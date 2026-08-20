@@ -60,7 +60,7 @@ CASES = [
         slug="case1-normal-return", src="쏘카일레클 정상 대여, 정상 반납.mp4",
         title="정상 대여 · 정상 반납", session=5,
         summary="쏘카일레클을 빌려 타고 와 구역 안에 세운 기준 사례.",
-        expect="반납 승인", kind="ok",
+        expect="반납 승인", kind="ok", group="주차 판정",
         anchors=[(0, "17:14:58", 5, "carry"), (211, "17:16:54", 14)],
         standing=4, standing_bad=1,       # 시작 프레임: #1 #2 #3 + carry #5 · 보도 자전거 #4
     ),
@@ -68,7 +68,7 @@ CASES = [
         slug="case2-on-the-line", src="쏘카일레클 타고와서 경계선 걸쳐 반납(반납거부).mp4",
         title="경계선에 걸쳐 반납", session=6,
         summary="앞바퀴만 구역 안. 발자국이 구역과 55.8%만 겹쳐 이탈로 판정.",
-        expect="반납 거부", kind="bad",
+        expect="반납 거부", kind="bad", group="주차 판정",
         anchors=[(43, "17:25:54", 33)],
         standing=3, standing_bad=1,       # 시작 프레임: #1 #3 #4 · 보도 자전거 #2
     ),
@@ -76,7 +76,7 @@ CASES = [
         slug="case3-out-of-zone", src="쏘카일레클 타고와서 범위 밖 반납(반납거부).mp4",
         title="구역 밖에 반납", session=6,
         summary="구역 경계 바깥 보도에 그대로 세운 경우. 겹침 0%.",
-        expect="반납 거부", kind="bad",
+        expect="반납 거부", kind="bad", group="주차 판정",
         anchors=[(0, "17:27:59", 38, "carry"), (50, "17:28:26", 37), (175, "17:29:29", 46)],
         standing=2, standing_bad=1,       # carry #38 + 중간에 다시 초록이 되는 #1 · 보도 자전거 #2
     ),
@@ -84,7 +84,7 @@ CASES = [
         slug="case4-fallen-in-zone", src="쏘카일레클 정상범위 내 넘어짐 반납(반납거부).mp4",
         title="구역 안이지만 넘어짐", session=6,
         summary="위치는 구역 안(겹침 95.3%)이지만 기체가 누워 전도로 판정.",
-        expect="반납 거부", kind="bad",
+        expect="반납 거부", kind="bad", group="주차 판정",
         anchors=[(11, "17:22:35", 10)],
         standing=3, standing_bad=1,       # 시작 프레임: #1 #3 #4 · 보도 자전거 #2 (#10 은 주인공)
     ),
@@ -92,7 +92,7 @@ CASES = [
         slug="case5-fallen-pending", src="쏘카일레클 타고와서 정상범위 내 넘어짐(반납보류).mp4",
         title="넘어짐 · 판정 보류", session=6,
         summary="전도로 보이지만 확정 전 상태(PENDING). 확정 판정이 아니라 로그에 남지 않는다.",
-        expect="반납 보류", kind="pending",
+        expect="반납 보류", kind="pending", group="주차 판정",
         anchors=[],                       # 확정 판정 없음 — 배너에 시각이 뜨지 않는다
         approx_time="17:23~17:25",        # tracks 12~14 로 앞뒤 클립 사이임을 확인
         standing=3, standing_bad=1,       # 시작 프레임: #1 #3 #4 · 보도 자전거 #2
@@ -101,7 +101,7 @@ CASES = [
         slug="case6-gcoo-walk", src="지쿠 걸어서 정상반납(3브랜드).mp4",
         title="지쿠 · 끌고 와서 정상 반납", session=7,
         summary="세 브랜드가 섞인 구역에서 지쿠를 끌고 와 반납. 브랜드 구분이 함께 확인된다.",
-        expect="반납 승인", kind="ok",
+        expect="반납 승인", kind="ok", group="주차 판정",
         anchors=[(7, "17:41:30", 4, "carry"), (70, "17:42:00", 9), (91, "17:42:08", 5, "carry")],
         standing=3,                       # #1 스윙 + carry #4 #5 (지쿠 #9 만 실제 반납) · 보도 자전거 없음
     ),
@@ -109,9 +109,37 @@ CASES = [
         slug="case7-gcoo-ride", src="지쿠 타고와서 정상반납(3브랜드).mp4",
         title="지쿠 · 타고 와서 정상 반납", session=7,
         summary="같은 구역에 지쿠를 타고 와서 반납. 앞 사례와 접근 방식만 다르다.",
-        expect="반납 승인", kind="ok",
+        expect="반납 승인", kind="ok", group="주차 판정",
         anchors=[(48, "17:45:07", 23)],
         standing=2,                       # 시작 프레임: #1 #4 (#5 는 보류 표시)
+    ),
+
+    # ── 야간 인식 비교 ────────────────────────────────────────────────
+    # 판정 로그가 없는 촬영분이다. 확정 판정 대신 영상에서 뽑아낸
+    # 인식 결과(extract_live.py)로만 구역 맵을 채운다.
+    dict(
+        slug="night1-return", src="추가/m 모델 야간반납(pending).avi", enc="night",
+        title="야간 반납 판정", group="야간 인식", session=None, clock="야간",
+        summary="가로등만 있는 야간에도 반납 승인이 확정된다. 옆 기체는 아직 보류 상태로 남는다.",
+        expect="반납 승인", kind="ok", anchors=[],
+    ),
+    dict(
+        slug="night2-m-model", src="추가/m모델 야간인식개선됨(동일조건).avi", enc="night",
+        title="m 모델 · 야간 인식", group="야간 인식", session=None, clock="야간",
+        summary="아래 s 모델과 같은 조건에서 m 모델로 바꾼 결과. 어두워도 기체를 계속 잡아낸다.",
+        expect="인식 성공", kind="ok", anchors=[],
+    ),
+    dict(
+        slug="night3-s-model", src="추가/s모델 야간인식불량(동일조건).avi", enc="night",
+        title="s 모델 · 야간 인식", group="야간 인식", session=None, clock="야간",
+        summary="동일 조건, 더 가벼운 s 모델. 같은 자리에 세워진 기체를 대부분 놓친다.",
+        expect="인식 실패", kind="bad", anchors=[],
+    ),
+    dict(
+        slug="night4-light", src="추가/야간 조명 유무 인식률 차이.avi", enc="night",
+        title="조명 유무에 따른 차이", group="야간 인식", session=None, clock="야간",
+        summary="같은 자리에서 조명이 없을 때와 켜졌을 때를 이어 붙인 영상.",
+        expect="조명 비교", kind="pending", anchors=[],
     ),
 ]
 
@@ -155,15 +183,25 @@ def poster(video, frame, dst):
     return True
 
 
-def transcode():
-    """원본 1080p 영상을 1280px 웹용으로 재인코딩한다."""
+# 인코딩 프로파일 — 야간 영상은 센서 노이즈가 심해 그대로 넣으면 40배 커진다
+ENC = {
+    "day":   ("scale=1280:-2", "30"),
+    "night": ("hqdn3d=12:8:12:14,scale=800:-2", "36"),
+}
+
+
+def transcode(pick=None):
+    """원본 영상을 웹용으로 재인코딩한다."""
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     OUT_MEDIA.mkdir(parents=True, exist_ok=True)
     for c in CASES:
+        if pick and pick not in c["slug"]:
+            continue
+        vf, crf = ENC[c.get("enc", "day")]
         dst = OUT_MEDIA / f"{c['slug']}.mp4"
         subprocess.run([ff, "-y", "-loglevel", "error", "-i", c["src"],
-                        "-vf", "scale=1280:-2", "-c:v", "libx264", "-crf", "30",
+                        "-vf", vf, "-c:v", "libx264", "-crf", crf,
                         "-preset", "slow", "-pix_fmt", "yuv420p", "-an",
                         "-movflags", "+faststart", str(dst)], check=True)
         print(f"  {c['slug']:<22} {Path(c['src']).stat().st_size/1e6:>6.1f}MB "
@@ -172,8 +210,10 @@ def transcode():
 
 def main():
     if "--video" in sys.argv:
+        i = sys.argv.index("--video")
+        only = sys.argv[i + 1] if len(sys.argv) > i + 1 else None
         print("영상 재인코딩")
-        transcode()
+        transcode(only)
 
     records = [json.loads(l) for l in SRC_JSONL.open(encoding="utf-8") if l.strip()]
     calib = json.loads(SRC_CALIB.read_text(encoding="utf-8"))
@@ -212,7 +252,7 @@ def main():
     cases = []
     for c in CASES:
         n, fps, dur, w, h = probe(OUT_MEDIA / f"{c['slug']}.mp4")
-        sess = sessions[c["session"] - 1]
+        sess = sessions[c["session"] - 1] if c.get("session") else []
         events = []
         for a in c["anchors"]:
             frame, tm, track = a[0], a[1], a[2]
@@ -233,12 +273,13 @@ def main():
 
         cases.append({
             "id": c["slug"], "title": c["title"], "summary": c["summary"],
-            "expect": c["expect"], "kind": c["kind"], "session": c["session"],
+            "expect": c["expect"], "kind": c["kind"], "session": c.get("session"),
+            "group": c.get("group", "주차 판정"),
             "video": f"media/{c['slug']}.mp4",
             "poster": f"media/{c['slug']}.jpg",
             "live": f"live/{c['slug']}.json",
             "duration": dur, "fps": round(fps, 3), "frames": n, "width": w, "height": h,
-            "clock": c.get("approx_time") or (events[0]["time"] if events else ""),
+            "clock": c.get("clock") or c.get("approx_time") or (events[0]["time"] if events else ""),
             "approx": bool(c.get("approx_time")),
             "standing": c.get("standing", 0),
             "standing_bad": c.get("standing_bad", 0),
@@ -273,7 +314,8 @@ def main():
           f"{sum(len(c['events']) for c in cases)}건 · 전체 판정 {len(all_j)}건 "
           f"(위반 {viol} / 정상 {len(all_j)-viol})")
     for c in cases:
-        print(f"  {c['id']:<22} {c['duration']:>6.1f}s  세션{c['session']}  "
+        sess_txt = f"세션{c['session']}" if c["session"] else "기록없음"
+        print(f"  {c['id']:<18} {c['group']:<8} {c['duration']:>6.1f}s  {sess_txt:<8} "
               f"{c['clock']:<12} 판정 {len(c['events'])}건")
 
 

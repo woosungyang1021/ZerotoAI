@@ -233,5 +233,7 @@ demo_export/
 Thumbs.db
 desktop.ini
 
-# 원본 시연 영상 (docs/media 에 720p 압축본만 커밋)
+# 원본 시연 영상 (docs/media 에 압축본만 커밋)
 /*.mp4
+# 야간 원본 영상 + 기존과 동일한 로그 사본
+추가/

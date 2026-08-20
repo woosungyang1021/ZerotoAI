@@ -49,7 +49,11 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .rule .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
 
 /* ── 케이스 갤러리 ── */
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:10px}
+.gallery{display:flex;flex-direction:column;gap:10px}
+.gallery .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:10px}
+.ghead{display:flex;align-items:center;gap:10px;margin-top:6px}
+.ghead span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase;white-space:nowrap}
+.ghead i{flex:1;height:1px;background:var(--rule)}
 .card{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--ink-3);border-radius:3px;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:12px 14px 13px;display:flex;flex-direction:column;gap:7px;transition:border-color .14s,background .14s}
 .card:hover{border-color:var(--ink-3);background:var(--panel-2)}
 .card.ok{border-left-color:var(--ok)} .card.bad{border-left-color:var(--alert)} .card.pending{border-left-color:var(--warn)}
@@ -216,7 +220,7 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
 
   <section>
     <h2 class="title">시연 케이스 <span class="tag" id="galCount"></span></h2>
-    <p class="sub">상황을 하나씩 만들어 찍은 현장 영상입니다. 카드를 고르면 아래에서 재생됩니다.</p>
+    <p class="sub">상황을 하나씩 만들어 찍은 현장 영상입니다. 카드를 고르면 아래에서 재생됩니다.<br>야간 영상은 판정 로그가 없는 촬영분이라, 영상에서 뽑아낸 인식 결과만 구역 맵에 표시됩니다.</p>
     <div class="gallery" id="gallery"></div>
   </section>
 
@@ -397,6 +401,15 @@ fetch('cases.json').then(r=>r.json()).then(d=>{
 function buildGallery(){
   const g=$('gallery');
   g.innerHTML='';
+  const groups=[...new Set(D.cases.map(c=>c.group||'주차 판정'))];
+  const boxes={};
+  groups.forEach(name=>{
+    const h=document.createElement('div');
+    h.className='ghead'; h.innerHTML=`<span>${name}</span><i></i>`;
+    g.appendChild(h);
+    const box=document.createElement('div');
+    box.className='grid'; g.appendChild(box); boxes[name]=box;
+  });
   D.cases.forEach((c,i)=>{
     const b=document.createElement('button');
     b.className='card '+c.kind; b.dataset.i=i;
@@ -412,7 +425,7 @@ function buildGallery(){
         <span>판정 ${c.events.filter(e=>!e.carry).length}건</span>
       </div>`;
     b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
-    g.appendChild(b);
+    boxes[c.group||'주차 판정'].appendChild(b);
   });
 }
 
@@ -612,7 +625,7 @@ function select(i){
   $('cSummary').textContent=cur.summary;
   $('cExpect').textContent=cur.expect;
   $('cClock').textContent=cur.clock+(cur.approx?' (판정 로그 없음 · 앞뒤 클립으로 추정)':'');
-  $('cSess').textContent='세션 '+cur.session;
+  $('cSess').textContent=cur.session?('세션 '+cur.session):'판정 로그 없음';
   $('cDur').textContent=cur.duration.toFixed(1)+'초 · '+cur.frames+'프레임 · '+cur.fps.toFixed(1)+'fps';
   $('tEnd').textContent=fmt(cur.duration);
   $('evCount').textContent='대기';
@@ -641,7 +654,9 @@ function select(i){
 function buildEvents(){
   const box=$('events');
   if(!cur.events.length){
-    box.innerHTML=`<div class="empty">이 구간에는 확정 판정이 없습니다.<br>기체가 멈췄는지 확인하는 <b>보류(PENDING)</b> 상태만 이어집니다.</div>`;
+    box.innerHTML=`<div class="empty">${cur.session
+      ? '이 구간에는 확정 판정이 없습니다.<br>기체가 멈췄는지 확인하는 <b>보류(PENDING)</b> 상태만 이어집니다.'
+      : '판정 로그가 없는 촬영분입니다.<br>인식 결과는 <b>구역 맵</b>에서 확인하세요.'}</div>`;
     return;
   }
   box.innerHTML=`<div class="empty" id="evWait">재생이 판정 시점에 닿으면 여기에 뜹니다.</div>`;
@@ -766,10 +781,12 @@ function drawCase(){
     bevDot(x,w,e,{active:i===curEv, dim:i!==curEv});
   });
 
-  $('bevCount').textContent = units.length ? units.length+'대' : (curEv<0?'대기':(curEv+1)+'대');
+  $('bevCount').textContent = units.length ? units.length+'대'
+      : (live&&live.frames) ? '0대' : (curEv<0?'대기':(curEv+1)+'대');
   if(!units.length && curEv<0){
     x.font='12px Pretendard, sans-serif'; x.fillStyle='#5E6D82'; x.textAlign='center';
-    x.fillText(live===false ? '인식 데이터 없음' : '인식 대기 중', w/2, w/2);
+    x.fillText(live===false ? '인식 데이터 없음'
+             : (live&&live.frames) ? '인식된 기체 없음' : '인식 대기 중', w/2, w/2);
   }
 }
 /* ── 구역 맵 탭 (접지점 / 위치) ── */
