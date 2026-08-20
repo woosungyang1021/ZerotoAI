@@ -30,7 +30,7 @@ SRC_JSONL = Path("judgments.jsonl")
 SRC_CALIB = Path("judge_calib.json")
 OUT_JSON  = Path("docs/cases.json")
 OUT_MEDIA = Path("docs/media")
-MARGIN_M  = 1.0                       # BEV 그림 여백
+MARGIN_M  = 2.1                       # BEV 그림 여백 — 구역 밖 기체까지 담는다
 ZONE_NAME = "유억겸 기념관 앞"
 
 BRAND_KO = {"SOCAR": "쏘카일레클", "SWING": "스윙", "GCOO": "지쿠"}
@@ -213,6 +213,7 @@ def main():
             "expect": c["expect"], "kind": c["kind"], "session": c["session"],
             "video": f"media/{c['slug']}.mp4",
             "poster": f"media/{c['slug']}.jpg",
+            "live": f"live/{c['slug']}.json",
             "duration": dur, "fps": round(fps, 3), "frames": n, "width": w, "height": h,
             "clock": c.get("approx_time") or (events[0]["time"] if events else ""),
             "approx": bool(c.get("approx_time")),
