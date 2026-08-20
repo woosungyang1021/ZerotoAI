@@ -79,7 +79,6 @@ CASES = [
         expect="반납 보류", kind="pending",
         anchors=[],                       # 확정 판정 없음 — 배너에 시각이 뜨지 않는다
         approx_time="17:23~17:25",        # tracks 12~14 로 앞뒤 클립 사이임을 확인
-        approx_start="17:23:30",          # 구역 맵 누적 기준으로만 쓰는 값
     ),
     dict(
         slug="case6-gcoo-walk", src="지쿠 걸어서 정상반납(3브랜드).mp4",
@@ -96,12 +95,6 @@ CASES = [
         anchors=[(48, "17:45:07", 23)],
     ),
 ]
-
-
-def secs(hms):
-    """'17:28:26' → 자정 기준 초"""
-    h, m, sec = (int(v) for v in hms.split(":"))
-    return h * 3600 + m * 60 + sec
 
 
 def split_sessions(records):
@@ -211,28 +204,6 @@ def main():
             events.append(e)
         events.sort(key=lambda e: e["t"])
 
-        # 클립이 시작된 실제 시각 — 마지막 앵커에서 역산한다.
-        # (첫 프레임 배너는 클립 전에 내려진 판정이 남아 있는 것이라 기준으로 못 쓴다)
-        if events:
-            last = events[-1]
-            start_wall = secs(last["time"]) - last["t"]
-        else:
-            start_wall = secs(c["approx_start"])
-
-        # 구역 맵 배경 — 같은 세션에서 판정된 다른 기체들.
-        # 세워둔 기체는 그대로 있으므로, 클립 시작 전에 판정된 것도 화면에 남는다.
-        own = {(a[1], a[2]) for a in c["anchors"]}
-        context = []
-        for r in sess:
-            if (r["time"], r["track_id"]) in own:
-                continue
-            e = shape(r, c["session"])
-            e["t"] = round(secs(r["time"]) - start_wall, 1)
-            if e["t"] > dur:                  # 클립이 끝난 뒤 판정 — 보여줄 수 없다
-                continue
-            context.append(e)
-        context.sort(key=lambda e: e["t"])
-
         # 대표 장면 — 판정이 뜬 프레임, 없으면 후반부
         key_frame = events[-1]["frame"] if events else int(n * 0.75)
         poster(OUT_MEDIA / f"{c['slug']}.mp4", key_frame, OUT_MEDIA / f"{c['slug']}.jpg")
@@ -246,7 +217,6 @@ def main():
             "clock": c.get("approx_time") or (events[0]["time"] if events else ""),
             "approx": bool(c.get("approx_time")),
             "events": events,
-            "context": context,
         })
 
     viol = sum(1 for j in all_j if j["violation"])
@@ -278,8 +248,7 @@ def main():
           f"(위반 {viol} / 정상 {len(all_j)-viol})")
     for c in cases:
         print(f"  {c['id']:<22} {c['duration']:>6.1f}s  세션{c['session']}  "
-              f"{c['clock']:<12} 판정 {len(c['events'])}건  "
-              f"맵 배경 {len(c['context'])}대")
+              f"{c['clock']:<12} 판정 {len(c['events'])}건")
 
 
 if __name__ == "__main__":
