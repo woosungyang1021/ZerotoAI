@@ -1,0 +1,15 @@
+# 대용량 원본 · 개인 파일 (GitHub 파일당 100MB 제한)
+*.hwp
+사진/
+새 폴더/
+demo_export/
+19/
+
+# 파이썬
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
