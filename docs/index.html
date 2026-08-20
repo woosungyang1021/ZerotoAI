@@ -3,24 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>선 넘은 PM 단속반 — 판정 리플레이</title>
+<title>선 넘은 PM 단속반 — 주차 판정 리포트</title>
+<meta name="description" content="공유 PM이 지정 구역에 제대로 반납됐는지 엣지 AI가 판정한 결과를 시연 영상과 함께 보여줍니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0E141D; --panel:#161E2A; --rule:#283445;
+  --bg:#0E141D; --panel:#161E2A; --panel-2:#1B2432; --rule:#283445;
   --ink:#E6EDF6; --ink-2:#8C9BB0; --ink-3:#5E6D82;
-  --line:#FFD23F; --alert:#FF4D5E; --ok:#3DDC97;
+  --line:#FFD23F; --alert:#FF4D5E; --ok:#3DDC97; --warn:#FFA23F;
   --mono:'JetBrains Mono',ui-monospace,monospace;
-  --sans:'Pretendard Variable',Pretendard,-apple-system,sans-serif;
+  --sans:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
 .hazard{height:5px;background:repeating-linear-gradient(115deg,var(--line) 0 14px,#0E141D 14px 28px);opacity:.85}
-.shell{max-width:1560px;margin:0 auto;padding:0 20px 28px}
+.shell{max-width:1400px;margin:0 auto;padding:0 20px 60px}
+section{margin-top:34px}
 
+/* ── 헤더 ── */
 .bar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:16px 0 14px;border-bottom:1px solid var(--rule)}
 .mark{display:flex;flex-direction:column;gap:1px;margin-right:auto}
 .mark b{font-size:19px;font-weight:800;letter-spacing:-.035em;border-left:3px solid var(--line);padding-left:9px}
@@ -29,77 +34,112 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14p
 .stat b{color:var(--ink);font-weight:500}
 .led{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none;box-shadow:0 0 0 3px rgba(61,220,151,.16);animation:breathe 2.6s ease-in-out infinite}
 @keyframes breathe{50%{opacity:.42}}
-.ctl{display:flex;gap:6px}
-.ctl button{background:var(--panel);border:1px solid var(--rule);color:var(--ink-2);font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:2px;cursor:pointer}
+
+/* ── 제목 ── */
+h2.title{font-size:16px;font-weight:750;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:none}
+.sub{color:var(--ink-2);font-size:12.5px;margin-bottom:14px;padding-left:13px}
+
+/* ── 요약 수치 ── */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{background:var(--panel);border:1px solid var(--rule);border-radius:3px;padding:14px 15px}
+.kpi .n{font-family:var(--mono);font-size:27px;font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.kpi .l{font-size:11.5px;color:var(--ink-2);margin-top:3px}
+.kpi.hot .n{color:var(--alert)} .kpi.good .n{color:var(--ok)} .kpi.warn .n{color:var(--line)}
+
+/* ── 판정 기준 ── */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.rule{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--ink-3);border-radius:3px;padding:15px 16px}
+.rule.ok{border-left-color:var(--ok)} .rule.bad{border-left-color:var(--alert)} .rule.pending{border-left-color:var(--warn)}
+.rule h3{font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rule p{font-size:12.5px;color:var(--ink-2);margin-top:7px}
+.rule .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+
+/* ── 케이스 갤러리 ── */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:3px;overflow:hidden;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:0;transition:border-color .14s,transform .14s}
+.card:hover{border-color:var(--ink-3);transform:translateY(-2px)}
+.card.on{border-color:var(--line);box-shadow:0 0 0 1px var(--line)}
+.card .thumb{position:relative;aspect-ratio:16/9;background:#080C12}
+.card .thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.9}
+.card.on .thumb img{opacity:1}
+.card .no{position:absolute;left:0;top:0;background:rgba(8,12,18,.86);font-family:var(--mono);font-size:10px;padding:3px 7px;color:var(--ink-2);letter-spacing:.1em}
+.card .body{padding:11px 13px 13px}
+.card h3{font-size:13.5px;font-weight:700;letter-spacing:-.01em}
+.card .meta{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:5px;display:flex;gap:9px;flex-wrap:wrap}
+
+.badge{font-family:var(--mono);font-size:10px;font-weight:500;padding:2px 7px;border-radius:2px;border:1px solid;letter-spacing:.02em;white-space:nowrap}
+.badge.ok{color:var(--ok);border-color:rgba(61,220,151,.45);background:rgba(61,220,151,.1)}
+.badge.bad{color:var(--alert);border-color:rgba(255,77,94,.45);background:rgba(255,77,94,.1)}
+.badge.pending{color:var(--warn);border-color:rgba(255,162,63,.45);background:rgba(255,162,63,.1)}
+.card .thumb .badge{position:absolute;right:7px;top:7px;background:rgba(8,12,18,.86)}
+
+/* ── 뷰어 ── */
+.viewer{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(320px,.85fr);gap:14px}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:3px;display:flex;flex-direction:column;min-width:0}
+.head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.head h3{font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--ink-2);font-family:var(--mono);text-transform:uppercase;margin-right:auto}
+.tag{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.06em}
+.stage{background:#080C12;position:relative}
+.stage video{width:100%;display:block;aspect-ratio:16/9;object-fit:contain;background:#080C12}
+
+/* 타임라인 */
+.track{position:relative;height:34px;background:var(--panel-2);border-top:1px solid var(--rule);cursor:pointer}
+.track .fill{position:absolute;left:0;top:0;bottom:0;background:rgba(255,210,63,.13);border-right:1px solid var(--line);width:0}
+.track .mk{position:absolute;top:6px;width:2px;height:22px;transform:translateX(-1px);border-radius:1px}
+.track .mk.bad{background:var(--alert);box-shadow:0 0 0 2px rgba(255,77,94,.2)}
+.track .mk.ok{background:var(--ok);box-shadow:0 0 0 2px rgba(61,220,151,.2)}
+.tline{display:flex;justify-content:space-between;padding:7px 12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);border-top:1px solid var(--rule)}
+.ctl{display:flex;gap:6px;padding:0}
+.ctl button{background:var(--panel-2);border:1px solid var(--rule);color:var(--ink-2);font-family:var(--mono);font-size:10.5px;padding:4px 9px;border-radius:2px;cursor:pointer}
 .ctl button:hover{border-color:var(--line);color:var(--ink)}
 .ctl button.on{border-color:var(--line);color:var(--line)}
 
-.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,.85fr);gap:16px;margin-top:16px}
-.col{display:flex;flex-direction:column;gap:16px;min-width:0}
-.card{background:var(--panel);border:1px solid var(--rule);border-radius:3px;display:flex;flex-direction:column;min-width:0}
-.head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--rule)}
-.head h2{font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--ink-2);font-family:var(--mono);text-transform:uppercase;margin-right:auto}
-.tag{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.06em}
+.caseinfo{padding:14px}
+.caseinfo h4{font-size:16px;font-weight:750;letter-spacing:-.02em;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.caseinfo p{color:var(--ink-2);font-size:12.5px;margin-top:7px}
+.caseinfo dl{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;margin-top:12px;font-size:12px;padding-top:12px;border-top:1px solid var(--rule)}
+.caseinfo dt{color:var(--ink-3);font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;padding-top:2px}
+.caseinfo dd{color:var(--ink)}
 
-.video{position:relative;background:#080C12;aspect-ratio:16/9;overflow:hidden}
-.video video{width:100%;height:100%;object-fit:contain;display:block}
-.void{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px}
-.void p{color:var(--ink-2);font-size:13px;max-width:38ch}
-.void code{font-family:var(--mono);font-size:11px;color:var(--line)}
-.scan{width:46px;height:1px;background:var(--line);opacity:.6;animation:scan 2.2s ease-in-out infinite}
-@keyframes scan{0%,100%{transform:translateX(-26px)}50%{transform:translateX(26px)}}
-.overlay{position:absolute;left:11px;bottom:11px;display:flex;gap:6px;font-family:var(--mono);font-size:10.5px}
-.chip{background:rgba(8,12,18,.82);border:1px solid var(--rule);padding:3px 8px;color:var(--ink-2)}
-.chip.hot{border-color:var(--alert);color:var(--alert)}
-.seek{height:3px;background:var(--rule);position:relative}
-.seek i{position:absolute;left:0;top:0;bottom:0;background:var(--line);width:0}
-
-.bev{padding:14px;display:flex;gap:14px;align-items:flex-start}
+.bev{padding:13px}
 .bev canvas{width:100%;height:auto;display:block;border-radius:2px}
-.bevwrap{flex:1;min-width:0}
-.key{display:flex;flex-direction:column;gap:9px;width:130px;flex:none;padding-top:2px}
-.keyrow{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink-2)}
-.dot{width:9px;height:9px;border-radius:50%;flex:none}
-.keynote{font-size:10.5px;color:var(--ink-3);line-height:1.5;border-top:1px solid var(--rule);padding-top:9px;margin-top:2px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;padding:0 13px 13px;font-size:11px;color:var(--ink-2)}
+.legend i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:1px}
+.note{padding:0 13px 13px;font-size:11.5px;color:var(--ink-3);line-height:1.6}
 
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule)}
-.cell{background:var(--panel);padding:14px}
-.cell .n{font-family:var(--mono);font-size:27px;font-weight:700;letter-spacing:-.03em;line-height:1.1}
-.cell .l{font-size:11px;color:var(--ink-3);margin-top:3px}
-.cell.hot .n{color:var(--alert)}
-.cell.good .n{color:var(--ok)}
+.events{padding:8px;display:flex;flex-direction:column;gap:6px;max-height:330px;overflow:auto}
+.ev{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 11px;background:var(--panel-2);border:1px solid transparent;border-left:2px solid var(--ink-3);border-radius:2px;cursor:pointer;transition:border-color .14s}
+.ev:hover{border-color:var(--rule);border-left-color:var(--ink-2)}
+.ev.bad{border-left-color:var(--alert)} .ev.ok{border-left-color:var(--ok)}
+.ev.now{background:#20293a;border-color:var(--line)}
+.ev .t{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.ev .who{font-size:12.5px;font-weight:600}
+.ev .why{font-size:11px;color:var(--ink-2);margin-top:1px}
+.empty{padding:22px 14px;text-align:center;color:var(--ink-3);font-size:12.5px}
 
-.log{flex:1;overflow-y:auto;max-height:min(520px,62vh);scrollbar-width:thin;scrollbar-color:var(--rule) transparent}
-.log::-webkit-scrollbar{width:8px}
-.log::-webkit-scrollbar-thumb{background:var(--rule)}
-.ev{display:grid;grid-template-columns:3px 1fr;border-bottom:1px solid var(--rule);position:relative}
-.ev .edge{background:var(--ok)}
-.ev.bad .edge{background:var(--alert)}
-.ev .body{padding:10px 13px;min-width:0}
-.ev .top{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
-.ev .verdict{font-size:13px;font-weight:700;letter-spacing:-.02em;color:var(--ok)}
-.ev.bad .verdict{color:var(--alert)}
-.ev .time{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-left:auto;flex:none}
-.ev .meta{display:flex;flex-wrap:wrap;gap:5px 7px;font-family:var(--mono);font-size:10.5px;color:var(--ink-2)}
-.ev .meta i{font-style:normal;display:inline-flex;align-items:center;gap:4px}
-.ev .brand{color:var(--ink)}
-.ev.fresh{animation:land .5s cubic-bezier(.2,.8,.3,1)}
-@keyframes land{from{opacity:0;transform:translateY(-9px)}}
-.ev.fresh::after{content:'';position:absolute;inset:0;background:var(--line);animation:flash .7s ease-out forwards;pointer-events:none}
-@keyframes flash{from{opacity:.16}to{opacity:0}}
-.empty{padding:34px 20px;text-align:center;color:var(--ink-3);font-size:12.5px;line-height:1.6}
+/* ── 전체 로그 ── */
+.logwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.72fr);gap:14px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase;position:sticky;top:0;background:var(--panel);z-index:1}
+td.mono{font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+tr.bad td.v{color:var(--alert)} tr.ok td.v{color:var(--ok)}
+.tablebox{max-height:430px;overflow:auto}
+.bars{padding:13px;display:flex;flex-direction:column;gap:11px}
+.brow{display:grid;grid-template-columns:76px 1fr auto;gap:10px;align-items:center;font-size:12px}
+.brow .track2{height:7px;background:var(--panel-2);border-radius:4px;overflow:hidden}
+.brow .track2 i{display:block;height:100%;border-radius:4px}
+.brow .v{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
 
-.foot{margin-top:16px;padding-top:13px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:10.5px;color:var(--ink-3);display:flex;gap:16px;flex-wrap:wrap}
+.foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--rule);display:flex;gap:20px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
 .foot b{color:var(--ink-2);font-weight:500}
 
-@media (max-width:1000px){
-  .grid{grid-template-columns:1fr}
-  .bev{flex-direction:column}
-  .key{flex-direction:row;flex-wrap:wrap;width:100%;gap:12px}
-  .keynote{width:100%}
+@media(max-width:980px){
+  .viewer,.logwrap{grid-template-columns:1fr}
+  .events{max-height:none}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
-:focus-visible{outline:2px solid var(--line);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -111,260 +151,415 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14p
       <b>선 넘은 PM 단속반</b>
       <span>EDGE AI · CAMPUS PM ENFORCEMENT</span>
     </div>
-    <div class="stat"><i class="led"></i><span id="conn">불러오는 중</span></div>
-    <div class="stat"><b id="tpos">0:00</b> / <b id="tlen">0:00</b></div>
-    <div class="ctl">
-      <button id="bPlay">일시정지</button>
-      <button data-sp="1">x1</button>
-      <button data-sp="2">x2</button>
-      <button data-sp="4" class="on">x4</button>
-      <button id="bRew">처음부터</button>
-    </div>
+    <div class="stat"><i class="led"></i><span id="conn">데이터 불러오는 중</span></div>
+    <div class="stat">구역 <b id="hZone">—</b></div>
+    <div class="stat">기록 <b id="hDate">—</b></div>
   </header>
 
-  <div class="grid">
-    <div class="col">
-      <section class="card">
-        <div class="head">
-          <h2>Live · <span id="zoneName">—</span></h2>
-          <span class="tag" id="src">—</span>
-        </div>
-        <div class="video">
-          <video id="cam" muted playsinline preload="auto" style="display:none"></video>
-          <div class="void" id="camvoid">
-            <div class="scan"></div>
-            <p id="camtext">영상 파일이 없습니다. 판정 데이터만 재생합니다.</p>
-            <code>docs/viz.mp4 를 넣으면 자동으로 재생됩니다</code>
-          </div>
-          <div class="overlay">
-            <span class="chip" id="ovTrack">추적 0대</span>
-            <span class="chip hot" id="ovViol">위반 0</span>
-          </div>
-        </div>
-        <div class="seek"><i id="seekbar"></i></div>
-      </section>
-
-      <section class="card">
-        <div class="head">
-          <h2>구역 맵 · 접지점 판정</h2>
-          <span class="tag">IPM HOMOGRAPHY · BEV</span>
-        </div>
-        <div class="bev">
-          <div class="bevwrap"><canvas id="bev" width="900" height="900"></canvas></div>
-          <div class="key">
-            <div class="keyrow"><i class="dot" style="background:#2C7CF7"></i>쏘카</div>
-            <div class="keyrow"><i class="dot" style="background:#E8ECF2"></i>스윙</div>
-            <div class="keyrow"><i class="dot" style="background:#00C73C"></i>지쿠</div>
-            <div class="keyrow"><i class="dot" style="background:#6B7A8F"></i>알 수 없음</div>
-            <p class="keynote">노란 선이 허용 주차 구역입니다. 점을 감싼 고리는 발자국이 구역과 겹친 비율이며, 70% 미만이면 위반입니다.</p>
-          </div>
-        </div>
-      </section>
+  <section>
+    <h2 class="title">한눈에 보기</h2>
+    <p class="sub">젯슨이 현장에서 실시간으로 남긴 판정 기록 전체입니다.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="n" id="kJudge">0</div><div class="l">누적 판정</div></div>
+      <div class="kpi hot"><div class="n" id="kViol">0</div><div class="l">반납 거부 (위반)</div></div>
+      <div class="kpi good"><div class="n" id="kOk">0</div><div class="l">반납 승인</div></div>
+      <div class="kpi warn"><div class="n" id="kRate">0%</div><div class="l">위반 비율</div></div>
+      <div class="kpi"><div class="n" id="kCase">0</div><div class="l">시연 케이스</div></div>
+      <div class="kpi"><div class="n" id="kBrand">0</div><div class="l">인식 브랜드</div></div>
     </div>
+  </section>
 
-    <div class="col">
-      <section class="card">
-        <div class="stats">
-          <div class="cell"><div class="n" id="sTrack">0</div><div class="l">감시 중인 기기</div></div>
-          <div class="cell hot"><div class="n" id="sViol">0</div><div class="l">누적 위반</div></div>
-          <div class="cell good"><div class="n" id="sOk">0</div><div class="l">정상 반납</div></div>
-          <div class="cell"><div class="n" id="sRate">0%</div><div class="l">위반 비율</div></div>
-        </div>
-      </section>
-
-      <section class="card" style="flex:1">
-        <div class="head">
-          <h2>판정 기록</h2>
-          <span class="tag" id="evcount">0건</span>
-        </div>
-        <div class="log" id="log">
-          <div class="empty" id="empty">재생을 기다리는 중입니다.</div>
-        </div>
-      </section>
+  <section>
+    <h2 class="title">무엇을 보고 판정하나</h2>
+    <p class="sub">기체의 접지점(바퀴가 땅에 닿는 지점)을 지면 좌표로 바꾼 뒤, 그 발자국이 허용 구역과 얼마나 겹치는지로 판단합니다.</p>
+    <div class="rules">
+      <div class="rule ok">
+        <h3>반납 승인 <span class="cnt" id="rOk">—</span></h3>
+        <p>접지 발자국이 구역과 <b>70% 이상</b> 겹치고, 기체가 서 있는 상태.</p>
+      </div>
+      <div class="rule bad">
+        <h3>구역 이탈 <span class="cnt" id="rOut">—</span></h3>
+        <p>겹침이 <b>70% 미만</b>. 경계선에 걸친 경우도 여기에 들어갑니다.</p>
+      </div>
+      <div class="rule bad">
+        <h3>전도 <span class="cnt" id="rFall">—</span></h3>
+        <p>구역 안이어도 기체 축이 누우면 <b>넘어진 것</b>으로 보고 반납을 막습니다.</p>
+      </div>
+      <div class="rule pending">
+        <h3>판정 보류 <span class="cnt">PENDING</span></h3>
+        <p>움직임이 멈췄는지 확인하는 중. 확정 판정이 아니라 기록에는 남지 않습니다.</p>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <section>
+    <h2 class="title">시연 케이스 <span class="tag" id="galCount"></span></h2>
+    <p class="sub">상황을 하나씩 만들어 찍은 현장 영상입니다. 카드를 고르면 아래에서 재생됩니다.</p>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section id="viewer">
+    <div class="viewer">
+      <div class="col">
+        <div class="panel">
+          <div class="head">
+            <h3>재생</h3>
+            <span class="tag" id="vTag">—</span>
+            <div class="ctl">
+              <button data-sp="0.5">0.5x</button>
+              <button data-sp="1" class="on">1x</button>
+              <button data-sp="2">2x</button>
+              <button id="bPlay">일시정지</button>
+            </div>
+          </div>
+          <div class="stage">
+            <video id="cam" playsinline preload="metadata" muted loop></video>
+          </div>
+          <div class="track" id="track"><div class="fill" id="fill"></div></div>
+          <div class="tline">
+            <span id="tNow">0:00</span>
+            <span class="tag">막대는 판정이 내려진 지점입니다 · 클릭하면 그 장면으로 이동</span>
+            <span id="tEnd">0:00</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="caseinfo">
+            <h4 id="cTitle">—</h4>
+            <p id="cSummary"></p>
+            <dl>
+              <dt>기대 결과</dt><dd id="cExpect">—</dd>
+              <dt>촬영 시각</dt><dd id="cClock">—</dd>
+              <dt>세션</dt><dd id="cSess">—</dd>
+              <dt>영상 길이</dt><dd id="cDur">—</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="panel">
+          <div class="head"><h3>이 케이스의 판정</h3><span class="tag" id="evCount">0건</span></div>
+          <div class="events" id="events"></div>
+        </div>
+        <div class="panel">
+          <div class="head"><h3>구역 맵 · 접지점</h3><span class="tag">BEV</span></div>
+          <div class="bev"><canvas id="bevCase" width="900" height="900"></canvas></div>
+          <div class="legend">
+            <span><i style="background:#2C7CF7"></i>쏘카일레클</span>
+            <span><i style="background:#E8ECF2"></i>스윙</span>
+            <span><i style="background:#00C73C"></i>지쿠</span>
+          </div>
+          <p class="note">노란 테두리가 허용 주차 구역입니다. 점을 감싼 고리 두께가 구역과 겹친 비율이고, 빨간 점이 반납 거부된 기체입니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="title">전체 판정 기록</h2>
+    <p class="sub">시연 구간뿐 아니라 그날 남은 판정 <b id="allCount">—</b>건 전부입니다.</p>
+    <div class="logwrap">
+      <div class="panel">
+        <div class="head">
+          <h3>판정 로그</h3>
+          <div class="ctl" id="filters">
+            <button data-f="all" class="on">전체</button>
+            <button data-f="bad">위반만</button>
+            <button data-f="ok">정상만</button>
+          </div>
+        </div>
+        <div class="tablebox">
+          <table>
+            <thead><tr><th>시각</th><th>세션</th><th>기체</th><th>브랜드</th><th>상태</th><th>겹침</th><th>판정</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col">
+        <div class="panel">
+          <div class="head"><h3>판정 위치 분포</h3><span class="tag">ALL</span></div>
+          <div class="bev"><canvas id="bevAll" width="900" height="900"></canvas></div>
+          <p class="note">그날 판정된 기체가 실제로 어디에 세워져 있었는지입니다. 구역 밖 점이 곧 반납 거부입니다.</p>
+        </div>
+        <div class="panel">
+          <div class="head"><h3>브랜드별 판정</h3></div>
+          <div class="bars" id="brandBars"></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <div class="foot">
-    <span>세션 <b id="fSess">—</b></span>
-    <span>영상 <b id="fVid">—</b></span>
     <span>모델 <b>YOLO26s-seg</b></span>
     <span>디바이스 <b>Jetson Orin Nano</b></span>
+    <span>좌표 <b>IPM 호모그래피 · BEV</b></span>
     <span>구역 <b id="fZone">—</b></span>
+    <span>영상 <b id="fMedia">—</b></span>
+    <span><a href="https://github.com/woosungyang1021/ZerotoAI">GitHub</a></span>
   </div>
 </div>
 
 <script>
-const BRAND_COLOR = {'쏘카':'#2C7CF7','스윙':'#E8ECF2','지쿠':'#00C73C','알 수 없음':'#6B7A8F'};
-
-let DATA=null, ZONE=[[.1,.1],[.9,.1],[.9,.9],[.1,.9]], BOUNDS=null;
-let hasVideo=false, playing=true, speed=4, t=0, lastWall=0;
-let shown=new Set(), viol=0, ok=0, live=[];
-
 const $ = id => document.getElementById(id);
-const vid = $('cam');
-const fmt = s => Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+const BRAND_COLOR = {'쏘카일레클':'#2C7CF7','스윙':'#E8ECF2','지쿠':'#00C73C','미확인':'#6B7A8F'};
+const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 
-/* ── 시계: 영상이 있으면 영상이 기준, 없으면 내부 타이머 ── */
-function clockTick(){
-  if(hasVideo && !vid.paused){ t = vid.currentTime; return; }
-  const now = performance.now();
-  if(playing && lastWall) t += (now-lastWall)/1000 * speed;
-  lastWall = now;
-  if(t >= DATA.duration){ t = 0; resetLog(); }
-}
-
-function resetLog(){
-  shown.clear(); viol=0; ok=0;
-  $('log').innerHTML = '<div class="empty" id="empty">재생을 기다리는 중입니다.</div>';
-}
-
-/* ── 현재 시각 기준으로 상태 재구성 ── */
-function rebuild(){
-  const cur = new Map();
-  for(const j of DATA.judgments){
-    if(j.t > t) break;
-    cur.set(j.track_id, j);
-    if(!shown.has(j.frame+'-'+j.track_id)){
-      shown.add(j.frame+'-'+j.track_id);
-      j.violation ? viol++ : ok++;
-      pushEvent(j);
-    }
-  }
-  live = [...cur.values()];
-}
-
-function pushEvent(j){
-  $('empty')?.remove();
-  const el=document.createElement('div');
-  el.className='ev fresh'+(j.violation?' bad':'');
-  const col=BRAND_COLOR[j.brand]||'#6B7A8F';
-  el.innerHTML=`
-    <div class="edge"></div>
-    <div class="body">
-      <div class="top">
-        <span class="verdict">${j.verdict}</span>
-        <span class="time">${j.time}</span>
-      </div>
-      <div class="meta">
-        <i class="brand"><span class="dot" style="background:${col}"></span>${j.brand}</i>
-        <i>#${j.track_id}</i><i>${j.state}</i>
-        <i>겹침 ${Math.round(j.overlap*100)}%</i>
-        <i>${fmt(j.t)}</i>
-      </div>
-    </div>`;
-  $('log').prepend(el);
-}
-
-/* ── BEV ── */
-const cv=$('bev'), cx=cv.getContext('2d');
-function drawBEV(){
-  const dpr=devicePixelRatio||1, w=cv.clientWidth||900;
-  const ar=BOUNDS?(BOUNDS.y[1]-BOUNDS.y[0])/(BOUNDS.x[1]-BOUNDS.x[0]):1;
-  const h=Math.round(w*Math.min(Math.max(ar,.45),1.35));
-  if(cv.width!==Math.round(w*dpr)){
-    cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr); cv.style.height=h+'px';
-  }
-  cx.setTransform(dpr,0,0,dpr,0,0);
-  cx.fillStyle='#0A0F16'; cx.fillRect(0,0,w,h);
-
-  if(BOUNDS){
-    cx.strokeStyle='rgba(40,52,69,.55)'; cx.lineWidth=1;
-    const [ax,bx]=BOUNDS.x,[ay,by]=BOUNDS.y;
-    for(let m=Math.ceil(ax);m<=bx;m++){const x=(m-ax)/(bx-ax)*w;cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,h);cx.stroke();}
-    for(let m=Math.ceil(ay);m<=by;m++){const y=(by-m)/(by-ay)*h;cx.beginPath();cx.moveTo(0,y);cx.lineTo(w,y);cx.stroke();}
-  }
-
-  const P=ZONE.map(([x,y])=>[x*w,y*h]);
-  cx.beginPath(); cx.moveTo(P[0][0],P[0][1]);
-  for(let i=1;i<P.length;i++) cx.lineTo(P[i][0],P[i][1]);
-  cx.closePath();
-  cx.fillStyle='rgba(255,210,63,.055)'; cx.fill();
-  cx.strokeStyle='#FFD23F'; cx.lineWidth=2.5; cx.lineJoin='round'; cx.stroke();
-  cx.font='500 10px JetBrains Mono, monospace';
-  cx.fillStyle='rgba(255,210,63,.72)';
-  cx.fillText('허용 주차 구역',P[0][0]+9,P[0][1]+18);
-
-  live.forEach(e=>{
-    const x=e.x*w, y=e.y*h, col=BRAND_COLOR[e.brand]||'#6B7A8F';
-    const ov=Math.max(0,Math.min(1,e.overlap||0));
-    if(e.violation){
-      const k=(Date.now()%1600)/1600;
-      cx.beginPath(); cx.arc(x,y,15+k*14,0,7);
-      cx.strokeStyle=`rgba(255,77,94,${.4*(1-k)})`; cx.lineWidth=2; cx.stroke();
-    }
-    cx.beginPath(); cx.arc(x,y,13,0,7);
-    cx.strokeStyle='rgba(255,255,255,.13)'; cx.lineWidth=4; cx.stroke();
-    if(ov>0){
-      cx.beginPath(); cx.arc(x,y,13,-Math.PI/2,-Math.PI/2+ov*2*Math.PI);
-      cx.strokeStyle=e.violation?'#FF4D5E':'#3DDC97'; cx.lineWidth=4; cx.stroke();
-    }
-    cx.beginPath(); cx.arc(x,y,6,0,7);
-    cx.fillStyle=col; cx.fill();
-    cx.strokeStyle='#0A0F16'; cx.lineWidth=1.5; cx.stroke();
-    cx.font='500 9.5px JetBrains Mono, monospace'; cx.fillStyle='#8C9BB0';
-    cx.fillText('#'+e.track_id+'  '+Math.round(ov*100)+'%',x+19,y+3.5);
-  });
-}
-
-function refresh(){
-  $('sTrack').textContent=live.length;
-  $('sViol').textContent=viol; $('sOk').textContent=ok;
-  const n=viol+ok;
-  $('sRate').textContent=n?Math.round(viol/n*100)+'%':'0%';
-  $('evcount').textContent=n+'건';
-  $('ovTrack').textContent='추적 '+live.length+'대';
-  $('ovViol').textContent='위반 '+live.filter(e=>e.violation).length;
-  $('tpos').textContent=fmt(t);
-  $('seekbar').style.width=(t/DATA.duration*100)+'%';
-}
-
-function loop(){
-  if(DATA){ clockTick(); rebuild(); drawBEV(); refresh(); }
-  requestAnimationFrame(loop);
-}
-
-/* ── 컨트롤 ── */
-$('bPlay').onclick=()=>{
-  playing=!playing;
-  $('bPlay').textContent=playing?'일시정지':'재생';
-  if(hasVideo) playing?vid.play():vid.pause();
-  lastWall=0;
-};
-$('bRew').onclick=()=>{ t=0; resetLog(); if(hasVideo) vid.currentTime=0; };
-document.querySelectorAll('[data-sp]').forEach(b=>{
-  b.onclick=()=>{
-    speed=+b.dataset.sp;
-    document.querySelectorAll('[data-sp]').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    if(hasVideo) vid.playbackRate=speed;
-  };
-});
+let D=null, cur=null, curEv=-1, filter='all';
+const vid=$('cam');
 
 /* ── 부팅 ── */
-fetch('data.json').then(r=>r.json()).then(d=>{
-  DATA=d; ZONE=d.zone_poly; BOUNDS=d.bounds_m;
+fetch('cases.json').then(r=>r.json()).then(d=>{
+  D=d;
   $('conn').textContent='판정 데이터 로드됨';
-  $('zoneName').textContent=d.zone_name;
-  $('tlen').textContent=fmt(d.duration);
-  $('fSess').textContent='#'+d.session;
-  $('fZone').textContent=(d.bounds_m.x[1]-d.bounds_m.x[0]).toFixed(1)+'×'+
-                         (d.bounds_m.y[1]-d.bounds_m.y[0]).toFixed(1)+'m 범위';
-  $('src').textContent='SESSION '+d.session;
+  $('hZone').textContent=d.zone_name;
+  $('hDate').textContent=d.built;
+  $('fZone').textContent=(d.bounds_m.x[1]-d.bounds_m.x[0]).toFixed(1)+'×'+(d.bounds_m.y[1]-d.bounds_m.y[0]).toFixed(1)+'m';
+  $('fMedia').textContent=d.cases.length+'편 · 1280px';
 
-  vid.playbackRate=speed;
-  vid.onloadeddata=()=>{
-    hasVideo=true; vid.style.display='block'; $('camvoid').style.display='none';
-    $('fVid').textContent='재생 중'; vid.loop=true; vid.play();
-  };
-  vid.onerror=()=>{ hasVideo=false; $('fVid').textContent='없음'; };
-  vid.src='viz.mp4';
+  const t=d.totals;
+  $('kJudge').textContent=t.judgments;
+  $('kViol').textContent=t.violations;
+  $('kOk').textContent=t.valid;
+  $('kRate').textContent=Math.round(t.violations/t.judgments*100)+'%';
+  $('kCase').textContent=t.cases;
+  $('kBrand').textContent=Object.keys(t.brands).length;
+  $('allCount').textContent=t.judgments;
+  $('galCount').textContent=d.cases.length+'편';
+  $('rOk').textContent=t.valid+'건';
+  $('rOut').textContent=(t.reasons['구역 이탈']||0)+'건';
+  $('rFall').textContent=(t.reasons['전도']||0)+'건';
+
+  buildGallery();
+  buildLog();
+  buildBars();
+  drawAll();
+  select(0);
 }).catch(err=>{
-  $('conn').textContent='data.json 을 불러올 수 없습니다';
+  $('conn').textContent='cases.json 을 불러올 수 없습니다';
   console.error(err);
 });
 
-loop();
-addEventListener('resize',drawBEV);
+/* ── 케이스 갤러리 ── */
+function buildGallery(){
+  const g=$('gallery');
+  g.innerHTML='';
+  D.cases.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='card'; b.dataset.i=i;
+    b.innerHTML=`
+      <div class="thumb">
+        <img src="${c.poster}" alt="${c.title}" loading="lazy">
+        <span class="no">CASE ${String(i+1).padStart(2,'0')}</span>
+        <span class="badge ${c.kind}">${c.expect}</span>
+      </div>
+      <div class="body">
+        <h3>${c.title}</h3>
+        <div class="meta">
+          <span>${fmt(c.duration)}</span>
+          <span>${c.clock}</span>
+          <span>판정 ${c.events.length}건</span>
+        </div>
+      </div>`;
+    b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
+    g.appendChild(b);
+  });
+}
+
+/* ── 케이스 선택 ── */
+function select(i){
+  cur=D.cases[i]; curEv=-1;
+  document.querySelectorAll('.card').forEach(el=>el.classList.toggle('on', +el.dataset.i===i));
+
+  $('vTag').textContent='CASE '+String(i+1).padStart(2,'0');
+  $('cTitle').innerHTML=`${cur.title} <span class="badge ${cur.kind}">${cur.expect}</span>`;
+  $('cSummary').textContent=cur.summary;
+  $('cExpect').textContent=cur.expect;
+  $('cClock').textContent=cur.clock+(cur.approx?' (판정 로그 없음 · 앞뒤 클립으로 추정)':'');
+  $('cSess').textContent='세션 '+cur.session;
+  $('cDur').textContent=cur.duration.toFixed(1)+'초 · '+cur.frames+'프레임 · '+cur.fps.toFixed(1)+'fps';
+  $('tEnd').textContent=fmt(cur.duration);
+  $('evCount').textContent=cur.events.length+'건';
+
+  vid.src=cur.video; vid.poster=cur.poster;
+  vid.play().catch(()=>{});
+  $('bPlay').textContent='일시정지';
+
+  // 타임라인 마커
+  const tr=$('track');
+  tr.querySelectorAll('.mk').forEach(el=>el.remove());
+  cur.events.forEach(e=>{
+    const m=document.createElement('i');
+    m.className='mk '+(e.violation?'bad':'ok');
+    m.style.left=(e.t/cur.duration*100)+'%';
+    m.title=`${e.time} #${e.track} ${e.state}`;
+    tr.appendChild(m);
+  });
+
+  buildEvents();
+  drawCase();
+}
+
+function buildEvents(){
+  const box=$('events');
+  if(!cur.events.length){
+    box.innerHTML=`<div class="empty">이 구간에는 확정 판정이 없습니다.<br>기체가 멈췄는지 확인하는 <b>보류(PENDING)</b> 상태만 이어집니다.</div>`;
+    return;
+  }
+  box.innerHTML='';
+  cur.events.forEach((e,i)=>{
+    const el=document.createElement('div');
+    el.className='ev '+(e.violation?'bad':'ok'); el.dataset.i=i;
+    el.innerHTML=`
+      <span class="t">${fmt(e.t)}</span>
+      <span>
+        <div class="who">#${e.track} ${e.brand}</div>
+        <div class="why">${e.state} · 겹침 ${Math.round(e.overlap*100)}%</div>
+      </span>
+      <span class="badge ${e.violation?'bad':'ok'}">${e.verdict}</span>`;
+    el.onclick=()=>{ vid.currentTime=Math.min(e.t+0.2, cur.duration-0.05); };
+    box.appendChild(el);
+  });
+}
+
+/* ── 재생 동기화 ── */
+vid.addEventListener('timeupdate',()=>{
+  if(!cur) return;
+  const p=vid.currentTime/(vid.duration||cur.duration);
+  $('fill').style.width=(p*100)+'%';
+  $('tNow').textContent=fmt(vid.currentTime);
+
+  let idx=-1;
+  cur.events.forEach((e,i)=>{ if(vid.currentTime+0.25>=e.t) idx=i; });
+  if(idx!==curEv){
+    curEv=idx;
+    document.querySelectorAll('.ev').forEach(el=>el.classList.toggle('now', +el.dataset.i===idx));
+    drawCase();
+  }
+});
+$('track').onclick=e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  vid.currentTime=(e.clientX-r.left)/r.width*(vid.duration||cur.duration);
+};
+$('bPlay').onclick=()=>{
+  if(vid.paused){ vid.play(); $('bPlay').textContent='일시정지'; }
+  else { vid.pause(); $('bPlay').textContent='재생'; }
+};
+document.querySelectorAll('[data-sp]').forEach(b=>{
+  b.onclick=()=>{
+    vid.playbackRate=+b.dataset.sp;
+    document.querySelectorAll('[data-sp]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+  };
+});
+
+/* ── BEV 그리기 ── */
+function bevSetup(cv){
+  const dpr=window.devicePixelRatio||1;
+  const w=cv.clientWidth||360;
+  cv.width=w*dpr; cv.height=w*dpr;
+  const x=cv.getContext('2d');
+  x.setTransform(dpr,0,0,dpr,0,0);
+  x.clearRect(0,0,w,w);
+  return {x,w};
+}
+function bevZone(x,w){
+  x.fillStyle='#0B1119'; x.fillRect(0,0,w,w);
+  x.strokeStyle='rgba(40,52,69,.85)'; x.lineWidth=1;
+  for(let i=1;i<8;i++){
+    const p=w*i/8;
+    x.beginPath(); x.moveTo(p,0); x.lineTo(p,w); x.moveTo(0,p); x.lineTo(w,p); x.stroke();
+  }
+  const Z=D.zone_poly;
+  x.beginPath();
+  Z.forEach((p,i)=> i? x.lineTo(p[0]*w,p[1]*w) : x.moveTo(p[0]*w,p[1]*w));
+  x.closePath();
+  x.fillStyle='rgba(255,210,63,.07)'; x.fill();
+  x.strokeStyle='#FFD23F'; x.lineWidth=1.6; x.stroke();
+}
+function bevDot(x,w,j,{active=false,dim=false}={}){
+  const px=j.x*w, py=j.y*w;
+  const r=active?7:5.2;
+  x.globalAlpha=dim?.35:1;
+  // 겹침 비율 고리
+  x.beginPath(); x.arc(px,py,r+4.5,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,j.overlap));
+  x.strokeStyle=j.violation?'#FF4D5E':'#3DDC97'; x.lineWidth=active?3:2; x.stroke();
+  // 본체
+  x.beginPath(); x.arc(px,py,r,0,Math.PI*2);
+  x.fillStyle=BRAND_COLOR[j.brand]||'#6B7A8F'; x.fill();
+  x.strokeStyle=j.violation?'#FF4D5E':'rgba(14,20,29,.9)'; x.lineWidth=active?2.5:1.5; x.stroke();
+  if(active){
+    x.font='500 11px JetBrains Mono, monospace'; x.fillStyle='#E6EDF6'; x.textAlign='center';
+    x.fillText('#'+j.track, px, py-r-9);
+  }
+  x.globalAlpha=1;
+}
+function drawCase(){
+  const cv=$('bevCase'); if(!cv||!D) return;
+  const {x,w}=bevSetup(cv); bevZone(x,w);
+  if(!cur) return;
+  cur.events.forEach((e,i)=> bevDot(x,w,e,{active:i===curEv, dim:curEv>=0&&i!==curEv}));
+  if(!cur.events.length){
+    x.font='12px Pretendard, sans-serif'; x.fillStyle='#5E6D82'; x.textAlign='center';
+    x.fillText('확정 판정 없음 (보류 상태)', w/2, w/2);
+  }
+}
+function drawAll(){
+  const cv=$('bevAll'); if(!cv||!D) return;
+  const {x,w}=bevSetup(cv); bevZone(x,w);
+  D.judgments.forEach(j=>{
+    if(filter==='bad'&&!j.violation) return;
+    if(filter==='ok'&&j.violation) return;
+    bevDot(x,w,j,{dim:true});
+  });
+}
+
+/* ── 전체 로그 ── */
+function buildLog(){
+  const b=$('logBody'); b.innerHTML='';
+  D.judgments.forEach(j=>{
+    if(filter==='bad'&&!j.violation) return;
+    if(filter==='ok'&&j.violation) return;
+    const tr=document.createElement('tr');
+    tr.className=j.violation?'bad':'ok';
+    tr.innerHTML=`<td class="mono">${j.time}</td><td class="mono">${j.session}</td>
+      <td class="mono">#${j.track}</td><td>${j.brand}</td><td>${j.state}</td>
+      <td class="mono">${Math.round(j.overlap*100)}%</td>
+      <td class="v">${j.verdict}</td>`;
+    b.appendChild(tr);
+  });
+}
+$('filters').onclick=e=>{
+  const btn=e.target.closest('button'); if(!btn) return;
+  filter=btn.dataset.f;
+  document.querySelectorAll('#filters button').forEach(x=>x.classList.toggle('on',x===btn));
+  buildLog(); drawAll();
+};
+
+/* ── 브랜드별 막대 ── */
+function buildBars(){
+  const box=$('brandBars'); box.innerHTML='';
+  const agg={};
+  D.judgments.forEach(j=>{
+    agg[j.brand]=agg[j.brand]||{n:0,bad:0};
+    agg[j.brand].n++; if(j.violation) agg[j.brand].bad++;
+  });
+  Object.entries(agg).sort((a,b)=>b[1].n-a[1].n).forEach(([brand,v])=>{
+    const pct=Math.round(v.bad/v.n*100);
+    const el=document.createElement('div');
+    el.className='brow';
+    el.innerHTML=`<span>${brand}</span>
+      <span class="track2"><i style="width:${pct}%;background:${pct>50?'#FF4D5E':'#FFD23F'}"></i></span>
+      <span class="v">${v.bad}/${v.n} · ${pct}%</span>`;
+    box.appendChild(el);
+  });
+  const el=document.createElement('div');
+  el.className='note'; el.style.padding='2px 0 0';
+  el.textContent='막대는 그 브랜드 판정 중 반납이 거부된 비율입니다.';
+  box.appendChild(el);
+}
+
+addEventListener('resize',()=>{ drawCase(); drawAll(); });
 </script>
 </body>
 </html>

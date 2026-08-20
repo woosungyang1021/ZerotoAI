@@ -232,3 +232,6 @@ demo_export/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# 원본 시연 영상 (docs/media 에 720p 압축본만 커밋)
+/*.mp4

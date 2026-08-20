@@ -1,0 +1,1184 @@
+{
+ "built": "2026-08-20",
+ "zone_name": "공학관 앞 보도",
+ "zone_poly": [
+  [
+   0.1923,
+   0.1724
+  ],
+  [
+   0.8077,
+   0.1724
+  ],
+  [
+   0.8077,
+   0.8276
+  ],
+  [
+   0.1923,
+   0.8276
+  ]
+ ],
+ "zone_poly_m": [
+  [
+   0.0,
+   3.8
+  ],
+  [
+   3.2,
+   3.8
+  ],
+  [
+   3.2,
+   0.0
+  ],
+  [
+   0.0,
+   0.0
+  ]
+ ],
+ "bounds_m": {
+  "x": [
+   -1.0,
+   4.200000047683716
+  ],
+  "y": [
+   -1.0,
+   4.799999952316284
+  ]
+ },
+ "totals": {
+  "sessions": 7,
+  "cases": 7,
+  "judgments": 49,
+  "violations": 21,
+  "valid": 28,
+  "brands": {
+   "쏘카일레클": 41,
+   "스윙": 5,
+   "지쿠": 3
+  },
+  "reasons": {
+   "구역 이탈": 18,
+   "전도": 3
+  }
+ },
+ "cases": [
+  {
+   "id": "case1-normal-return",
+   "title": "정상 대여 · 정상 반납",
+   "summary": "쏘카일레클을 빌려 타고 와 구역 안에 세운 기준 사례.",
+   "expect": "반납 승인",
+   "kind": "ok",
+   "session": 5,
+   "video": "media/case1-normal-return.mp4",
+   "poster": "media/case1-normal-return.jpg",
+   "duration": 116.73,
+   "fps": 1.833,
+   "frames": 214,
+   "width": 1280,
+   "height": 720,
+   "clock": "17:14:58",
+   "approx": false,
+   "events": [
+    {
+     "session": 5,
+     "time": "17:14:58",
+     "track": 5,
+     "brand": "스윙",
+     "state": "정상 반납",
+     "verdict": "반납 승인",
+     "violation": false,
+     "overlap": 0.924,
+     "ground": [
+      1.26,
+      3.43
+     ],
+     "x": 0.4346,
+     "y": 0.2362,
+     "t": 0.0,
+     "frame": 0
+    },
+    {
+     "session": 5,
+     "time": "17:16:54",
+     "track": 14,
+     "brand": "쏘카일레클",
+     "state": "정상 반납",
+     "verdict": "반납 승인",
+     "violation": false,
+     "overlap": 1.0,
+     "ground": [
+      2.26,
+      1.41
+     ],
+     "x": 0.6269,
+     "y": 0.5845,
+     "t": 115.09,
+     "frame": 211
+    }
+   ]
+  },
+  {
+   "id": "case2-on-the-line",
+   "title": "경계선에 걸쳐 반납",
+   "summary": "앞바퀴만 구역 안. 발자국이 구역과 55.8%만 겹쳐 이탈로 판정.",
+   "expect": "반납 거부",
+   "kind": "bad",
+   "session": 6,
+   "video": "media/case2-on-the-line.mp4",
+   "poster": "media/case2-on-the-line.jpg",
+   "duration": 29.69,
+   "fps": 1.886,
+   "frames": 56,
+   "width": 1280,
+   "height": 720,
+   "clock": "17:25:54",
+   "approx": false,
+   "events": [
+    {
+     "session": 6,
+     "time": "17:25:54",
+     "track": 33,
+     "brand": "지쿠",
+     "state": "구역 이탈",
+     "verdict": "반납 거부",
+     "violation": true,
+     "overlap": 0.558,
+     "ground": [
+      3.2,
+      2.73
+     ],
+     "x": 0.8077,
+     "y": 0.3569,
+     "t": 22.8,
+     "frame": 43
+    }
+   ]
+  },
+  {
+   "id": "case3-out-of-zone",
+   "title": "구역 밖에 반납",
+   "summary": "구역 경계 바깥 보도에 그대로 세운 경우. 겹침 0%.",
+   "expect": "반납 거부",
+   "kind": "bad",
+   "session": 6,
+   "video": "media/case3-out-of-zone.mp4",
+   "poster": "media/case3-out-of-zone.jpg",
+   "duration": 98.6,
+   "fps": 1.886,
+   "frames": 186,
+   "width": 1280,
+   "height": 720,
+   "clock": "17:27:59",
+   "approx": false,
+   "events": [
+    {
+     "session": 6,
+     "time": "17:27:59",
+     "track": 38,
+     "brand": "쏘카일레클",
+     "state": "정상 반납",
+     "verdict": "반납 승인",
+     "violation": false,
+     "overlap": 0.993,
+     "ground": [
+      0.91,
+      1.83
+     ],
+     "x": 0.3673,
+     "y": 0.5121,
+     "t": 0.0,
+     "frame": 0
+    },
+    {
+     "session": 6,
+     "time": "17:28:26",
+     "track": 37,
+     "brand": "스윙",
+     "state": "구역 이탈",
+     "verdict": "반납 거부",
+     "violation": true,
+     "overlap": 0.0,
+     "ground": [
+      1.3,
+      4.7
+     ],
+     "x": 0.4423,
+     "y": 0.0172,
+     "t": 26.51,
+     "frame": 50
+    },
+    {
+     "session": 6,
+     "time": "17:29:29",
+     "track": 46,
+     "brand": "쏘카일레클",
+     "state": "구역 이탈",
+     "verdict": "반납 거부",
+     "violation": true,
+     "overlap": 0.0,
+     "ground": [
+      2.8,
+      5.07
+     ],
+     "x": 0.7308,
+     "y": -0.0466,
+     "t": 92.77,
+     "frame": 175
+    }
+   ]
+  },
+  {
+   "id": "case4-fallen-in-zone",
+   "title": "구역 안이지만 넘어짐",
+   "summary": "위치는 구역 안(겹침 95.3%)이지만 기체가 누워 전도로 판정.",
+   "expect": "반납 거부",
+   "kind": "bad",
+   "session": 6,
+   "video": "media/case4-fallen-in-zone.mp4",
+   "poster": "media/case4-fallen-in-zone.jpg",
+   "duration": 10.07,
+   "fps": 1.886,
+   "frames": 19,
+   "width": 1280,
+   "height": 720,
+   "clock": "17:22:35",
+   "approx": false,
+   "events": [
+    {
+     "session": 6,
+     "time": "17:22:35",
+     "track": 10,
+     "brand": "쏘카일레클",
+     "state": "전도",
+     "verdict": "반납 거부",
+     "violation": true,
+     "overlap": 0.953,
+     "ground": [
+      2.49,
+      0.71
+     ],
+     "x": 0.6712,
+     "y": 0.7052,
+     "t": 5.83,
+     "frame": 11
+    }
+   ]
+  },
+  {
+   "id": "case5-fallen-pending",
+   "title": "넘어짐 · 판정 보류",
+   "summary": "전도로 보이지만 확정 전 상태(PENDING). 확정 판정이 아니라 로그에 남지 않는다.",
+   "expect": "반납 보류",
+   "kind": "pending",
+   "session": 6,
+   "video": "media/case5-fallen-pending.mp4",
+   "poster": "media/case5-fallen-pending.jpg",
+   "duration": 39.23,
+   "fps": 1.886,
+   "frames": 74,
+   "width": 1280,
+   "height": 720,
+   "clock": "17:23~17:25",
+   "approx": true,
+   "events": []
+  },
+  {
+   "id": "case6-gcoo-walk",
+   "title": "지쿠 · 끌고 와서 정상 반납",
+   "summary": "세 브랜드가 섞인 구역에서 지쿠를 끌고 와 반납. 브랜드 구분이 함께 확인된다.",
+   "expect": "반납 승인",
+   "kind": "ok",
+   "session": 7,
+   "video": "media/case6-gcoo-walk.mp4",
+   "poster": "media/case6-gcoo-walk.jpg",
+   "duration": 70.78,
+   "fps": 2.091,
+   "frames": 148,
+   "width": 1280,
+   "height": 720,
+   "clock": "17:41:30",
+   "approx": false,
+   "events": [
+    {
+     "session": 7,
+     "time": "17:41:30",
+     "track": 4,
+     "brand": "쏘카일레클",
+     "state": "정상 반납",
+     "verdict": "반납 승인",
+     "violation": false,
+     "overlap": 1.0,
+     "ground": [
+      1.17,
+      0.34
+     ],
+     "x": 0.4173,
+     "y": 0.769,
+     "t": 3.35,
+     "frame": 7
+    },
+    {
+     "session": 7,
+     "time": "17:42:00",
+     "track": 9,
+     "brand": "지쿠",
+     "state": "정상 반납",
+     "verdict": "반납 승인",
+     "violation": false,
+     "overlap": 1.0,
+     "ground": [
+      2.21,
+      2.5
+     ],
+     "x": 0.6173,
+     "y": 0.3966,
+     "t": 33.48,
+     "frame": 70
+    },
+    {
+     "session": 7,
+     "time": "17:42:08",
+     "track": 5,
+     "brand": "쏘카일레클",
+     "state": "정상 반납",
+     "verdict": "반납 승인",
+     "violation": false,
+     "overlap": 1.0,
+     "ground": [
+      1.13,
+      2.06
+     ],
+     "x": 0.4096,
+     "y": 0.4724,
+     "t": 43.52,
+     "frame": 91
+    }
+   ]
+  },
+  {
+   "id": "case7-gcoo-ride",
+   "title": "지쿠 · 타고 와서 정상 반납",
+   "summary": "같은 구역에 지쿠를 타고 와서 반납. 앞 사례와 접근 방식만 다르다.",
+   "expect": "반납 승인",
+   "kind": "ok",
+   "session": 7,
+   "video": "media/case7-gcoo-ride.mp4",
+   "poster": "media/case7-gcoo-ride.jpg",
+   "duration": 25.35,
+   "fps": 2.091,
+   "frames": 53,
+   "width": 1280,
+   "height": 720,
+   "clock": "17:45:07",
+   "approx": false,
+   "events": [
+    {
+     "session": 7,
+     "time": "17:45:07",
+     "track": 23,
+     "brand": "지쿠",
+     "state": "정상 반납",
+     "verdict": "반납 승인",
+     "violation": false,
+     "overlap": 1.0,
+     "ground": [
+      2.28,
+      1.24
+     ],
+     "x": 0.6308,
+     "y": 0.6138,
+     "t": 22.96,
+     "frame": 48
+    }
+   ]
+  }
+ ],
+ "judgments": [
+  {
+   "session": 1,
+   "time": "16:47:27",
+   "track": 1,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.778,
+   "ground": [
+    0.43,
+    0.88
+   ],
+   "x": 0.275,
+   "y": 0.6759
+  },
+  {
+   "session": 1,
+   "time": "16:47:27",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.025,
+   "ground": [
+    -0.21,
+    -0.34
+   ],
+   "x": 0.1519,
+   "y": 0.8862
+  },
+  {
+   "session": 1,
+   "time": "16:47:28",
+   "track": 5,
+   "brand": "스윙",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.58,
+    3.11
+   ],
+   "x": 0.4962,
+   "y": 0.2914
+  },
+  {
+   "session": 1,
+   "time": "16:48:07",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.736,
+   "ground": [
+    0.55,
+    1.49
+   ],
+   "x": 0.2981,
+   "y": 0.5707
+  },
+  {
+   "session": 1,
+   "time": "16:49:15",
+   "track": 18,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.99,
+    2.43
+   ],
+   "x": 0.575,
+   "y": 0.4086
+  },
+  {
+   "session": 1,
+   "time": "16:49:32",
+   "track": 12,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.982,
+   "ground": [
+    2.24,
+    3.47
+   ],
+   "x": 0.6231,
+   "y": 0.2293
+  },
+  {
+   "session": 1,
+   "time": "16:50:37",
+   "track": 21,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.66,
+   "ground": [
+    0.28,
+    1.31
+   ],
+   "x": 0.2462,
+   "y": 0.6017
+  },
+  {
+   "session": 1,
+   "time": "16:52:22",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "전도",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.948,
+   "ground": [
+    0.59,
+    0.42
+   ],
+   "x": 0.3058,
+   "y": 0.7552
+  },
+  {
+   "session": 1,
+   "time": "16:52:40",
+   "track": 21,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.955,
+   "ground": [
+    0.58,
+    2.28
+   ],
+   "x": 0.3038,
+   "y": 0.4345
+  },
+  {
+   "session": 2,
+   "time": "16:58:07",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    2.01,
+    2.45
+   ],
+   "x": 0.5788,
+   "y": 0.4052
+  },
+  {
+   "session": 2,
+   "time": "16:58:07",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.814,
+   "ground": [
+    0.47,
+    1.8
+   ],
+   "x": 0.2827,
+   "y": 0.5172
+  },
+  {
+   "session": 2,
+   "time": "16:58:07",
+   "track": 5,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.018,
+   "ground": [
+    -0.2,
+    -0.29
+   ],
+   "x": 0.1538,
+   "y": 0.8776
+  },
+  {
+   "session": 2,
+   "time": "16:58:08",
+   "track": 1,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.664,
+   "ground": [
+    2.67,
+    3.67
+   ],
+   "x": 0.7058,
+   "y": 0.1948
+  },
+  {
+   "session": 3,
+   "time": "17:02:05",
+   "track": 1,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.664,
+   "ground": [
+    2.67,
+    3.67
+   ],
+   "x": 0.7058,
+   "y": 0.1948
+  },
+  {
+   "session": 3,
+   "time": "17:02:05",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.93,
+    2.44
+   ],
+   "x": 0.5635,
+   "y": 0.4069
+  },
+  {
+   "session": 3,
+   "time": "17:02:05",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.82,
+   "ground": [
+    0.53,
+    1.8
+   ],
+   "x": 0.2942,
+   "y": 0.5172
+  },
+  {
+   "session": 3,
+   "time": "17:02:05",
+   "track": 5,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.015,
+   "ground": [
+    -0.15,
+    -0.33
+   ],
+   "x": 0.1635,
+   "y": 0.8845
+  },
+  {
+   "session": 3,
+   "time": "17:03:25",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.965,
+   "ground": [
+    0.8,
+    2.81
+   ],
+   "x": 0.3462,
+   "y": 0.3431
+  },
+  {
+   "session": 4,
+   "time": "17:06:01",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.015,
+   "ground": [
+    -0.22,
+    -0.36
+   ],
+   "x": 0.15,
+   "y": 0.8897
+  },
+  {
+   "session": 4,
+   "time": "17:06:02",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.824,
+   "ground": [
+    0.51,
+    1.8
+   ],
+   "x": 0.2904,
+   "y": 0.5172
+  },
+  {
+   "session": 4,
+   "time": "17:09:14",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "전도",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.015,
+   "ground": [
+    -0.22,
+    -0.36
+   ],
+   "x": 0.15,
+   "y": 0.8897
+  },
+  {
+   "session": 5,
+   "time": "17:12:11",
+   "track": 1,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.814,
+   "ground": [
+    2.59,
+    1.34
+   ],
+   "x": 0.6904,
+   "y": 0.5966
+  },
+  {
+   "session": 5,
+   "time": "17:12:11",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.16,
+    2.06
+   ],
+   "x": 0.4154,
+   "y": 0.4724
+  },
+  {
+   "session": 5,
+   "time": "17:12:11",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.0,
+    0.66
+   ],
+   "x": 0.3846,
+   "y": 0.7138
+  },
+  {
+   "session": 5,
+   "time": "17:12:11",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.0,
+   "ground": [
+    0.67,
+    -1.87
+   ],
+   "x": 0.3212,
+   "y": 1.15
+  },
+  {
+   "session": 5,
+   "time": "17:13:19",
+   "track": 1,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.822,
+   "ground": [
+    2.65,
+    1.33
+   ],
+   "x": 0.7019,
+   "y": 0.5983
+  },
+  {
+   "session": 5,
+   "time": "17:13:19",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.03,
+    0.64
+   ],
+   "x": 0.3904,
+   "y": 0.7172
+  },
+  {
+   "session": 5,
+   "time": "17:13:19",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.0,
+   "ground": [
+    0.62,
+    -1.85
+   ],
+   "x": 0.3115,
+   "y": 1.1466
+  },
+  {
+   "session": 5,
+   "time": "17:13:42",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.11,
+    2.08
+   ],
+   "x": 0.4058,
+   "y": 0.469
+  },
+  {
+   "session": 5,
+   "time": "17:14:58",
+   "track": 5,
+   "brand": "스윙",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.924,
+   "ground": [
+    1.26,
+    3.43
+   ],
+   "x": 0.4346,
+   "y": 0.2362
+  },
+  {
+   "session": 5,
+   "time": "17:16:54",
+   "track": 14,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    2.26,
+    1.41
+   ],
+   "x": 0.6269,
+   "y": 0.5845
+  },
+  {
+   "session": 5,
+   "time": "17:18:48",
+   "track": 24,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.847,
+   "ground": [
+    2.78,
+    1.91
+   ],
+   "x": 0.7269,
+   "y": 0.4983
+  },
+  {
+   "session": 6,
+   "time": "17:21:01",
+   "track": 1,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    0.99,
+    0.63
+   ],
+   "x": 0.3827,
+   "y": 0.719
+  },
+  {
+   "session": 6,
+   "time": "17:21:01",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.0,
+   "ground": [
+    0.72,
+    -1.83
+   ],
+   "x": 0.3308,
+   "y": 1.1431
+  },
+  {
+   "session": 6,
+   "time": "17:21:01",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.15,
+    2.02
+   ],
+   "x": 0.4135,
+   "y": 0.4793
+  },
+  {
+   "session": 6,
+   "time": "17:22:01",
+   "track": 10,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.953,
+   "ground": [
+    2.49,
+    0.71
+   ],
+   "x": 0.6712,
+   "y": 0.7052
+  },
+  {
+   "session": 6,
+   "time": "17:22:02",
+   "track": 4,
+   "brand": "스윙",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.916,
+   "ground": [
+    1.22,
+    3.42
+   ],
+   "x": 0.4269,
+   "y": 0.2379
+  },
+  {
+   "session": 6,
+   "time": "17:22:35",
+   "track": 10,
+   "brand": "쏘카일레클",
+   "state": "전도",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.953,
+   "ground": [
+    2.49,
+    0.71
+   ],
+   "x": 0.6712,
+   "y": 0.7052
+  },
+  {
+   "session": 6,
+   "time": "17:25:54",
+   "track": 33,
+   "brand": "지쿠",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.558,
+   "ground": [
+    3.2,
+    2.73
+   ],
+   "x": 0.8077,
+   "y": 0.3569
+  },
+  {
+   "session": 6,
+   "time": "17:27:59",
+   "track": 38,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.993,
+   "ground": [
+    0.91,
+    1.83
+   ],
+   "x": 0.3673,
+   "y": 0.5121
+  },
+  {
+   "session": 6,
+   "time": "17:28:26",
+   "track": 37,
+   "brand": "스윙",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.0,
+   "ground": [
+    1.3,
+    4.7
+   ],
+   "x": 0.4423,
+   "y": 0.0172
+  },
+  {
+   "session": 6,
+   "time": "17:29:29",
+   "track": 46,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.0,
+   "ground": [
+    2.8,
+    5.07
+   ],
+   "x": 0.7308,
+   "y": -0.0466
+  },
+  {
+   "session": 7,
+   "time": "17:41:10",
+   "track": 1,
+   "brand": "스윙",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.927,
+   "ground": [
+    1.23,
+    3.44
+   ],
+   "x": 0.4288,
+   "y": 0.2345
+  },
+  {
+   "session": 7,
+   "time": "17:41:10",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.985,
+   "ground": [
+    0.96,
+    1.82
+   ],
+   "x": 0.3769,
+   "y": 0.5138
+  },
+  {
+   "session": 7,
+   "time": "17:41:10",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.0,
+   "ground": [
+    0.78,
+    -1.81
+   ],
+   "x": 0.3423,
+   "y": 1.1397
+  },
+  {
+   "session": 7,
+   "time": "17:41:30",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.17,
+    0.34
+   ],
+   "x": 0.4173,
+   "y": 0.769
+  },
+  {
+   "session": 7,
+   "time": "17:42:00",
+   "track": 9,
+   "brand": "지쿠",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    2.21,
+    2.5
+   ],
+   "x": 0.6173,
+   "y": 0.3966
+  },
+  {
+   "session": 7,
+   "time": "17:42:08",
+   "track": 5,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.13,
+    2.06
+   ],
+   "x": 0.4096,
+   "y": 0.4724
+  },
+  {
+   "session": 7,
+   "time": "17:45:07",
+   "track": 23,
+   "brand": "지쿠",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    2.28,
+    1.24
+   ],
+   "x": 0.6308,
+   "y": 0.6138
+  }
+ ]
+}
