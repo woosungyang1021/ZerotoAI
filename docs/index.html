@@ -496,12 +496,14 @@ function buildLog(){
     g.innerHTML=`<td colspan="7">
       <span class="no">CASE ${String(ci+1).padStart(2,'0')}</span><b>${c.title}</b>
       <span class="badge ${c.kind}">${c.expect}</span>
-      <span class="tag">세션${c.session} · 판정 ${nReal}건${nCarry?' · 재시작 '+nCarry+'건':''}</span></td>`;
+      <span class="tag">${c.session?('세션'+c.session):'판정 로그 없음'} · 판정 ${nReal}건${nCarry?' · 재시작 '+nCarry+'건':''}</span></td>`;
     tb.appendChild(g);
     if(!c.events.length){
       const tr=document.createElement('tr');
       tr.className='none'; tr.dataset.g=ci;
-      tr.innerHTML=`<td colspan="7">확정 판정 없음 — 멈춤을 확인하는 보류(PENDING) 상태만 이어집니다.</td>`;
+      tr.innerHTML=`<td colspan="7">${c.session
+        ? '확정 판정 없음 — 멈춤을 확인하는 보류(PENDING) 상태만 이어집니다.'
+        : '판정 로그가 없는 야간 촬영분 — 인식 결과는 구역 맵에서 확인하세요.'}</td>`;
       tb.appendChild(tr);
       return;
     }
