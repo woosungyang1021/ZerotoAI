@@ -115,12 +115,14 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .empty{padding:22px 14px;text-align:center;color:var(--ink-3);font-size:12.5px}
 
 /* ── 판정 기록 ── */
-.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px}
-.ty{background:var(--panel);border:1px solid var(--rule);border-radius:3px;padding:12px 14px}
-.ty b{display:block;font-family:var(--mono);font-size:23px;font-weight:500;letter-spacing:-.03em;line-height:1.25}
-.ty span{font-size:11.5px;color:var(--ink-3)}
-.ty em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
-.ty.ok b{color:var(--ok)} .ty.bad b{color:var(--alert)}
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.ty{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--ink-3);border-radius:3px;padding:11px 13px;display:flex;flex-direction:column;gap:3px;text-align:left;color:inherit;font:inherit;cursor:pointer;transition:border-color .14s,background .14s}
+.ty:hover{border-color:var(--ink-3);background:var(--panel-2)}
+.ty.ok{border-left-color:var(--ok)} .ty.bad{border-left-color:var(--alert)} .ty.pending{border-left-color:var(--warn)}
+.ty .no{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.12em}
+.ty .cnts{font-size:14.5px;font-weight:750;letter-spacing:-.015em}
+.ty .cnts .okc{color:var(--ok)} .ty .cnts .badc{color:var(--alert)} .ty .cnts .pendc{color:var(--warn)}
+.ty .nm{font-size:11px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .dist{padding:13px 13px 4px}
 .dist canvas{width:100%;height:auto;display:block}
@@ -258,13 +260,12 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
 
   <section>
     <h2 class="title">현장 판정 기록 <span class="tag" id="logCount"></span></h2>
-    <p class="sub">집계와 분포는 젯슨이 현장에서 남긴 확정 판정 전부 기준입니다.
-      로그 표는 그중 시연 영상 7편에 잡힌 판정을 케이스별로 묶은 것입니다 — 행을 누르면 그 장면으로 이동합니다.</p>
+    <p class="sub">시연 영상 7편에 잡힌 판정을 케이스별로 묶었습니다. 타일이나 행을 누르면 그 장면으로 이동합니다.
+      겹침 분포만 젯슨이 현장에서 남긴 확정 판정 전체 기준입니다.</p>
 
     <div class="tally" id="tally"></div>
-    <div class="legend" id="brandTally" style="padding:11px 2px 0"></div>
 
-    <div class="viewer" style="margin-top:4px">
+    <div class="viewer" style="margin-top:12px">
       <div class="col">
         <div class="panel">
           <div class="head">
@@ -366,17 +367,26 @@ function buildGallery(){
 
 /* ── 현장 판정 기록 ── */
 function buildTally(){
-  const t=D.totals;
-  const why=Object.entries(t.reasons||{}).map(([k,v])=>`${k} ${v}`).join(' · ');
-  $('tally').innerHTML=`
-    <div class="ty"><b>${t.judgments}</b><span>확정 판정</span></div>
-    <div class="ty ok"><b>${t.valid}</b><span>반납 승인</span></div>
-    <div class="ty bad"><b>${t.violations}</b><span>반납 거부</span><em>${why}</em></div>
-    <div class="ty"><b>${t.sessions}</b><span>녹화 세션</span></div>`;
-  $('brandTally').innerHTML='<span class="lg">브랜드</span>'+
-    Object.entries(t.brands||{}).map(([k,v])=>
-      `<span><i style="background:${BRAND_COLOR[k]||'#6B7A8F'}"></i>${k} ${v}건</span>`).join('');
-  $('logCount').textContent=t.judgments+'건';
+  const t=$('tally');
+  t.innerHTML='';
+  D.cases.forEach((c,i)=>{
+    const ok=c.events.filter(e=>!e.violation).length;
+    const bad=c.events.length-ok;
+    const parts=[];
+    if(ok)  parts.push(`<span class="okc">승인 ${ok}</span>`);
+    if(bad) parts.push(`<span class="badc">거부 ${bad}</span>`);
+    if(!c.events.length) parts.push(`<span class="pendc">보류</span>`);
+    const b=document.createElement('button');
+    b.className='ty '+c.kind;
+    b.innerHTML=`
+      <span class="no">CASE ${String(i+1).padStart(2,'0')}</span>
+      <span class="cnts">${parts.join(' <span style="color:var(--ink-3)">·</span> ')}</span>
+      <span class="nm">${c.title}</span>`;
+    b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
+    t.appendChild(b);
+  });
+  $('logCount').textContent='영상 '+D.cases.length+'편 · 판정 '
+    +D.cases.reduce((n,c)=>n+c.events.length,0)+'건';
 }
 
 let jumpSeq=0;
