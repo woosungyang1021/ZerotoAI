@@ -1,5 +1,5 @@
 {
- "built": "2026-08-20",
+ "built": "2026-08-21",
  "zone_name": "유억겸 기념관 앞",
  "zone_poly": [
   [
@@ -81,6 +81,7 @@
    "height": 720,
    "clock": "17:14:58",
    "approx": false,
+   "standing": 4,
    "events": [
     {
      "session": 5,
@@ -100,7 +101,8 @@
      "rec_frame": 609,
      "onstart": false,
      "t": 0.0,
-     "frame": 0
+     "frame": 0,
+     "carry": true
     },
     {
      "session": 5,
@@ -120,7 +122,8 @@
      "rec_frame": 1248,
      "onstart": false,
      "t": 115.09,
-     "frame": 211
+     "frame": 211,
+     "carry": false
     }
    ]
   },
@@ -141,6 +144,7 @@
    "height": 720,
    "clock": "17:25:54",
    "approx": false,
+   "standing": 3,
    "events": [
     {
      "session": 6,
@@ -160,7 +164,8 @@
      "rec_frame": 1680,
      "onstart": false,
      "t": 22.8,
-     "frame": 43
+     "frame": 43,
+     "carry": false
     }
    ]
   },
@@ -181,6 +186,7 @@
    "height": 720,
    "clock": "17:27:59",
    "approx": false,
+   "standing": 2,
    "events": [
     {
      "session": 6,
@@ -200,7 +206,8 @@
      "rec_frame": 2400,
      "onstart": false,
      "t": 0.0,
-     "frame": 0
+     "frame": 0,
+     "carry": true
     },
     {
      "session": 6,
@@ -220,7 +227,8 @@
      "rec_frame": 2565,
      "onstart": false,
      "t": 26.51,
-     "frame": 50
+     "frame": 50,
+     "carry": false
     },
     {
      "session": 6,
@@ -240,7 +248,8 @@
      "rec_frame": 2940,
      "onstart": false,
      "t": 92.77,
-     "frame": 175
+     "frame": 175,
+     "carry": false
     }
    ]
   },
@@ -261,6 +270,7 @@
    "height": 720,
    "clock": "17:22:35",
    "approx": false,
+   "standing": 3,
    "events": [
     {
      "session": 6,
@@ -280,7 +290,8 @@
      "rec_frame": 576,
      "onstart": false,
      "t": 5.83,
-     "frame": 11
+     "frame": 11,
+     "carry": false
     }
    ]
   },
@@ -301,6 +312,7 @@
    "height": 720,
    "clock": "17:23~17:25",
    "approx": true,
+   "standing": 3,
    "events": []
   },
   {
@@ -320,6 +332,7 @@
    "height": 720,
    "clock": "17:41:30",
    "approx": false,
+   "standing": 3,
    "events": [
     {
      "session": 7,
@@ -339,7 +352,8 @@
      "rec_frame": 204,
      "onstart": false,
      "t": 3.35,
-     "frame": 7
+     "frame": 7,
+     "carry": true
     },
     {
      "session": 7,
@@ -359,7 +373,8 @@
      "rec_frame": 393,
      "onstart": false,
      "t": 33.48,
-     "frame": 70
+     "frame": 70,
+     "carry": false
     },
     {
      "session": 7,
@@ -379,7 +394,8 @@
      "rec_frame": 441,
      "onstart": false,
      "t": 43.52,
-     "frame": 91
+     "frame": 91,
+     "carry": true
     }
    ]
   },
@@ -400,6 +416,7 @@
    "height": 720,
    "clock": "17:45:07",
    "approx": false,
+   "standing": 2,
    "events": [
     {
      "session": 7,
@@ -419,7 +436,8 @@
      "rec_frame": 1587,
      "onstart": false,
      "t": 22.96,
-     "frame": 48
+     "frame": 48,
+     "carry": false
     }
    ]
   }

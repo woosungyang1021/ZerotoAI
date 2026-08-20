@@ -63,6 +63,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .badge.ok{color:var(--ok);border-color:rgba(61,220,151,.45);background:rgba(61,220,151,.1)}
 .badge.bad{color:var(--alert);border-color:rgba(255,77,94,.45);background:rgba(255,77,94,.1)}
 .badge.pending{color:var(--warn);border-color:rgba(255,162,63,.45);background:rgba(255,162,63,.1)}
+.badge.carry{color:var(--ink-2);border-color:rgba(140,155,176,.4);background:rgba(140,155,176,.08)}
 
 /* ── 뷰어 ── */
 .viewer{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(320px,.85fr);gap:14px}
@@ -80,6 +81,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .track .mk{position:absolute;top:6px;width:2px;height:22px;transform:translateX(-1px);border-radius:1px}
 .track .mk.bad{background:var(--alert);box-shadow:0 0 0 2px rgba(255,77,94,.2)}
 .track .mk.ok{background:var(--ok);box-shadow:0 0 0 2px rgba(61,220,151,.2)}
+.track .mk.carry{background:var(--ink-3);box-shadow:0 0 0 2px rgba(94,109,130,.25)}
 .tline{display:flex;justify-content:space-between;padding:7px 12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);border-top:1px solid var(--rule)}
 .ctl{display:flex;gap:6px;padding:0}
 .ctl button{background:var(--panel-2);border:1px solid var(--rule);color:var(--ink-2);font-family:var(--mono);font-size:10.5px;padding:4px 9px;border-radius:2px;cursor:pointer}
@@ -125,6 +127,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ev{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 11px;background:var(--panel-2);border:1px solid transparent;border-left:2px solid var(--ink-3);border-radius:2px;cursor:pointer;transition:border-color .14s}
 .ev:hover{border-color:var(--rule);border-left-color:var(--ink-2)}
 .ev.bad{border-left-color:var(--alert)} .ev.ok{border-left-color:var(--ok)}
+.ev.carry{border-left-color:var(--ink-3);opacity:.8}
 .ev.now{background:#20293a;border-color:var(--line)}
 .ev.hide{display:none}
 .ev{animation:pop .32s ease-out}
@@ -142,6 +145,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ty .no{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.12em}
 .ty .cnts{font-size:14.5px;font-weight:750;letter-spacing:-.015em}
 .ty .cnts .okc{color:var(--ok)} .ty .cnts .badc{color:var(--alert)} .ty .cnts .pendc{color:var(--warn)}
+.ty .cnts .carryc{color:var(--ink-2);font-weight:600;font-size:12px}
 .ty .nm{font-size:11px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .dist{padding:13px 13px 4px}
@@ -306,6 +310,7 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
   <section>
     <h2 class="title">현장 판정 기록 <span class="tag" id="logCount"></span></h2>
     <p class="sub">시연 영상 7편에 잡힌 판정을 케이스별로 묶었습니다. 타일이나 행을 누르면 그 장면으로 이동합니다.
+      <b>재시작 허가</b>는 새 반납이 아니라, 녹화(관측)를 다시 시작할 때 이미 서 있던 기체가 다시 받은 승인 표시입니다.
       겹침 분포만 젯슨이 현장에서 남긴 확정 판정 전체 기준입니다.</p>
 
     <div class="tally" id="tally"></div>
@@ -403,7 +408,7 @@ function buildGallery(){
       <div class="meta">
         <span>${fmt(c.duration)}</span>
         <span>${c.clock}</span>
-        <span>판정 ${c.events.length}건</span>
+        <span>판정 ${c.events.filter(e=>!e.carry).length}건</span>
       </div>`;
     b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
     g.appendChild(b);
@@ -415,12 +420,13 @@ function buildTally(){
   const t=$('tally');
   t.innerHTML='';
   D.cases.forEach((c,i)=>{
-    const ok=c.events.filter(e=>!e.violation).length;
-    const bad=c.events.length-ok;
+    const ok=c.events.filter(e=>!e.violation && !e.carry).length;   // 실제 반납 행위만
+    const bad=c.events.filter(e=>e.violation).length;
     const parts=[];
     if(ok)  parts.push(`<span class="okc">승인 ${ok}</span>`);
     if(bad) parts.push(`<span class="badc">거부 ${bad}</span>`);
-    if(!c.events.length) parts.push(`<span class="pendc">보류</span>`);
+    if(!ok && !bad) parts.push(`<span class="pendc">보류</span>`);
+    if(c.standing) parts.push(`<span class="carryc">재시작 허가 ${c.standing}</span>`);
     const b=document.createElement('button');
     b.className='ty '+c.kind;
     b.innerHTML=`
@@ -470,10 +476,12 @@ function buildLog(){
   D.cases.forEach((c,ci)=>{
     const g=document.createElement('tr');
     g.className='grp'; g.dataset.g=ci;
+    const nReal=c.events.filter(e=>!e.carry).length;
+    const nCarry=c.events.length-nReal;
     g.innerHTML=`<td colspan="7">
       <span class="no">CASE ${String(ci+1).padStart(2,'0')}</span><b>${c.title}</b>
       <span class="badge ${c.kind}">${c.expect}</span>
-      <span class="tag">세션${c.session} · 판정 ${c.events.length}건</span></td>`;
+      <span class="tag">세션${c.session} · 판정 ${nReal}건${nCarry?' · 재시작 '+nCarry+'건':''}</span></td>`;
     tb.appendChild(g);
     if(!c.events.length){
       const tr=document.createElement('tr');
@@ -483,7 +491,7 @@ function buildLog(){
       return;
     }
     c.events.forEach(j=>{
-      const k=j.violation?'bad':'ok';
+      const k=j.carry?'carry':(j.violation?'bad':'ok');
       const tr=document.createElement('tr');
       tr.dataset.k=k; tr.dataset.g=ci;
       tr.style.cursor='pointer';
@@ -494,7 +502,7 @@ function buildLog(){
         <td class="num">${j.time}</td>
         <td class="num">#${j.track}</td>
         <td><i class="dot" style="background:${BRAND_COLOR[j.brand]||'#6B7A8F'}"></i>${j.brand}</td>
-        <td><span class="badge ${k}">${j.verdict}</span> <span class="dim">${j.state}</span></td>
+        <td><span class="badge ${k}">${j.carry?'재시작 허가':j.verdict}</span> <span class="dim">${j.carry?'기존 주차 재확인':j.state}</span></td>
         <td class="ov">${(j.overlap*100).toFixed(1)}%</td>
         <td class="dim">${j.ground[0].toFixed(2)}, ${j.ground[1].toFixed(2)}</td>`;
       tb.appendChild(tr);
@@ -617,9 +625,9 @@ function select(i){
   tr.querySelectorAll('.mk').forEach(el=>el.remove());
   cur.events.forEach(e=>{
     const m=document.createElement('i');
-    m.className='mk '+(e.violation?'bad':'ok');
+    m.className='mk '+(e.carry?'carry':(e.violation?'bad':'ok'));
     m.style.left=(e.t/cur.duration*100)+'%';
-    m.title=`${e.time} #${e.track} ${e.state}`;
+    m.title=`${e.time} #${e.track} ${e.carry?'재시작 허가':e.state}`;
     tr.appendChild(m);
   });
 
@@ -636,15 +644,16 @@ function buildEvents(){
   }
   box.innerHTML=`<div class="empty" id="evWait">재생이 판정 시점에 닿으면 여기에 뜹니다.</div>`;
   cur.events.forEach((e,i)=>{
+    const k=e.carry?'carry':(e.violation?'bad':'ok');
     const el=document.createElement('div');
-    el.className='ev hide '+(e.violation?'bad':'ok'); el.dataset.i=i;
+    el.className='ev hide '+k; el.dataset.i=i;
     el.innerHTML=`
       <span class="t">${fmt(e.t)}</span>
       <span>
         <div class="who">#${e.track} ${e.brand}</div>
-        <div class="why">${e.state} · 겹침 ${Math.round(e.overlap*100)}%</div>
+        <div class="why">${e.carry?'기존 주차 재확인':e.state} · 겹침 ${Math.round(e.overlap*100)}%</div>
       </span>
-      <span class="badge ${e.violation?'bad':'ok'}">${e.verdict}</span>`;
+      <span class="badge ${k}">${e.carry?'재시작 허가':e.verdict}</span>`;
     el.onclick=()=>{ jumpSeq++; vid.currentTime=Math.min(e.t+0.2, cur.duration-0.05); };
     box.appendChild(el);
   });
@@ -717,9 +726,9 @@ function bevDot(x,w,j,{active=false,dim=false}={}){
   const px=j.x*w, py=j.y*w;
   const r=active?7:5.2;
   x.globalAlpha=dim?.55:1;
-  // 겹침 비율 고리
+  // 겹침 비율 고리 — 재시작 허가는 회색으로 눌러 둔다
   x.beginPath(); x.arc(px,py,r+4.5,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,j.overlap));
-  x.strokeStyle=j.violation?'#FF4D5E':'#3DDC97'; x.lineWidth=active?3:2; x.stroke();
+  x.strokeStyle=j.carry?'#8C9BB0':(j.violation?'#FF4D5E':'#3DDC97'); x.lineWidth=active?3:2; x.stroke();
   // 본체
   x.beginPath(); x.arc(px,py,r,0,Math.PI*2);
   x.fillStyle=BRAND_COLOR[j.brand]||'#6B7A8F'; x.fill();
