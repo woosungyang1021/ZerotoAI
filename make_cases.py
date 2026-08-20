@@ -53,6 +53,8 @@ STATUS_KO = {
 #          녹화(장비) 재시작 때 이미 서 있던 기체가 다시 받은 허가 표시다.
 # standing: 클립 영상에 승인(초록) 표시로 보이는 기존 주차 기체 수.
 #           carry 이벤트 + 이전 판정의 박스가 그대로 남은 것까지, 프레임을 떠서 셌다.
+# standing_bad: 같은 방식으로 센 기존 주차 기체의 불허가(주황) 표시 수.
+#           세션 5~6 내내 보도에 서 있던 자전거가 구역 이탈로 찍혀 있다. 세션 7 에서는 치워짐.
 CASES = [
     dict(
         slug="case1-normal-return", src="쏘카일레클 정상 대여, 정상 반납.mp4",
@@ -60,7 +62,7 @@ CASES = [
         summary="쏘카일레클을 빌려 타고 와 구역 안에 세운 기준 사례.",
         expect="반납 승인", kind="ok",
         anchors=[(0, "17:14:58", 5, "carry"), (211, "17:16:54", 14)],
-        standing=4,                       # 시작 프레임: #1 #2 #3 + carry #5
+        standing=4, standing_bad=1,       # 시작 프레임: #1 #2 #3 + carry #5 · 보도 자전거 #4
     ),
     dict(
         slug="case2-on-the-line", src="쏘카일레클 타고와서 경계선 걸쳐 반납(반납거부).mp4",
@@ -68,7 +70,7 @@ CASES = [
         summary="앞바퀴만 구역 안. 발자국이 구역과 55.8%만 겹쳐 이탈로 판정.",
         expect="반납 거부", kind="bad",
         anchors=[(43, "17:25:54", 33)],
-        standing=3,                       # 시작 프레임: #1 #3 #4
+        standing=3, standing_bad=1,       # 시작 프레임: #1 #3 #4 · 보도 자전거 #2
     ),
     dict(
         slug="case3-out-of-zone", src="쏘카일레클 타고와서 범위 밖 반납(반납거부).mp4",
@@ -76,7 +78,7 @@ CASES = [
         summary="구역 경계 바깥 보도에 그대로 세운 경우. 겹침 0%.",
         expect="반납 거부", kind="bad",
         anchors=[(0, "17:27:59", 38, "carry"), (50, "17:28:26", 37), (175, "17:29:29", 46)],
-        standing=2,                       # carry #38 + 중간에 다시 초록이 되는 #1
+        standing=2, standing_bad=1,       # carry #38 + 중간에 다시 초록이 되는 #1 · 보도 자전거 #2
     ),
     dict(
         slug="case4-fallen-in-zone", src="쏘카일레클 정상범위 내 넘어짐 반납(반납거부).mp4",
@@ -84,7 +86,7 @@ CASES = [
         summary="위치는 구역 안(겹침 95.3%)이지만 기체가 누워 전도로 판정.",
         expect="반납 거부", kind="bad",
         anchors=[(11, "17:22:35", 10)],
-        standing=3,                       # 시작 프레임: #1 #3 #4 (#10 은 이 케이스의 주인공)
+        standing=3, standing_bad=1,       # 시작 프레임: #1 #3 #4 · 보도 자전거 #2 (#10 은 주인공)
     ),
     dict(
         slug="case5-fallen-pending", src="쏘카일레클 타고와서 정상범위 내 넘어짐(반납보류).mp4",
@@ -93,7 +95,7 @@ CASES = [
         expect="반납 보류", kind="pending",
         anchors=[],                       # 확정 판정 없음 — 배너에 시각이 뜨지 않는다
         approx_time="17:23~17:25",        # tracks 12~14 로 앞뒤 클립 사이임을 확인
-        standing=3,                       # 시작 프레임: #1 #3 #4
+        standing=3, standing_bad=1,       # 시작 프레임: #1 #3 #4 · 보도 자전거 #2
     ),
     dict(
         slug="case6-gcoo-walk", src="지쿠 걸어서 정상반납(3브랜드).mp4",
@@ -101,7 +103,7 @@ CASES = [
         summary="세 브랜드가 섞인 구역에서 지쿠를 끌고 와 반납. 브랜드 구분이 함께 확인된다.",
         expect="반납 승인", kind="ok",
         anchors=[(7, "17:41:30", 4, "carry"), (70, "17:42:00", 9), (91, "17:42:08", 5, "carry")],
-        standing=3,                       # #1 스윙 + carry #4 #5 (지쿠 #9 만 실제 반납)
+        standing=3,                       # #1 스윙 + carry #4 #5 (지쿠 #9 만 실제 반납) · 보도 자전거 없음
     ),
     dict(
         slug="case7-gcoo-ride", src="지쿠 타고와서 정상반납(3브랜드).mp4",
@@ -239,6 +241,7 @@ def main():
             "clock": c.get("approx_time") or (events[0]["time"] if events else ""),
             "approx": bool(c.get("approx_time")),
             "standing": c.get("standing", 0),
+            "standing_bad": c.get("standing_bad", 0),
             "events": events,
         })
 

@@ -82,6 +82,7 @@
    "clock": "17:14:58",
    "approx": false,
    "standing": 4,
+   "standing_bad": 1,
    "events": [
     {
      "session": 5,
@@ -145,6 +146,7 @@
    "clock": "17:25:54",
    "approx": false,
    "standing": 3,
+   "standing_bad": 1,
    "events": [
     {
      "session": 6,
@@ -187,6 +189,7 @@
    "clock": "17:27:59",
    "approx": false,
    "standing": 2,
+   "standing_bad": 1,
    "events": [
     {
      "session": 6,
@@ -271,6 +274,7 @@
    "clock": "17:22:35",
    "approx": false,
    "standing": 3,
+   "standing_bad": 1,
    "events": [
     {
      "session": 6,
@@ -313,6 +317,7 @@
    "clock": "17:23~17:25",
    "approx": true,
    "standing": 3,
+   "standing_bad": 1,
    "events": []
   },
   {
@@ -333,6 +338,7 @@
    "clock": "17:41:30",
    "approx": false,
    "standing": 3,
+   "standing_bad": 0,
    "events": [
     {
      "session": 7,
@@ -417,6 +423,7 @@
    "clock": "17:45:07",
    "approx": false,
    "standing": 2,
+   "standing_bad": 0,
    "events": [
     {
      "session": 7,

@@ -146,6 +146,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ty .cnts{font-size:14.5px;font-weight:750;letter-spacing:-.015em}
 .ty .cnts .okc{color:var(--ok)} .ty .cnts .badc{color:var(--alert)} .ty .cnts .pendc{color:var(--warn)}
 .ty .cnts .carryc{color:var(--ink-2);font-weight:600;font-size:12px}
+.ty .cnts .carrybc{color:#C4707B;font-weight:600;font-size:12px}
 .ty .nm{font-size:11px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .dist{padding:13px 13px 4px}
@@ -310,7 +311,7 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
   <section>
     <h2 class="title">현장 판정 기록 <span class="tag" id="logCount"></span></h2>
     <p class="sub">시연 영상 7편에 잡힌 판정을 케이스별로 묶었습니다. 타일이나 행을 누르면 그 장면으로 이동합니다.
-      <b>재시작 허가</b>는 새 반납이 아니라, 녹화(관측)를 다시 시작할 때 이미 서 있던 기체가 다시 받은 승인 표시입니다.
+      <b>재시작 허가·불허가</b>는 새 반납이 아니라, 녹화(관측)를 다시 시작할 때 이미 서 있던 기체가 다시 받은 판정 표시입니다.
       겹침 분포만 젯슨이 현장에서 남긴 확정 판정 전체 기준입니다.</p>
 
     <div class="tally" id="tally"></div>
@@ -427,6 +428,7 @@ function buildTally(){
     if(bad) parts.push(`<span class="badc">거부 ${bad}</span>`);
     if(!ok && !bad) parts.push(`<span class="pendc">보류</span>`);
     if(c.standing) parts.push(`<span class="carryc">재시작 허가 ${c.standing}</span>`);
+    if(c.standing_bad) parts.push(`<span class="carrybc">불허가 ${c.standing_bad}</span>`);
     const b=document.createElement('button');
     b.className='ty '+c.kind;
     b.innerHTML=`
