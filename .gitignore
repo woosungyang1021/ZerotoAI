@@ -13,3 +13,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# 로컬 도구
+.claude/
