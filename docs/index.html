@@ -101,6 +101,14 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .legend .lg{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.12em;text-transform:uppercase}
 .note{padding:0 13px 13px;font-size:11.5px;color:var(--ink-3);line-height:1.6}
 
+/* 구역 맵 탭 — 접지점 / 위치 전환 */
+.tabs{display:flex}
+.tabs button{background:var(--panel-2);border:1px solid var(--rule);color:var(--ink-2);font:inherit;font-size:12.5px;font-weight:700;letter-spacing:-.01em;padding:7px 0;min-width:84px;text-align:center;cursor:pointer;transition:color .14s,background .14s}
+.tabs button:first-child{border-radius:3px 0 0 3px}
+.tabs button+button{border-left:none;border-radius:0 3px 3px 0}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{background:var(--line);border-color:var(--line);color:#10151D;font-weight:800}
+
 /* 반납구역 위치 — 위성사진 위에 핀을 얹는다 (구역 맵 패널의 탭) */
 .locinfo{padding:13px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--rule)}
 .locinfo dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px}
@@ -254,7 +262,7 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
         <div class="panel">
           <div class="head">
             <h3>구역 맵</h3><span class="tag" id="bevCount">—</span>
-            <div class="ctl" id="mapTabs">
+            <div class="tabs" id="mapTabs">
               <button data-tab="bev" class="on">접지점</button>
               <button data-tab="loc">위치</button>
             </div>
