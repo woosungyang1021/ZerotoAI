@@ -21,7 +21,7 @@ SRC_CALIB = Path("judge_calib.json")
 OUT_DIR   = Path("demo_export")
 FPS       = 30.0     # 젯슨 입력 영상의 fps
 MARGIN_M  = 1.0      # 구역 바깥 여유(m) — BEV 화면에 보일 범위
-ZONE_NAME = "공학관 앞 보도"
+ZONE_NAME = "유억겸 기념관 앞"
 # ────────────────────────────────────────────────────────
 
 BRAND_KO = {"SOCAR": "쏘카", "SWING": "스윙", "GCOO": "지쿠"}

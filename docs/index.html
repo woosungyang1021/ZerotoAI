@@ -40,13 +40,6 @@ h2.title{font-size:16px;font-weight:750;letter-spacing:-.02em;display:flex;align
 h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:none}
 .sub{color:var(--ink-2);font-size:12.5px;margin-bottom:14px;padding-left:13px}
 
-/* ── 요약 수치 ── */
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.kpi{background:var(--panel);border:1px solid var(--rule);border-radius:3px;padding:14px 15px}
-.kpi .n{font-family:var(--mono);font-size:27px;font-weight:700;letter-spacing:-.03em;line-height:1.1}
-.kpi .l{font-size:11.5px;color:var(--ink-2);margin-top:3px}
-.kpi.hot .n{color:var(--alert)} .kpi.good .n{color:var(--ok)} .kpi.warn .n{color:var(--line)}
-
 /* ── 판정 기준 ── */
 .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
 .rule{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--ink-3);border-radius:3px;padding:15px 16px}
@@ -56,23 +49,20 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .rule .cnt{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
 
 /* ── 케이스 갤러리 ── */
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:12px}
-.card{background:var(--panel);border:1px solid var(--rule);border-radius:3px;overflow:hidden;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:0;transition:border-color .14s,transform .14s}
-.card:hover{border-color:var(--ink-3);transform:translateY(-2px)}
-.card.on{border-color:var(--line);box-shadow:0 0 0 1px var(--line)}
-.card .thumb{position:relative;aspect-ratio:16/9;background:#080C12}
-.card .thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.9}
-.card.on .thumb img{opacity:1}
-.card .no{position:absolute;left:0;top:0;background:rgba(8,12,18,.86);font-family:var(--mono);font-size:10px;padding:3px 7px;color:var(--ink-2);letter-spacing:.1em}
-.card .body{padding:11px 13px 13px}
-.card h3{font-size:13.5px;font-weight:700;letter-spacing:-.01em}
-.card .meta{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);margin-top:5px;display:flex;gap:9px;flex-wrap:wrap}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:10px}
+.card{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--ink-3);border-radius:3px;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:12px 14px 13px;display:flex;flex-direction:column;gap:7px;transition:border-color .14s,background .14s}
+.card:hover{border-color:var(--ink-3);background:var(--panel-2)}
+.card.ok{border-left-color:var(--ok)} .card.bad{border-left-color:var(--alert)} .card.pending{border-left-color:var(--warn)}
+.card.on{border-color:var(--line);background:var(--panel-2);box-shadow:0 0 0 1px rgba(255,210,63,.35)}
+.card .top{display:flex;align-items:center;gap:8px}
+.card .no{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.12em;margin-right:auto}
+.card h3{font-size:14px;font-weight:700;letter-spacing:-.015em;line-height:1.35}
+.card .meta{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);display:flex;gap:9px;flex-wrap:wrap;margin-top:auto;padding-top:2px}
 
 .badge{font-family:var(--mono);font-size:10px;font-weight:500;padding:2px 7px;border-radius:2px;border:1px solid;letter-spacing:.02em;white-space:nowrap}
 .badge.ok{color:var(--ok);border-color:rgba(61,220,151,.45);background:rgba(61,220,151,.1)}
 .badge.bad{color:var(--alert);border-color:rgba(255,77,94,.45);background:rgba(255,77,94,.1)}
 .badge.pending{color:var(--warn);border-color:rgba(255,162,63,.45);background:rgba(255,162,63,.1)}
-.card .thumb .badge{position:absolute;right:7px;top:7px;background:rgba(8,12,18,.86)}
 
 /* ── 뷰어 ── */
 .viewer{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(320px,.85fr);gap:14px}
@@ -119,25 +109,11 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ev .why{font-size:11px;color:var(--ink-2);margin-top:1px}
 .empty{padding:22px 14px;text-align:center;color:var(--ink-3);font-size:12.5px}
 
-/* ── 전체 로그 ── */
-.logwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.72fr);gap:14px}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--rule);white-space:nowrap}
-th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase;position:sticky;top:0;background:var(--panel);z-index:1}
-td.mono{font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
-tr.bad td.v{color:var(--alert)} tr.ok td.v{color:var(--ok)}
-.tablebox{max-height:430px;overflow:auto}
-.bars{padding:13px;display:flex;flex-direction:column;gap:11px}
-.brow{display:grid;grid-template-columns:76px 1fr auto;gap:10px;align-items:center;font-size:12px}
-.brow .track2{height:7px;background:var(--panel-2);border-radius:4px;overflow:hidden}
-.brow .track2 i{display:block;height:100%;border-radius:4px}
-.brow .v{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
-
 .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--rule);display:flex;gap:20px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
 .foot b{color:var(--ink-2);font-weight:500}
 
 @media(max-width:980px){
-  .viewer,.logwrap{grid-template-columns:1fr}
+  .viewer{grid-template-columns:1fr}
   .events{max-height:none}
 }
 </style>
@@ -157,20 +133,7 @@ tr.bad td.v{color:var(--alert)} tr.ok td.v{color:var(--ok)}
   </header>
 
   <section>
-    <h2 class="title">한눈에 보기</h2>
-    <p class="sub">젯슨이 현장에서 실시간으로 남긴 판정 기록 전체입니다.</p>
-    <div class="kpis">
-      <div class="kpi"><div class="n" id="kJudge">0</div><div class="l">누적 판정</div></div>
-      <div class="kpi hot"><div class="n" id="kViol">0</div><div class="l">반납 거부 (위반)</div></div>
-      <div class="kpi good"><div class="n" id="kOk">0</div><div class="l">반납 승인</div></div>
-      <div class="kpi warn"><div class="n" id="kRate">0%</div><div class="l">위반 비율</div></div>
-      <div class="kpi"><div class="n" id="kCase">0</div><div class="l">시연 케이스</div></div>
-      <div class="kpi"><div class="n" id="kBrand">0</div><div class="l">인식 브랜드</div></div>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="title">무엇을 보고 판정하나</h2>
+    <h2 class="title">판정 기준</h2>
     <p class="sub">기체의 접지점(바퀴가 땅에 닿는 지점)을 지면 좌표로 바꾼 뒤, 그 발자국이 허용 구역과 얼마나 겹치는지로 판단합니다.</p>
     <div class="rules">
       <div class="rule ok">
@@ -256,40 +219,6 @@ tr.bad td.v{color:var(--alert)} tr.ok td.v{color:var(--ok)}
     </div>
   </section>
 
-  <section>
-    <h2 class="title">전체 판정 기록</h2>
-    <p class="sub">시연 구간뿐 아니라 그날 남은 판정 <b id="allCount">—</b>건 전부입니다.</p>
-    <div class="logwrap">
-      <div class="panel">
-        <div class="head">
-          <h3>판정 로그</h3>
-          <div class="ctl" id="filters">
-            <button data-f="all" class="on">전체</button>
-            <button data-f="bad">위반만</button>
-            <button data-f="ok">정상만</button>
-          </div>
-        </div>
-        <div class="tablebox">
-          <table>
-            <thead><tr><th>시각</th><th>세션</th><th>기체</th><th>브랜드</th><th>상태</th><th>겹침</th><th>판정</th></tr></thead>
-            <tbody id="logBody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="col">
-        <div class="panel">
-          <div class="head"><h3>판정 위치 분포</h3><span class="tag">ALL</span></div>
-          <div class="bev"><canvas id="bevAll" width="900" height="900"></canvas></div>
-          <p class="note">그날 판정된 기체가 실제로 어디에 세워져 있었는지입니다. 구역 밖 점이 곧 반납 거부입니다.</p>
-        </div>
-        <div class="panel">
-          <div class="head"><h3>브랜드별 판정</h3></div>
-          <div class="bars" id="brandBars"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <div class="foot">
     <span>모델 <b>YOLO26s-seg</b></span>
     <span>디바이스 <b>Jetson Orin Nano</b></span>
@@ -305,7 +234,7 @@ const $ = id => document.getElementById(id);
 const BRAND_COLOR = {'쏘카일레클':'#2C7CF7','스윙':'#E8ECF2','지쿠':'#00C73C','미확인':'#6B7A8F'};
 const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 
-let D=null, cur=null, curEv=-1, filter='all';
+let D=null, cur=null, curEv=-1;
 const vid=$('cam');
 
 /* ── 부팅 ── */
@@ -318,22 +247,12 @@ fetch('cases.json').then(r=>r.json()).then(d=>{
   $('fMedia').textContent=d.cases.length+'편 · 1280px';
 
   const t=d.totals;
-  $('kJudge').textContent=t.judgments;
-  $('kViol').textContent=t.violations;
-  $('kOk').textContent=t.valid;
-  $('kRate').textContent=Math.round(t.violations/t.judgments*100)+'%';
-  $('kCase').textContent=t.cases;
-  $('kBrand').textContent=Object.keys(t.brands).length;
-  $('allCount').textContent=t.judgments;
   $('galCount').textContent=d.cases.length+'편';
   $('rOk').textContent=t.valid+'건';
   $('rOut').textContent=(t.reasons['구역 이탈']||0)+'건';
   $('rFall').textContent=(t.reasons['전도']||0)+'건';
 
   buildGallery();
-  buildLog();
-  buildBars();
-  drawAll();
   select(0);
 }).catch(err=>{
   $('conn').textContent='cases.json 을 불러올 수 없습니다';
@@ -346,20 +265,17 @@ function buildGallery(){
   g.innerHTML='';
   D.cases.forEach((c,i)=>{
     const b=document.createElement('button');
-    b.className='card'; b.dataset.i=i;
+    b.className='card '+c.kind; b.dataset.i=i;
     b.innerHTML=`
-      <div class="thumb">
-        <img src="${c.poster}" alt="${c.title}" loading="lazy">
+      <div class="top">
         <span class="no">CASE ${String(i+1).padStart(2,'0')}</span>
         <span class="badge ${c.kind}">${c.expect}</span>
       </div>
-      <div class="body">
-        <h3>${c.title}</h3>
-        <div class="meta">
-          <span>${fmt(c.duration)}</span>
-          <span>${c.clock}</span>
-          <span>판정 ${c.events.length}건</span>
-        </div>
+      <h3>${c.title}</h3>
+      <div class="meta">
+        <span>${fmt(c.duration)}</span>
+        <span>${c.clock}</span>
+        <span>판정 ${c.events.length}건</span>
       </div>`;
     b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
     g.appendChild(b);
@@ -504,62 +420,7 @@ function drawCase(){
     x.fillText('확정 판정 없음 (보류 상태)', w/2, w/2);
   }
 }
-function drawAll(){
-  const cv=$('bevAll'); if(!cv||!D) return;
-  const {x,w}=bevSetup(cv); bevZone(x,w);
-  D.judgments.forEach(j=>{
-    if(filter==='bad'&&!j.violation) return;
-    if(filter==='ok'&&j.violation) return;
-    bevDot(x,w,j,{dim:true});
-  });
-}
-
-/* ── 전체 로그 ── */
-function buildLog(){
-  const b=$('logBody'); b.innerHTML='';
-  D.judgments.forEach(j=>{
-    if(filter==='bad'&&!j.violation) return;
-    if(filter==='ok'&&j.violation) return;
-    const tr=document.createElement('tr');
-    tr.className=j.violation?'bad':'ok';
-    tr.innerHTML=`<td class="mono">${j.time}</td><td class="mono">${j.session}</td>
-      <td class="mono">#${j.track}</td><td>${j.brand}</td><td>${j.state}</td>
-      <td class="mono">${Math.round(j.overlap*100)}%</td>
-      <td class="v">${j.verdict}</td>`;
-    b.appendChild(tr);
-  });
-}
-$('filters').onclick=e=>{
-  const btn=e.target.closest('button'); if(!btn) return;
-  filter=btn.dataset.f;
-  document.querySelectorAll('#filters button').forEach(x=>x.classList.toggle('on',x===btn));
-  buildLog(); drawAll();
-};
-
-/* ── 브랜드별 막대 ── */
-function buildBars(){
-  const box=$('brandBars'); box.innerHTML='';
-  const agg={};
-  D.judgments.forEach(j=>{
-    agg[j.brand]=agg[j.brand]||{n:0,bad:0};
-    agg[j.brand].n++; if(j.violation) agg[j.brand].bad++;
-  });
-  Object.entries(agg).sort((a,b)=>b[1].n-a[1].n).forEach(([brand,v])=>{
-    const pct=Math.round(v.bad/v.n*100);
-    const el=document.createElement('div');
-    el.className='brow';
-    el.innerHTML=`<span>${brand}</span>
-      <span class="track2"><i style="width:${pct}%;background:${pct>50?'#FF4D5E':'#FFD23F'}"></i></span>
-      <span class="v">${v.bad}/${v.n} · ${pct}%</span>`;
-    box.appendChild(el);
-  });
-  const el=document.createElement('div');
-  el.className='note'; el.style.padding='2px 0 0';
-  el.textContent='막대는 그 브랜드 판정 중 반납이 거부된 비율입니다.';
-  box.appendChild(el);
-}
-
-addEventListener('resize',()=>{ drawCase(); drawAll(); });
+addEventListener('resize', drawCase);
 </script>
 </body>
 </html>

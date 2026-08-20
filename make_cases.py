@@ -31,7 +31,7 @@ SRC_CALIB = Path("judge_calib.json")
 OUT_JSON  = Path("docs/cases.json")
 OUT_MEDIA = Path("docs/media")
 MARGIN_M  = 1.0                       # BEV 그림 여백
-ZONE_NAME = "공학관 앞 보도"
+ZONE_NAME = "유억겸 기념관 앞"
 
 BRAND_KO = {"SOCAR": "쏘카일레클", "SWING": "스윙", "GCOO": "지쿠"}
 STATUS_KO = {
