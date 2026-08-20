@@ -209,14 +209,14 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
           <div class="events" id="events"></div>
         </div>
         <div class="panel">
-          <div class="head"><h3>구역 맵 · 접지점</h3><span class="tag">BEV</span></div>
+          <div class="head"><h3>구역 맵 · 접지점</h3><span class="tag" id="bevCount">—</span></div>
           <div class="bev"><canvas id="bevCase" width="900" height="900"></canvas></div>
           <div class="legend">
             <span><i style="background:#2C7CF7"></i>쏘카일레클</span>
             <span><i style="background:#E8ECF2"></i>스윙</span>
             <span><i style="background:#00C73C"></i>지쿠</span>
           </div>
-          <p class="note">노란 테두리가 허용 주차 구역입니다. 점을 감싼 고리 두께가 구역과 겹친 비율이고, 빨간 점이 반납 거부된 기체입니다.</p>
+          <p class="note">노란 테두리가 허용 주차 구역입니다. 점을 감싼 고리가 구역과 겹친 비율이고, 빨간 테두리가 반납 거부입니다.<br>흐린 점은 같은 세션에서 이미 판정돼 세워져 있던 기체이고, 진한 점이 이 영상에서 내려진 판정입니다.</p>
         </div>
       </div>
     </div>
@@ -237,7 +237,7 @@ const $ = id => document.getElementById(id);
 const BRAND_COLOR = {'쏘카일레클':'#2C7CF7','스윙':'#E8ECF2','지쿠':'#00C73C','미확인':'#6B7A8F'};
 const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
 
-let D=null, cur=null, curEv=-1;
+let D=null, cur=null, curEv=-1, curCtx=-1;
 const vid=$('cam');
 
 /* ── 부팅 ── */
@@ -282,7 +282,7 @@ function buildGallery(){
 
 /* ── 케이스 선택 ── */
 function select(i){
-  cur=D.cases[i]; curEv=-1;
+  cur=D.cases[i]; curEv=-1; curCtx=-1;
   document.querySelectorAll('.card').forEach(el=>el.classList.toggle('on', +el.dataset.i===i));
 
   $('vTag').textContent='CASE '+String(i+1).padStart(2,'0');
@@ -343,8 +343,10 @@ vid.addEventListener('timeupdate',()=>{
   $('fill').style.width=(p*100)+'%';
   $('tNow').textContent=fmt(vid.currentTime);
 
-  let idx=-1;
+  let idx=-1, ctx=0;
   cur.events.forEach((e,i)=>{ if(vid.currentTime+0.25>=e.t) idx=i; });
+  (cur.context||[]).forEach(c=>{ if(c.t<=vid.currentTime) ctx++; });
+  if(ctx!==curCtx){ curCtx=ctx; drawCase(); }
   if(idx!==curEv){
     curEv=idx;
     document.querySelectorAll('.ev').forEach(el=>{
@@ -398,17 +400,17 @@ function bevZone(x,w){
   x.fillStyle='rgba(255,210,63,.07)'; x.fill();
   x.strokeStyle='#FFD23F'; x.lineWidth=1.6; x.stroke();
 }
-function bevDot(x,w,j,{active=false,dim=false}={}){
+function bevDot(x,w,j,{active=false,dim=false,ghost=false}={}){
   const px=j.x*w, py=j.y*w;
-  const r=active?7:5.2;
-  x.globalAlpha=dim?.35:1;
+  const r=ghost?4:(active?7:5.2);
+  x.globalAlpha=ghost?.5:(dim?.55:1);
   // 겹침 비율 고리
   x.beginPath(); x.arc(px,py,r+4.5,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,j.overlap));
-  x.strokeStyle=j.violation?'#FF4D5E':'#3DDC97'; x.lineWidth=active?3:2; x.stroke();
+  x.strokeStyle=j.violation?'#FF4D5E':'#3DDC97'; x.lineWidth=ghost?1.2:(active?3:2); x.stroke();
   // 본체
   x.beginPath(); x.arc(px,py,r,0,Math.PI*2);
   x.fillStyle=BRAND_COLOR[j.brand]||'#6B7A8F'; x.fill();
-  x.strokeStyle=j.violation?'#FF4D5E':'rgba(14,20,29,.9)'; x.lineWidth=active?2.5:1.5; x.stroke();
+  x.strokeStyle=j.violation?'#FF4D5E':'rgba(14,20,29,.9)'; x.lineWidth=ghost?1:(active?2.5:1.5); x.stroke();
   if(active){
     x.font='500 11px JetBrains Mono, monospace'; x.fillStyle='#E6EDF6'; x.textAlign='center';
     x.fillText('#'+j.track, px, py-r-9);
@@ -419,11 +421,21 @@ function drawCase(){
   const cv=$('bevCase'); if(!cv||!D) return;
   const {x,w}=bevSetup(cv); bevZone(x,w);
   if(!cur) return;
+
+  // 같은 세션에서 이미 판정돼 세워져 있는 기체들 (트랙별 최신 상태만)
+  const now=vid.currentTime||0, parked=new Map();
+  (cur.context||[]).forEach(c=>{ if(c.t<=now) parked.set(c.track,c); });
+  cur.events.forEach((e,i)=>{ if(i<=curEv) parked.delete(e.track); });
+  parked.forEach(c=> bevDot(x,w,c,{ghost:true}));
+
+  // 이 클립에서 내려진 판정
   cur.events.forEach((e,i)=>{
     if(i>curEv) return;                       // 아직 판정되지 않은 지점
     bevDot(x,w,e,{active:i===curEv, dim:i!==curEv});
   });
-  if(!cur.events.length || curEv<0){
+
+  $('bevCount').textContent=(parked.size+Math.max(0,curEv+1))+'대';
+  if(!parked.size && curEv<0){
     x.font='12px Pretendard, sans-serif'; x.fillStyle='#5E6D82'; x.textAlign='center';
     x.fillText(cur.events.length ? '판정 대기 중' : '확정 판정 없음 (보류 상태)', w/2, w/2);
   }
