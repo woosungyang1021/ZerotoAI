@@ -104,6 +104,9 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ev:hover{border-color:var(--rule);border-left-color:var(--ink-2)}
 .ev.bad{border-left-color:var(--alert)} .ev.ok{border-left-color:var(--ok)}
 .ev.now{background:#20293a;border-color:var(--line)}
+.ev.hide{display:none}
+.ev{animation:pop .32s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .ev .t{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
 .ev .who{font-size:12.5px;font-weight:600}
 .ev .why{font-size:11px;color:var(--ink-2);margin-top:1px}
@@ -137,15 +140,15 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
     <p class="sub">기체의 접지점(바퀴가 땅에 닿는 지점)을 지면 좌표로 바꾼 뒤, 그 발자국이 허용 구역과 얼마나 겹치는지로 판단합니다.</p>
     <div class="rules">
       <div class="rule ok">
-        <h3>반납 승인 <span class="cnt" id="rOk">—</span></h3>
+        <h3>반납 승인 <span class="cnt">RETURN_VALID</span></h3>
         <p>접지 발자국이 구역과 <b>70% 이상</b> 겹치고, 기체가 서 있는 상태.</p>
       </div>
       <div class="rule bad">
-        <h3>구역 이탈 <span class="cnt" id="rOut">—</span></h3>
+        <h3>구역 이탈 <span class="cnt">OUT_OF_ZONE</span></h3>
         <p>겹침이 <b>70% 미만</b>. 경계선에 걸친 경우도 여기에 들어갑니다.</p>
       </div>
       <div class="rule bad">
-        <h3>전도 <span class="cnt" id="rFall">—</span></h3>
+        <h3>전도 <span class="cnt">FALLEN</span></h3>
         <p>구역 안이어도 기체 축이 누우면 <b>넘어진 것</b>으로 보고 반납을 막습니다.</p>
       </div>
       <div class="rule pending">
@@ -202,7 +205,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 
       <div class="col">
         <div class="panel">
-          <div class="head"><h3>이 케이스의 판정</h3><span class="tag" id="evCount">0건</span></div>
+          <div class="head"><h3>판정</h3><span class="tag" id="evCount">대기</span></div>
           <div class="events" id="events"></div>
         </div>
         <div class="panel">
@@ -246,12 +249,7 @@ fetch('cases.json').then(r=>r.json()).then(d=>{
   $('fZone').textContent=(d.bounds_m.x[1]-d.bounds_m.x[0]).toFixed(1)+'×'+(d.bounds_m.y[1]-d.bounds_m.y[0]).toFixed(1)+'m';
   $('fMedia').textContent=d.cases.length+'편 · 1280px';
 
-  const t=d.totals;
   $('galCount').textContent=d.cases.length+'편';
-  $('rOk').textContent=t.valid+'건';
-  $('rOut').textContent=(t.reasons['구역 이탈']||0)+'건';
-  $('rFall').textContent=(t.reasons['전도']||0)+'건';
-
   buildGallery();
   select(0);
 }).catch(err=>{
@@ -295,7 +293,7 @@ function select(i){
   $('cSess').textContent='세션 '+cur.session;
   $('cDur').textContent=cur.duration.toFixed(1)+'초 · '+cur.frames+'프레임 · '+cur.fps.toFixed(1)+'fps';
   $('tEnd').textContent=fmt(cur.duration);
-  $('evCount').textContent=cur.events.length+'건';
+  $('evCount').textContent='대기';
 
   vid.src=cur.video; vid.poster=cur.poster;
   vid.play().catch(()=>{});
@@ -322,10 +320,10 @@ function buildEvents(){
     box.innerHTML=`<div class="empty">이 구간에는 확정 판정이 없습니다.<br>기체가 멈췄는지 확인하는 <b>보류(PENDING)</b> 상태만 이어집니다.</div>`;
     return;
   }
-  box.innerHTML='';
+  box.innerHTML=`<div class="empty" id="evWait">재생이 판정 시점에 닿으면 여기에 뜹니다.</div>`;
   cur.events.forEach((e,i)=>{
     const el=document.createElement('div');
-    el.className='ev '+(e.violation?'bad':'ok'); el.dataset.i=i;
+    el.className='ev hide '+(e.violation?'bad':'ok'); el.dataset.i=i;
     el.innerHTML=`
       <span class="t">${fmt(e.t)}</span>
       <span>
@@ -349,7 +347,14 @@ vid.addEventListener('timeupdate',()=>{
   cur.events.forEach((e,i)=>{ if(vid.currentTime+0.25>=e.t) idx=i; });
   if(idx!==curEv){
     curEv=idx;
-    document.querySelectorAll('.ev').forEach(el=>el.classList.toggle('now', +el.dataset.i===idx));
+    document.querySelectorAll('.ev').forEach(el=>{
+      const i=+el.dataset.i;
+      el.classList.toggle('hide', i>idx);      // 아직 오지 않은 판정은 감춘다
+      el.classList.toggle('now', i===idx);
+    });
+    const wait=$('evWait');
+    if(wait) wait.style.display = idx<0 ? '' : 'none';
+    $('evCount').textContent = idx<0 ? '대기' : (idx+1)+'건';
     drawCase();
   }
 });
@@ -414,10 +419,13 @@ function drawCase(){
   const cv=$('bevCase'); if(!cv||!D) return;
   const {x,w}=bevSetup(cv); bevZone(x,w);
   if(!cur) return;
-  cur.events.forEach((e,i)=> bevDot(x,w,e,{active:i===curEv, dim:curEv>=0&&i!==curEv}));
-  if(!cur.events.length){
+  cur.events.forEach((e,i)=>{
+    if(i>curEv) return;                       // 아직 판정되지 않은 지점
+    bevDot(x,w,e,{active:i===curEv, dim:i!==curEv});
+  });
+  if(!cur.events.length || curEv<0){
     x.font='12px Pretendard, sans-serif'; x.fillStyle='#5E6D82'; x.textAlign='center';
-    x.fillText('확정 판정 없음 (보류 상태)', w/2, w/2);
+    x.fillText(cur.events.length ? '판정 대기 중' : '확정 판정 없음 (보류 상태)', w/2, w/2);
   }
 }
 addEventListener('resize', drawCase);
