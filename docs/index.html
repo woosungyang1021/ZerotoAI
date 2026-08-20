@@ -131,6 +131,11 @@ table.log th{position:sticky;top:0;z-index:1;background:var(--panel-2);color:var
 table.log td{padding:7px 12px;border-bottom:1px solid rgba(40,52,69,.55);white-space:nowrap}
 table.log tbody tr:hover{background:var(--panel-2)}
 table.log tr.hide{display:none}
+table.log tr.grp td{background:var(--panel-2);border-bottom:1px solid var(--rule);padding:9px 12px;white-space:normal}
+table.log tr.grp .no{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.12em;margin-right:9px}
+table.log tr.grp b{font-size:12.5px;font-weight:700}
+table.log tr.grp .tag{margin-left:9px}
+table.log tr.none td{color:var(--ink-3);font-size:11.5px;padding:8px 12px 10px}
 table.log .num{font-family:var(--mono);color:var(--ink-2)}
 table.log .dim{font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
 table.log .ov{font-family:var(--mono);color:var(--ink)}
@@ -253,7 +258,8 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
 
   <section>
     <h2 class="title">현장 판정 기록 <span class="tag" id="logCount"></span></h2>
-    <p class="sub">젯슨이 현장에서 남긴 확정 판정 전부입니다. 위 시연 케이스는 이 기록 중 영상과 맞춘 일부입니다.</p>
+    <p class="sub">집계와 분포는 젯슨이 현장에서 남긴 확정 판정 전부 기준입니다.
+      로그 표는 그중 시연 영상 7편에 잡힌 판정을 케이스별로 묶은 것입니다 — 행을 누르면 그 장면으로 이동합니다.</p>
 
     <div class="tally" id="tally"></div>
     <div class="legend" id="brandTally" style="padding:11px 2px 0"></div>
@@ -273,7 +279,7 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
           <div class="logwrap">
             <table class="log">
               <thead><tr>
-                <th>세션</th><th>시각</th><th>트랙</th><th>브랜드</th>
+                <th>시점</th><th>시각</th><th>트랙</th><th>브랜드</th>
                 <th>판정</th><th>겹침</th><th>지면좌표</th>
               </tr></thead>
               <tbody id="logBody"></tbody>
@@ -373,32 +379,86 @@ function buildTally(){
   $('logCount').textContent=t.judgments+'건';
 }
 
+let jumpSeq=0;
+function jumpTo(ci,t){
+  const switching = !cur || cur!==D.cases[ci];
+  if(switching) select(ci);
+  const target=Math.min(t+0.2, D.cases[ci].duration-0.05);
+  const token=++jumpSeq;                                   // 나중 클릭이 이긴다
+  // Range 지원 서버(배포처)는 첫 탐색이 그대로 먹는다. 미지원 서버(로컬
+  // python -m http.server)는 안 받은 구간으로 탐색하면 무산시키고 다운로드를
+  // 처음부터 다시 시작한다. 그래서 첫 탐색은 한 번만 하고, 무산됐으면 버퍼가
+  // 목표 시점을 덮은 뒤에 다시 시도한다. 탐색 중(seeking)에는 currentTime 이
+  // 목표값을 미리 보고하므로 판정은 seeked 이후에만 한다.
+  const EVS=['loadedmetadata','seeked','progress','canplaythrough'];
+  const cleanup=()=>EVS.forEach(e=>vid.removeEventListener(e,step));
+  const covered=()=>{ const b=vid.buffered;
+    for(let i=0;i<b.length;i++) if(b.start(i)<=target&&target<=b.end(i)) return true;
+    return false; };
+  let tried=false;
+  const step=()=>{
+    if(token!==jumpSeq) return cleanup();
+    if(vid.seeking) return;                                        // 판정은 탐색이 끝난 뒤
+    if(Math.abs(vid.currentTime-target)<0.5) return cleanup();     // 도착
+    if(vid.readyState<1) return;
+    if(tried && !covered()) return;                                // 무산됨 — 버퍼를 기다린다
+    tried=true;
+    vid.currentTime=target;
+  };
+  EVS.forEach(e=>vid.addEventListener(e,step));
+  if(!switching) step();       // 전환 중엔 이전 영상 상대로 시도하지 않는다 — loadedmetadata 를 기다린다
+  $('viewer').scrollIntoView({block:'start'});
+}
 function buildLog(){
   const tb=$('logBody');
   tb.innerHTML='';
-  D.judgments.forEach(j=>{
-    const k=j.violation?'bad':'ok';
-    const tr=document.createElement('tr');
-    tr.dataset.k=k;
-    tr.innerHTML=`
-      <td class="dim">S${j.session}</td>
-      <td class="num">${j.time}</td>
-      <td class="num">#${j.track}</td>
-      <td><i class="dot" style="background:${BRAND_COLOR[j.brand]||'#6B7A8F'}"></i>${j.brand}</td>
-      <td><span class="badge ${k}">${j.verdict}</span> <span class="dim">${j.state}</span></td>
-      <td class="ov">${(j.overlap*100).toFixed(1)}%</td>
-      <td class="dim">${j.ground[0].toFixed(2)}, ${j.ground[1].toFixed(2)}</td>`;
-    tb.appendChild(tr);
+  D.cases.forEach((c,ci)=>{
+    const g=document.createElement('tr');
+    g.className='grp'; g.dataset.g=ci;
+    g.innerHTML=`<td colspan="7">
+      <span class="no">CASE ${String(ci+1).padStart(2,'0')}</span><b>${c.title}</b>
+      <span class="badge ${c.kind}">${c.expect}</span>
+      <span class="tag">세션${c.session} · 판정 ${c.events.length}건</span></td>`;
+    tb.appendChild(g);
+    if(!c.events.length){
+      const tr=document.createElement('tr');
+      tr.className='none'; tr.dataset.g=ci;
+      tr.innerHTML=`<td colspan="7">확정 판정 없음 — 멈춤을 확인하는 보류(PENDING) 상태만 이어집니다.</td>`;
+      tb.appendChild(tr);
+      return;
+    }
+    c.events.forEach(j=>{
+      const k=j.violation?'bad':'ok';
+      const tr=document.createElement('tr');
+      tr.dataset.k=k; tr.dataset.g=ci;
+      tr.style.cursor='pointer';
+      tr.title='누르면 이 장면으로 이동합니다';
+      tr.onclick=()=>jumpTo(ci,j.t);
+      tr.innerHTML=`
+        <td class="num">${fmt(j.t)}</td>
+        <td class="num">${j.time}</td>
+        <td class="num">#${j.track}</td>
+        <td><i class="dot" style="background:${BRAND_COLOR[j.brand]||'#6B7A8F'}"></i>${j.brand}</td>
+        <td><span class="badge ${k}">${j.verdict}</span> <span class="dim">${j.state}</span></td>
+        <td class="ov">${(j.overlap*100).toFixed(1)}%</td>
+        <td class="dim">${j.ground[0].toFixed(2)}, ${j.ground[1].toFixed(2)}</td>`;
+      tb.appendChild(tr);
+    });
   });
   logFilter('all');
 }
 function logFilter(f){
-  let n=0;
-  $('logBody').querySelectorAll('tr').forEach(tr=>{
+  const tb=$('logBody');
+  let n=0, seen={};
+  tb.querySelectorAll('tr').forEach(tr=>{
+    if(tr.classList.contains('grp')||tr.classList.contains('none')) return;
     const on = f==='all' || tr.dataset.k===f;
     tr.classList.toggle('hide', !on);
-    if(on) n++;
+    if(on){ n++; seen[tr.dataset.g]=true; }
   });
+  // 묶음 머리는 보이는 행이 있을 때만 남긴다. 판정 없는 케이스는 전체 보기에서만.
+  tb.querySelectorAll('tr.grp').forEach(g=>g.classList.toggle('hide', f!=='all' && !seen[g.dataset.g]));
+  tb.querySelectorAll('tr.none').forEach(tr=>tr.classList.toggle('hide', f!=='all'));
   $('logShown').textContent=n+'건';
 }
 $('logFilter').onclick=e=>{
@@ -530,7 +590,7 @@ function buildEvents(){
         <div class="why">${e.state} · 겹침 ${Math.round(e.overlap*100)}%</div>
       </span>
       <span class="badge ${e.violation?'bad':'ok'}">${e.verdict}</span>`;
-    el.onclick=()=>{ vid.currentTime=Math.min(e.t+0.2, cur.duration-0.05); };
+    el.onclick=()=>{ jumpSeq++; vid.currentTime=Math.min(e.t+0.2, cur.duration-0.05); };
     box.appendChild(el);
   });
 }
@@ -558,6 +618,7 @@ vid.addEventListener('timeupdate',()=>{
   }
 });
 $('track').onclick=e=>{
+  jumpSeq++;                                   // 직접 이동 — 대기 중인 로그 점프를 무른다
   const r=e.currentTarget.getBoundingClientRect();
   vid.currentTime=(e.clientX-r.left)/r.width*(vid.duration||cur.duration);
 };
