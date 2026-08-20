@@ -101,11 +101,9 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .legend .lg{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.12em;text-transform:uppercase}
 .note{padding:0 13px 13px;font-size:11.5px;color:var(--ink-3);line-height:1.6}
 
-/* 반납구역 위치 — 위성사진 위에 핀을 얹는다 */
-.locpanel{margin-top:14px}
-.locgrid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr)}
-.locinfo{padding:16px 18px;display:flex;flex-direction:column;gap:14px;justify-content:center;border-left:1px solid var(--rule)}
-.locinfo dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:12.5px}
+/* 반납구역 위치 — 위성사진 위에 핀을 얹는다 (구역 맵 패널의 탭) */
+.locinfo{padding:13px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--rule)}
+.locinfo dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12px}
 .locinfo dt{color:var(--ink-3);font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;padding-top:2px}
 .locinfo dd{color:var(--ink)}
 .loc{position:relative;background:#080C12}
@@ -163,8 +161,6 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
 @media(max-width:980px){
   .viewer{grid-template-columns:1fr}
   .events{max-height:none}
-  .locgrid{grid-template-columns:1fr}
-  .locinfo{border-left:none;border-top:1px solid var(--rule)}
 }
 </style>
 </head>
@@ -256,40 +252,44 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
           <div class="events" id="events"></div>
         </div>
         <div class="panel">
-          <div class="head"><h3>구역 맵 · 접지점</h3><span class="tag" id="bevCount">—</span></div>
-          <div class="bev"><canvas id="bevCase" width="900" height="900"></canvas></div>
-          <div class="legend">
-            <span class="lg">인식</span>
-            <span><i class="sm" style="background:#3DDC97"></i>승인</span>
-            <span><i class="sm" style="background:#FF4D5E"></i>거부</span>
-            <span><i class="sm" style="background:#FFA23F"></i>보류</span>
-            <span class="lg">판정</span>
-            <span><i style="background:#2C7CF7"></i>쏘카일레클</span>
-            <span><i style="background:#E8ECF2"></i>스윙</span>
-            <span><i style="background:#00C73C"></i>지쿠</span>
+          <div class="head">
+            <h3>구역 맵</h3><span class="tag" id="bevCount">—</span>
+            <div class="ctl" id="mapTabs">
+              <button data-tab="bev" class="on">접지점</button>
+              <button data-tab="loc">위치</button>
+            </div>
           </div>
-          <p class="note">노란 테두리가 허용 주차 구역입니다. 작은 점은 그 순간 영상에서 인식된 기체 전부이고, 큰 점은 로그로 확정된 판정입니다(고리 = 구역과 겹친 비율).</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel locpanel">
-      <div class="head"><h3>반납구역 위치</h3><span class="tag">연세대 · 유억겸기념관 507동 앞</span></div>
-      <div class="locgrid">
-        <div class="loc">
-          <img src="media/zone-location.jpg" alt="유억겸기념관 앞 반납구역 위성사진">
-          <div class="pin" style="left:58.6%;top:50.2%"><span>유억겸 기념관 앞 반납구역</span><i></i></div>
-        </div>
-        <div class="locinfo">
-          <dl>
-            <dt>설치 지점</dt><dd>유억겸기념관 507동 앞 보도</dd>
-            <dt>허용 구역</dt><dd>3.2 × 3.8 m</dd>
-            <dt>장비</dt><dd>고정 카메라 + Jetson Orin Nano</dd>
-            <dt>좌표 변환</dt><dd>IPM 호모그래피 → 지면(BEV)</dd>
-            <dt>기록</dt><dd>세션 7회 · 확정 판정 49건</dd>
-          </dl>
-          <p class="note" style="padding:0">빨간 사각형이 카메라가 내려다보는 반납구역입니다.
-            위성사진 네이버 지도 · 국토지리정보원.</p>
+          <div id="tabBev">
+            <div class="bev"><canvas id="bevCase" width="900" height="900"></canvas></div>
+            <div class="legend">
+              <span class="lg">인식</span>
+              <span><i class="sm" style="background:#3DDC97"></i>승인</span>
+              <span><i class="sm" style="background:#FF4D5E"></i>거부</span>
+              <span><i class="sm" style="background:#FFA23F"></i>보류</span>
+              <span class="lg">판정</span>
+              <span><i style="background:#2C7CF7"></i>쏘카일레클</span>
+              <span><i style="background:#E8ECF2"></i>스윙</span>
+              <span><i style="background:#00C73C"></i>지쿠</span>
+            </div>
+            <p class="note">노란 테두리가 허용 주차 구역입니다. 작은 점은 그 순간 영상에서 인식된 기체 전부이고, 큰 점은 로그로 확정된 판정입니다(고리 = 구역과 겹친 비율).</p>
+          </div>
+          <div id="tabLoc" hidden>
+            <div class="loc">
+              <img src="media/zone-location.jpg" alt="유억겸기념관 앞 반납구역 위성사진">
+              <div class="pin" style="left:53.2%;top:58.4%"><span>유억겸 기념관 앞 반납구역</span><i></i></div>
+            </div>
+            <div class="locinfo">
+              <dl>
+                <dt>설치 지점</dt><dd>연세대 유억겸기념관 507동 앞 보도</dd>
+                <dt>허용 구역</dt><dd>3.2 × 3.8 m</dd>
+                <dt>장비</dt><dd>고정 카메라 + Jetson Orin Nano</dd>
+                <dt>좌표 변환</dt><dd>IPM 호모그래피 → 지면(BEV)</dd>
+                <dt>기록</dt><dd>세션 7회 · 확정 판정 49건</dd>
+              </dl>
+              <p class="note" style="padding:0">빨간 사각형이 카메라가 내려다보는 반납구역입니다.
+                위성사진 네이버 지도 · 국토지리정보원.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -753,6 +753,17 @@ function drawCase(){
     x.fillText(live===false ? '인식 데이터 없음' : '인식 대기 중', w/2, w/2);
   }
 }
+/* ── 구역 맵 탭 (접지점 / 위치) ── */
+$('mapTabs').onclick=e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  $('mapTabs').querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+  const showBev = b.dataset.tab==='bev';
+  $('tabBev').hidden=!showBev;
+  $('tabLoc').hidden=showBev;
+  $('bevCount').style.display=showBev?'':'none';   // 인식 대수는 접지점 탭에서만 의미가 있다
+  if(showBev) drawCase();          // 숨겨진 동안 폭 0 으로 그려졌을 수 있다 — 다시 맞춘다
+};
+
 addEventListener('resize', ()=>{ drawCase(); drawDist(); });
 // 분포 그림은 재생과 달리 다시 그릴 일이 없어, 폭이 바뀔 때마다 다시 맞춘다.
 // (옵저버를 변수에 담아둔다 — 참조를 놓으면 수거돼 콜백이 끊긴다)
