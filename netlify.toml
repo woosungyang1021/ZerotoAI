@@ -1,0 +1,25 @@
+# Netlify 배포 설정
+#
+# 사이트는 docs/ 안에 있는 정적 파일이 전부다. 빌드 과정이 없으므로
+# 발행 폴더만 알려주면 된다. (기본값인 저장소 루트에는 index.html 이 없어
+# 이 파일이 없으면 "Page not found" 가 뜬다)
+
+[build]
+  publish = "docs"
+
+# 영상·대표장면은 내용이 바뀌면 파일명이 아니라 데이터가 바뀌므로
+# 캐시를 짧게 잡아 재배포가 바로 반영되게 한다.
+[[headers]]
+  for = "/*.json"
+  [headers.values]
+    Cache-Control = "public, max-age=60"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/media/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
