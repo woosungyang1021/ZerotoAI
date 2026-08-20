@@ -101,6 +101,14 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .legend .lg{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.12em;text-transform:uppercase}
 .note{padding:0 13px 13px;font-size:11.5px;color:var(--ink-3);line-height:1.6}
 
+/* 반납구역 위치 — 위성사진 위에 핀을 얹는다 */
+.loc{position:relative;background:#080C12}
+.loc img{width:100%;display:block}
+.loc .pin{position:absolute;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:5px;pointer-events:none;padding-bottom:14px}
+.loc .pin span{background:rgba(14,20,29,.9);border:1px solid var(--line);color:var(--ink);font-size:11px;font-weight:650;letter-spacing:-.01em;padding:4px 9px;border-radius:2px;white-space:nowrap}
+.loc .pin i{width:9px;height:9px;border-radius:50%;background:var(--line);box-shadow:0 0 0 4px rgba(255,210,63,.28);animation:breathe 2.6s ease-in-out infinite}
+.loc .pin::after{content:'';width:1px;height:12px;background:var(--line);opacity:.7;position:absolute;bottom:2px}
+
 .events{padding:8px;display:flex;flex-direction:column;gap:6px;max-height:330px;overflow:auto}
 .ev{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 11px;background:var(--panel-2);border:1px solid transparent;border-left:2px solid var(--ink-3);border-radius:2px;cursor:pointer;transition:border-color .14s}
 .ev:hover{border-color:var(--rule);border-left-color:var(--ink-2)}
@@ -253,6 +261,15 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
             <span><i style="background:#00C73C"></i>지쿠</span>
           </div>
           <p class="note">노란 테두리가 허용 주차 구역입니다. 작은 점은 그 순간 영상에서 인식된 기체 전부이고, 큰 점은 로그로 확정된 판정입니다(고리 = 구역과 겹친 비율).</p>
+        </div>
+        <div class="panel">
+          <div class="head"><h3>반납구역 위치</h3><span class="tag">연세대 · 유억겸기념관 507동</span></div>
+          <div class="loc">
+            <img src="media/zone-location.jpg" alt="유억겸기념관 앞 반납구역 위성사진">
+            <div class="pin" style="left:58.6%;top:45.9%"><span>유억겸 기념관 앞 반납구역</span><i></i></div>
+          </div>
+          <p class="note">빨간 사각형이 카메라가 내려다보는 반납구역(3.2×3.8m)입니다.
+            위성사진 네이버 지도 · 국토지리정보원.</p>
         </div>
       </div>
     </div>
