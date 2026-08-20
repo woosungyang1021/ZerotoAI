@@ -33,6 +33,12 @@ OUT_MEDIA = Path("docs/media")
 MARGIN_M  = 2.1                       # BEV 그림 여백 — 구역 밖 기체까지 담는다
 ZONE_NAME = "유억겸 기념관 앞"
 
+# 녹화를 시작하면 젯슨은 그 자리에 이미 서 있던 기체들을 한꺼번에 판정한다.
+# 사람이 와서 반납한 건과 성격이 다르고(추적이 자리잡기 전이라 접지점이 흔들린다)
+# 세션이 바뀔 때마다 같은 기체가 다시 계수되므로 구분해 둔다.
+# 실측: 시작부 판정은 frame 69~75 에 몰려 있고, 그 다음 판정은 201 부터다.
+ONSTART_FRAME = 100
+
 BRAND_KO = {"SOCAR": "쏘카일레클", "SWING": "스윙", "GCOO": "지쿠"}
 STATUS_KO = {
     "RETURN_VALID":        ("정상 반납", "반납 승인", False),
@@ -179,6 +185,8 @@ def main():
             "overlap": round(r.get("zone_overlap", 0.0), 3),
             "ground": [round(v, 2) for v in r["ground_xy"]],
             "x": xy[0], "y": xy[1],
+            "rec_frame": r["frame"],                     # 젯슨이 기록한 프레임
+            "onstart": r["frame"] <= ONSTART_FRAME,      # 녹화 시작 직후 일괄 판정인가
         }
 
     # 전체 판정 로그

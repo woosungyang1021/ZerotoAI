@@ -114,6 +114,28 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ev .why{font-size:11px;color:var(--ink-2);margin-top:1px}
 .empty{padding:22px 14px;text-align:center;color:var(--ink-3);font-size:12.5px}
 
+/* ── 판정 기록 ── */
+.tally{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px}
+.ty{background:var(--panel);border:1px solid var(--rule);border-radius:3px;padding:12px 14px}
+.ty b{display:block;font-family:var(--mono);font-size:23px;font-weight:500;letter-spacing:-.03em;line-height:1.25}
+.ty span{font-size:11.5px;color:var(--ink-3)}
+.ty em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+.ty.ok b{color:var(--ok)} .ty.bad b{color:var(--alert)}
+
+.dist{padding:13px 13px 4px}
+.dist canvas{width:100%;height:auto;display:block}
+
+.logwrap{max-height:430px;overflow:auto}
+table.log{width:100%;border-collapse:collapse;font-size:12px}
+table.log th{position:sticky;top:0;z-index:1;background:var(--panel-2);color:var(--ink-3);font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule);white-space:nowrap}
+table.log td{padding:7px 12px;border-bottom:1px solid rgba(40,52,69,.55);white-space:nowrap}
+table.log tbody tr:hover{background:var(--panel-2)}
+table.log tr.hide{display:none}
+table.log .num{font-family:var(--mono);color:var(--ink-2)}
+table.log .dim{font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+table.log .ov{font-family:var(--mono);color:var(--ink)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:0}
+
 .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--rule);display:flex;gap:20px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
 .foot b{color:var(--ink-2);font-weight:500}
 
@@ -229,6 +251,50 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
     </div>
   </section>
 
+  <section>
+    <h2 class="title">현장 판정 기록 <span class="tag" id="logCount"></span></h2>
+    <p class="sub">젯슨이 현장에서 남긴 확정 판정 전부입니다. 위 시연 케이스는 이 기록 중 영상과 맞춘 일부입니다.</p>
+
+    <div class="tally" id="tally"></div>
+    <div class="legend" id="brandTally" style="padding:11px 2px 0"></div>
+
+    <div class="viewer" style="margin-top:4px">
+      <div class="col">
+        <div class="panel">
+          <div class="head">
+            <h3>판정 로그</h3>
+            <span class="tag" id="logShown">—</span>
+            <div class="ctl" id="logFilter">
+              <button data-f="all" class="on">전체</button>
+              <button data-f="ok">승인</button>
+              <button data-f="bad">거부</button>
+            </div>
+          </div>
+          <div class="logwrap">
+            <table class="log">
+              <thead><tr>
+                <th>세션</th><th>시각</th><th>트랙</th><th>브랜드</th>
+                <th>판정</th><th>겹침</th><th>지면좌표</th>
+              </tr></thead>
+              <tbody id="logBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="panel">
+          <div class="head"><h3>겹침 분포</h3><span class="tag">판정별 겹침 비율</span></div>
+          <div class="dist"><canvas id="dist"></canvas></div>
+          <p class="note">점 하나가 판정 한 건입니다. <b>사람이 와서 반납한 건</b>은 승인과 구역 이탈이
+            70% 기준선을 사이에 두고 갈립니다. <b>녹화 시작 직후</b>는 카메라를 켤 때 이미 서 있던 기체를
+            한꺼번에 판정한 것이라 추적이 자리잡기 전이고, 접지점이 흔들려 기준선을 넘나듭니다.
+            전도는 겹침이 아니라 자세로 거부하므로 줄을 따로 뒀습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <div class="foot">
     <span>모델 <b>YOLO26s-seg</b></span>
     <span>디바이스 <b>Jetson Orin Nano</b></span>
@@ -253,11 +319,16 @@ fetch('cases.json').then(r=>r.json()).then(d=>{
   $('conn').textContent='판정 데이터 로드됨';
   $('hZone').textContent=d.zone_name;
   $('hDate').textContent=d.built;
-  $('fZone').textContent=(d.bounds_m.x[1]-d.bounds_m.x[0]).toFixed(1)+'×'+(d.bounds_m.y[1]-d.bounds_m.y[0]).toFixed(1)+'m';
+  const zx=d.zone_poly_m.map(p=>p[0]), zy=d.zone_poly_m.map(p=>p[1]);   // 구역 자체 크기.
+  $('fZone').textContent=(Math.max(...zx)-Math.min(...zx)).toFixed(1)+'×'   // bounds_m 은 BEV 여백까지
+                        +(Math.max(...zy)-Math.min(...zy)).toFixed(1)+'m';  // 포함한 그림 범위라 다르다
   $('fMedia').textContent=d.cases.length+'편 · 1280px';
 
   $('galCount').textContent=d.cases.length+'편';
   buildGallery();
+  buildTally();
+  buildLog();
+  drawDist();
   select(0);
 }).catch(err=>{
   $('conn').textContent='cases.json 을 불러올 수 없습니다';
@@ -284,6 +355,116 @@ function buildGallery(){
       </div>`;
     b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
     g.appendChild(b);
+  });
+}
+
+/* ── 현장 판정 기록 ── */
+function buildTally(){
+  const t=D.totals;
+  const why=Object.entries(t.reasons||{}).map(([k,v])=>`${k} ${v}`).join(' · ');
+  $('tally').innerHTML=`
+    <div class="ty"><b>${t.judgments}</b><span>확정 판정</span></div>
+    <div class="ty ok"><b>${t.valid}</b><span>반납 승인</span></div>
+    <div class="ty bad"><b>${t.violations}</b><span>반납 거부</span><em>${why}</em></div>
+    <div class="ty"><b>${t.sessions}</b><span>녹화 세션</span></div>`;
+  $('brandTally').innerHTML='<span class="lg">브랜드</span>'+
+    Object.entries(t.brands||{}).map(([k,v])=>
+      `<span><i style="background:${BRAND_COLOR[k]||'#6B7A8F'}"></i>${k} ${v}건</span>`).join('');
+  $('logCount').textContent=t.judgments+'건';
+}
+
+function buildLog(){
+  const tb=$('logBody');
+  tb.innerHTML='';
+  D.judgments.forEach(j=>{
+    const k=j.violation?'bad':'ok';
+    const tr=document.createElement('tr');
+    tr.dataset.k=k;
+    tr.innerHTML=`
+      <td class="dim">S${j.session}</td>
+      <td class="num">${j.time}</td>
+      <td class="num">#${j.track}</td>
+      <td><i class="dot" style="background:${BRAND_COLOR[j.brand]||'#6B7A8F'}"></i>${j.brand}</td>
+      <td><span class="badge ${k}">${j.verdict}</span> <span class="dim">${j.state}</span></td>
+      <td class="ov">${(j.overlap*100).toFixed(1)}%</td>
+      <td class="dim">${j.ground[0].toFixed(2)}, ${j.ground[1].toFixed(2)}</td>`;
+    tb.appendChild(tr);
+  });
+  logFilter('all');
+}
+function logFilter(f){
+  let n=0;
+  $('logBody').querySelectorAll('tr').forEach(tr=>{
+    const on = f==='all' || tr.dataset.k===f;
+    tr.classList.toggle('hide', !on);
+    if(on) n++;
+  });
+  $('logShown').textContent=n+'건';
+}
+$('logFilter').onclick=e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  $('logFilter').querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+  logFilter(b.dataset.f);
+};
+
+/* 겹침 분포 — 성격이 다른 두 묶음을 나눠 70% 기준선과 견준다.
+   전도는 겹침이 아니라 자세로 거부하므로 줄을 따로 둔다. */
+const DIST_LANES=[
+  {k:'승인', s:'정상 반납', c:'#3DDC97'},
+  {k:'이탈', s:'구역 이탈', c:'#FF4D5E'},
+  {k:'전도', s:'전도',      c:'#FFA23F'},
+];
+function drawDist(){
+  const cv=$('dist'); if(!cv||!D) return;
+  const dpr=window.devicePixelRatio||1, w=cv.clientWidth||360, h=224;
+  cv.width=w*dpr; cv.height=h*dpr;
+  const x=cv.getContext('2d');
+  x.setTransform(dpr,0,0,dpr,0,0);
+  x.clearRect(0,0,w,h);
+
+  const L=46, R=14, T=30, B=28;
+  const px = v => L + v*(w-L-R);
+
+  // 옛 데이터에는 onstart 가 없다. 그때는 나누지 않고 한 덩어리로 그린다.
+  const split=D.judgments.some(j=>'onstart' in j);
+  const groups=split
+    ? [{n:'사람이 와서 반납한 건', v:D.judgments.filter(j=>!j.onstart)},
+       {n:'녹화 시작 직후 일괄 판정', v:D.judgments.filter(j=> j.onstart)}]
+    : [{n:'전체 판정', v:D.judgments}];
+
+  x.font='10px JetBrains Mono, monospace'; x.textAlign='center';
+  [0,.25,.5,.75,1].forEach(v=>{
+    x.strokeStyle='rgba(40,52,69,.8)'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(px(v),T); x.lineTo(px(v),h-B); x.stroke();
+    x.fillStyle='#5E6D82'; x.fillText(Math.round(v*100)+'%', px(v), h-B+15);
+  });
+
+  x.strokeStyle='#FFD23F'; x.lineWidth=1.4; x.setLineDash([4,3]);
+  x.beginPath(); x.moveTo(px(.7),T-6); x.lineTo(px(.7),h-B); x.stroke();
+  x.setLineDash([]);
+  x.fillStyle='#FFD23F'; x.font='500 9.5px JetBrains Mono, monospace';
+  x.fillText('70% 기준', px(.7), T-12);
+
+  const gH=(h-T-B)/groups.length;
+  groups.forEach((g,gi)=>{
+    const gy=T+gH*gi, label=`${g.n} ${g.v.length}건`;
+    x.font='600 10.5px Pretendard, sans-serif'; x.textAlign='left';
+    x.fillStyle='#161E2A'; x.fillRect(L-3, gy+1, x.measureText(label).width+8, 13);
+    x.fillStyle='#8C9BB0'; x.fillText(label, L+1, gy+11);
+
+    DIST_LANES.forEach((lane,li)=>{
+      const cy=gy+30+li*20, hit=g.v.filter(j=>j.state===lane.s);
+      x.strokeStyle='rgba(40,52,69,.55)'; x.lineWidth=1;
+      x.beginPath(); x.moveTo(L,cy); x.lineTo(w-R,cy); x.stroke();
+      x.textAlign='right'; x.font='500 10px JetBrains Mono, monospace';
+      x.globalAlpha=hit.length?1:.35; x.fillStyle=lane.c;
+      x.fillText(lane.k, L-8, cy+3.5); x.globalAlpha=1;
+      hit.forEach(j=>{
+        x.beginPath(); x.arc(px(j.overlap), cy, 4, 0, Math.PI*2);
+        x.globalAlpha=.45; x.fillStyle=lane.c; x.fill(); x.globalAlpha=1;
+        x.lineWidth=1; x.strokeStyle=lane.c; x.stroke();
+      });
+    });
   });
 }
 
@@ -464,7 +645,17 @@ function drawCase(){
     x.fillText(live===false ? '인식 데이터 없음' : '인식 대기 중', w/2, w/2);
   }
 }
-addEventListener('resize', drawCase);
+addEventListener('resize', ()=>{ drawCase(); drawDist(); });
+// 분포 그림은 재생과 달리 다시 그릴 일이 없어, 폭이 바뀔 때마다 다시 맞춘다.
+// (옵저버를 변수에 담아둔다 — 참조를 놓으면 수거돼 콜백이 끊긴다)
+let distRO=null;
+if(window.ResizeObserver){
+  distRO=new ResizeObserver(()=>drawDist());
+  distRO.observe($('dist'));
+}
+// 웹폰트가 늦게 붙으면 글자 폭이 달라져 칸 너비가 다시 잡힌다. 그 뒤에 한 번 더 그린다.
+addEventListener('load', drawDist);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(drawDist);
 </script>
 </body>
 </html>
