@@ -316,7 +316,7 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
     <h2 class="title">현장 판정 기록 <span class="tag" id="logCount"></span></h2>
     <p class="sub">시연 영상 7편에 잡힌 판정을 케이스별로 묶었습니다. 타일이나 행을 누르면 그 장면으로 이동합니다.
       <b>재시작 허가·불허가</b>는 새 반납이 아니라, 녹화(관측)를 다시 시작할 때 이미 서 있던 기체가 다시 받은 판정 표시입니다.
-      겹침 분포만 젯슨이 현장에서 남긴 확정 판정 전체 기준입니다.</p>
+      겹침 분포는 전체 누적과 케이스별 탭으로 볼 수 있고, 전체 탭만 젯슨이 현장에서 남긴 확정 판정 전체 기준입니다.</p>
 
     <div class="tally" id="tally"></div>
 
@@ -346,12 +346,9 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
 
       <div class="col">
         <div class="panel">
-          <div class="head"><h3>겹침 분포</h3><span class="tag">판정별 겹침 비율</span></div>
+          <div class="head"><h3>겹침 분포</h3><div class="ctl" id="distTabs"></div></div>
           <div class="dist"><canvas id="dist"></canvas></div>
-          <p class="note">점 하나가 판정 한 건입니다. <b>사람이 와서 반납한 건</b>은 승인과 구역 이탈이
-            70% 기준선을 사이에 두고 갈립니다. <b>녹화 시작 직후</b>는 카메라를 켤 때 이미 서 있던 기체를
-            한꺼번에 판정한 것이라 추적이 자리잡기 전이고, 접지점이 흔들려 기준선을 넘나듭니다.
-            전도는 겹침이 아니라 자세로 거부하므로 줄을 따로 뒀습니다.</p>
+          <p class="note" id="distNote"></p>
         </div>
       </div>
     </div>
@@ -390,6 +387,7 @@ fetch('cases.json').then(r=>r.json()).then(d=>{
   buildGallery();
   buildTally();
   buildLog();
+  buildDistTabs();
   drawDist();
   select(0);
 }).catch(err=>{
@@ -436,8 +434,8 @@ function buildTally(){
   D.cases.forEach((c,i)=>{
     const parts=[];
     if(!c.session){
-      // 야간 인식 비교 — 판정한 촬영분이 아니라서 판정 용어 대신 성격 라벨을 쓴다
-      parts.push(`<span class="${{ok:'okc',bad:'badc'}[c.kind]||'pendc'}">${c.expect}</span>`);
+      // 야간 인식 비교 — 판정한 촬영분이 아니라서 판정 용어 대신 제목을 그대로 쓴다
+      parts.push(`<span class="${{ok:'okc',bad:'badc'}[c.kind]||'pendc'}">${c.title}</span>`);
     }else{
       const ok=c.events.filter(e=>!e.violation && !e.carry).length;   // 실제 반납 행위만
       const bad=c.events.filter(e=>e.violation).length;
@@ -452,7 +450,7 @@ function buildTally(){
     b.innerHTML=`
       <span class="no">CASE ${String(i+1).padStart(2,'0')}</span>
       <span class="cnts">${parts.join(' <span style="color:var(--ink-3)">·</span> ')}</span>
-      <span class="nm">${c.title}</span>`;
+      ${c.session?`<span class="nm">${c.title}</span>`:''}`;
     b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
     t.appendChild(b);
   });
@@ -552,30 +550,59 @@ $('logFilter').onclick=e=>{
   logFilter(b.dataset.f);
 };
 
-/* 겹침 분포 — 성격이 다른 두 묶음을 나눠 70% 기준선과 견준다.
+/* 겹침 분포 — 전체 누적 탭과 케이스별 탭.
    전도는 겹침이 아니라 자세로 거부하므로 줄을 따로 둔다. */
-const DIST_LANES=[
-  {k:'승인', s:'정상 반납', c:'#3DDC97'},
-  {k:'이탈', s:'구역 이탈', c:'#FF4D5E'},
-  {k:'전도', s:'전도',      c:'#FFA23F'},
+let distMode='all';
+const LANES_ALL=[                                   // 전체 탭 — 묶음이 재시작을 이미 가른다
+  {k:'승인', c:'#3DDC97', f:j=>j.state==='정상 반납'},
+  {k:'이탈', c:'#FF4D5E', f:j=>j.state==='구역 이탈'},
+  {k:'전도', c:'#FFA23F', f:j=>j.state==='전도'},
 ];
+const LANES_CASE=[                                  // 케이스 탭 — 재시작 허가를 줄로 가른다
+  {k:'승인',   c:'#3DDC97', f:j=>j.state==='정상 반납' && !j.carry},
+  {k:'이탈',   c:'#FF4D5E', f:j=>j.state==='구역 이탈'},
+  {k:'전도',   c:'#FFA23F', f:j=>j.state==='전도'},
+  {k:'재시작', c:'#8C9BB0', f:j=>!!j.carry},
+];
+const DIST_NOTE={
+  all:`점 하나가 판정 한 건입니다. <b>사람이 와서 반납한 건</b>은 승인과 구역 이탈이
+    70% 기준선을 사이에 두고 갈립니다. <b>녹화 시작 직후</b>는 카메라를 켤 때 이미 서 있던 기체를
+    한꺼번에 판정한 것이라 추적이 자리잡기 전이고, 접지점이 흔들려 기준선을 넘나듭니다.
+    전도는 겹침이 아니라 자세로 거부하므로 줄을 따로 뒀습니다.`,
+  case:`점 하나가 판정 한 건, 노란 세로선이 <b>70%</b> 기준선입니다.
+    회색 점은 녹화를 다시 시작할 때 기존 주차 기체가 다시 받은 허가 표시입니다.`,
+};
+function buildDistTabs(){
+  const box=$('distTabs');
+  box.innerHTML='<button data-m="all" class="on">전체</button>'
+    +D.cases.map((c,i)=>c.session?`<button data-m="${i}">${i+1}</button>`:'').join('');
+  box.onclick=e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    distMode=b.dataset.m;
+    box.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+    $('distNote').innerHTML=DIST_NOTE[distMode==='all'?'all':'case'];
+    drawDist();
+  };
+  $('distNote').innerHTML=DIST_NOTE.all;
+}
 function drawDist(){
   const cv=$('dist'); if(!cv||!D) return;
-  const dpr=window.devicePixelRatio||1, w=cv.clientWidth||360, h=224;
+  const all=distMode==='all';
+  const lanes=all?LANES_ALL:LANES_CASE;
+  const groups=all
+    ? [{n:'사람이 와서 반납한 건', v:D.judgments.filter(j=>!j.onstart)},
+       {n:'녹화 시작 직후 일괄 판정', v:D.judgments.filter(j=> j.onstart)}]
+    : [(c=>({n:`CASE ${String(+distMode+1).padStart(2,'0')} · ${c.title}`, v:c.events}))(D.cases[+distMode])];
+
+  const L=46, R=14, T=30, B=28;
+  const gH=30+lanes.length*20+8;                    // 묶음 하나의 높이
+  const h=T+B+gH*groups.length;
+  const dpr=window.devicePixelRatio||1, w=cv.clientWidth||360;
   cv.width=w*dpr; cv.height=h*dpr;
   const x=cv.getContext('2d');
   x.setTransform(dpr,0,0,dpr,0,0);
   x.clearRect(0,0,w,h);
-
-  const L=46, R=14, T=30, B=28;
   const px = v => L + v*(w-L-R);
-
-  // 옛 데이터에는 onstart 가 없다. 그때는 나누지 않고 한 덩어리로 그린다.
-  const split=D.judgments.some(j=>'onstart' in j);
-  const groups=split
-    ? [{n:'사람이 와서 반납한 건', v:D.judgments.filter(j=>!j.onstart)},
-       {n:'녹화 시작 직후 일괄 판정', v:D.judgments.filter(j=> j.onstart)}]
-    : [{n:'전체 판정', v:D.judgments}];
 
   x.font='10px JetBrains Mono, monospace'; x.textAlign='center';
   [0,.25,.5,.75,1].forEach(v=>{
@@ -590,15 +617,19 @@ function drawDist(){
   x.fillStyle='#FFD23F'; x.font='500 9.5px JetBrains Mono, monospace';
   x.fillText('70% 기준', px(.7), T-12);
 
-  const gH=(h-T-B)/groups.length;
   groups.forEach((g,gi)=>{
     const gy=T+gH*gi, label=`${g.n} ${g.v.length}건`;
     x.font='600 10.5px Pretendard, sans-serif'; x.textAlign='left';
     x.fillStyle='#161E2A'; x.fillRect(L-3, gy+1, x.measureText(label).width+8, 13);
     x.fillStyle='#8C9BB0'; x.fillText(label, L+1, gy+11);
 
-    DIST_LANES.forEach((lane,li)=>{
-      const cy=gy+30+li*20, hit=g.v.filter(j=>j.state===lane.s);
+    if(!g.v.length){
+      x.font='12px Pretendard, sans-serif'; x.fillStyle='#5E6D82'; x.textAlign='center';
+      x.fillText('확정 판정이 없는 케이스입니다.', (L+w-R)/2, gy+gH/2+8);
+      return;
+    }
+    lanes.forEach((lane,li)=>{
+      const cy=gy+30+li*20, hit=g.v.filter(lane.f);
       x.strokeStyle='rgba(40,52,69,.55)'; x.lineWidth=1;
       x.beginPath(); x.moveTo(L,cy); x.lineTo(w-R,cy); x.stroke();
       x.textAlign='right'; x.font='500 10px JetBrains Mono, monospace';
