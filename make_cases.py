@@ -150,7 +150,7 @@ CASES = [
         report=False,
         summary="같은 자리에서 조명이 없을 때와 켜졌을 때를 이어 붙인 영상. "
                 "인근에 움직임이 감지되면 GPIO 로 조명이 자동 점등된다.",
-        expect="조명 비교", kind="pending", anchors=[],
+        expect="조명 비교", kind="info", anchors=[],   # info = 판정 결과가 아닌 정보성 비교 (파랑)
     ),
 ]
 
