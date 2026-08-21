@@ -48,18 +48,18 @@
   ]
  },
  "totals": {
-  "sessions": 7,
+  "sessions": 12,
   "cases": 11,
-  "judgments": 49,
-  "violations": 21,
-  "valid": 28,
+  "judgments": 61,
+  "violations": 24,
+  "valid": 37,
   "brands": {
-   "쏘카일레클": 41,
-   "스윙": 5,
+   "쏘카일레클": 49,
+   "스윙": 9,
    "지쿠": 3
   },
   "reasons": {
-   "구역 이탈": 18,
+   "구역 이탈": 21,
    "전도": 3
   }
  },
@@ -1436,6 +1436,222 @@
    "x": 0.5919,
    "y": 0.5825,
    "rec_frame": 1587,
+   "onstart": false
+  },
+  {
+   "session": 8,
+   "time": "18:51:47",
+   "track": 1,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.0,
+   "ground": [
+    1.08,
+    -0.57
+   ],
+   "x": 0.4297,
+   "y": 0.8087,
+   "rec_frame": 99,
+   "onstart": true
+  },
+  {
+   "session": 8,
+   "time": "18:51:53",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.836,
+   "ground": [
+    1.0,
+    3.2
+   ],
+   "x": 0.4189,
+   "y": 0.3375,
+   "rec_frame": 138,
+   "onstart": false
+  },
+  {
+   "session": 8,
+   "time": "18:54:11",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    1.86,
+    1.84
+   ],
+   "x": 0.5351,
+   "y": 0.5075,
+   "rec_frame": 978,
+   "onstart": false
+  },
+  {
+   "session": 9,
+   "time": "19:03:42",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.0,
+   "ground": [
+    1.13,
+    -1.27
+   ],
+   "x": 0.4365,
+   "y": 0.8962,
+   "rec_frame": 69,
+   "onstart": true
+  },
+  {
+   "session": 9,
+   "time": "19:03:43",
+   "track": 1,
+   "brand": "스윙",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.854,
+   "ground": [
+    0.9,
+    3.26
+   ],
+   "x": 0.4054,
+   "y": 0.33,
+   "rec_frame": 72,
+   "onstart": true
+  },
+  {
+   "session": 9,
+   "time": "19:04:35",
+   "track": 2,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    0.89,
+    1.01
+   ],
+   "x": 0.4041,
+   "y": 0.6112,
+   "rec_frame": 414,
+   "onstart": false
+  },
+  {
+   "session": 10,
+   "time": "19:10:00",
+   "track": 1,
+   "brand": "스윙",
+   "state": "구역 이탈",
+   "verdict": "반납 거부",
+   "violation": true,
+   "overlap": 0.363,
+   "ground": [
+    0.89,
+    3.8
+   ],
+   "x": 0.4041,
+   "y": 0.2625,
+   "rec_frame": 69,
+   "onstart": true
+  },
+  {
+   "session": 10,
+   "time": "19:11:22",
+   "track": 3,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.827,
+   "ground": [
+    0.55,
+    0.75
+   ],
+   "x": 0.3581,
+   "y": 0.6437,
+   "rec_frame": 696,
+   "onstart": false
+  },
+  {
+   "session": 11,
+   "time": "19:29:05",
+   "track": 4,
+   "brand": "스윙",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 0.955,
+   "ground": [
+    0.97,
+    3.11
+   ],
+   "x": 0.4149,
+   "y": 0.3487,
+   "rec_frame": 201,
+   "onstart": false
+  },
+  {
+   "session": 11,
+   "time": "19:32:27",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    0.93,
+    0.99
+   ],
+   "x": 0.4095,
+   "y": 0.6137,
+   "rec_frame": 555,
+   "onstart": false
+  },
+  {
+   "session": 12,
+   "time": "19:38:32",
+   "track": 4,
+   "brand": "쏘카일레클",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    0.97,
+    0.99
+   ],
+   "x": 0.4149,
+   "y": 0.6137,
+   "rec_frame": 423,
+   "onstart": false
+  },
+  {
+   "session": 12,
+   "time": "19:46:41",
+   "track": 4,
+   "brand": "스윙",
+   "state": "정상 반납",
+   "verdict": "반납 승인",
+   "violation": false,
+   "overlap": 1.0,
+   "ground": [
+    0.93,
+    0.93
+   ],
+   "x": 0.4095,
+   "y": 0.6212,
+   "rec_frame": 549,
    "onstart": false
   }
  ]

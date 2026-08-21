@@ -47,3 +47,15 @@
 {"ts": "2026-08-19T17:42:00", "time": "17:42:00", "track_id": 9, "brand": "GCOO", "status": "RETURN_VALID", "zone_overlap": 1.0, "ground_xy": [2.21, 2.5], "frame": 393, "events": []}
 {"ts": "2026-08-19T17:42:08", "time": "17:42:08", "track_id": 5, "brand": "SOCAR", "status": "RETURN_VALID", "zone_overlap": 1.0, "ground_xy": [1.13, 2.06], "frame": 441, "events": []}
 {"ts": "2026-08-19T17:45:07", "time": "17:45:07", "track_id": 23, "brand": "GCOO", "status": "RETURN_VALID", "zone_overlap": 1.0, "ground_xy": [2.28, 1.24], "frame": 1587, "events": []}
+{"ts": "2026-08-20T18:51:47", "time": "18:51:47", "track_id": 1, "brand": "SOCAR", "status": "INVALID_OUT_OF_ZONE", "zone_overlap": 0.0, "ground_xy": [1.08, -0.57], "frame": 99, "events": ["OUT_OF_ZONE"]}
+{"ts": "2026-08-20T18:51:53", "time": "18:51:53", "track_id": 2, "brand": "SOCAR", "status": "RETURN_VALID", "zone_overlap": 0.836, "ground_xy": [1.0, 3.2], "frame": 138, "events": []}
+{"ts": "2026-08-20T18:54:11", "time": "18:54:11", "track_id": 3, "brand": "SOCAR", "status": "RETURN_VALID", "zone_overlap": 1.0, "ground_xy": [1.86, 1.84], "frame": 978, "events": []}
+{"ts": "2026-08-20T19:03:42", "time": "19:03:42", "track_id": 3, "brand": "SOCAR", "status": "INVALID_OUT_OF_ZONE", "zone_overlap": 0.0, "ground_xy": [1.13, -1.27], "frame": 69, "events": ["OUT_OF_ZONE"]}
+{"ts": "2026-08-20T19:03:43", "time": "19:03:43", "track_id": 1, "brand": "SWING", "status": "RETURN_VALID", "zone_overlap": 0.854, "ground_xy": [0.9, 3.26], "frame": 72, "events": []}
+{"ts": "2026-08-20T19:04:35", "time": "19:04:35", "track_id": 2, "brand": "SOCAR", "status": "RETURN_VALID", "zone_overlap": 1.0, "ground_xy": [0.89, 1.01], "frame": 414, "events": []}
+{"ts": "2026-08-20T19:10:00", "time": "19:10:00", "track_id": 1, "brand": "SWING", "status": "INVALID_OUT_OF_ZONE", "zone_overlap": 0.363, "ground_xy": [0.89, 3.8], "frame": 69, "events": ["OUT_OF_ZONE"]}
+{"ts": "2026-08-20T19:11:22", "time": "19:11:22", "track_id": 3, "brand": "SOCAR", "status": "RETURN_VALID", "zone_overlap": 0.827, "ground_xy": [0.55, 0.75], "frame": 696, "events": []}
+{"ts": "2026-08-20T19:29:05", "time": "19:29:05", "track_id": 4, "brand": "SWING", "status": "RETURN_VALID", "zone_overlap": 0.955, "ground_xy": [0.97, 3.11], "frame": 201, "events": []}
+{"ts": "2026-08-20T19:32:27", "time": "19:32:27", "track_id": 4, "brand": "SOCAR", "status": "RETURN_VALID", "zone_overlap": 1.0, "ground_xy": [0.93, 0.99], "frame": 555, "events": []}
+{"ts": "2026-08-20T19:38:32", "time": "19:38:32", "track_id": 4, "brand": "SOCAR", "status": "RETURN_VALID", "zone_overlap": 1.0, "ground_xy": [0.97, 0.99], "frame": 423, "events": []}
+{"ts": "2026-08-20T19:46:41", "time": "19:46:41", "track_id": 4, "brand": "SWING", "status": "RETURN_VALID", "zone_overlap": 1.0, "ground_xy": [0.93, 0.93], "frame": 549, "events": []}
