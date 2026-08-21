@@ -141,7 +141,8 @@ CASES = [
         slug="night4-light", src="추가/야간 조명 유무 인식률 차이.avi", enc="night",
         title="조명 유무에 따른 차이", group="야간 인식", session=None, clock="야간",
         report=False,
-        summary="같은 자리에서 조명이 없을 때와 켜졌을 때를 이어 붙인 영상.",
+        summary="같은 자리에서 조명이 없을 때와 켜졌을 때를 이어 붙인 영상. "
+                "인근에 움직임이 감지되면 GPIO 로 조명이 자동 점등된다.",
         expect="조명 비교", kind="pending", anchors=[],
     ),
 ]
