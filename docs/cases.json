@@ -465,10 +465,10 @@
   {
    "id": "night1-return",
    "title": "야간 반납 판정",
-   "summary": "가로등만 있는 야간에도 반납 승인이 확정된다. 옆 기체는 아직 보류 상태로 남는다.",
+   "summary": "가로등만 있는 야간에 확정된 반납 승인(겹침 100%)이 유지되고, 옆 기체는 아직 보류로 남는다.",
    "expect": "반납 승인",
    "kind": "ok",
-   "session": null,
+   "session": 12,
    "group": "야간 인식",
    "video": "media/night1-return.mp4",
    "poster": "media/night1-return.jpg",
@@ -478,12 +478,34 @@
    "frames": 67,
    "width": 800,
    "height": 450,
-   "clock": "야간",
+   "clock": "야간 19:38 무렵",
    "approx": false,
-   "standing": 0,
+   "standing": 1,
    "standing_bad": 0,
    "report": true,
-   "events": []
+   "events": [
+    {
+     "session": 12,
+     "time": "19:38:32",
+     "track": 4,
+     "brand": "쏘카일레클",
+     "state": "정상 반납",
+     "verdict": "반납 승인",
+     "violation": false,
+     "overlap": 1.0,
+     "ground": [
+      0.97,
+      0.99
+     ],
+     "x": 0.4149,
+     "y": 0.6137,
+     "rec_frame": 423,
+     "onstart": false,
+     "t": 0.0,
+     "frame": 0,
+     "carry": true
+    }
+   ]
   },
   {
    "id": "night2-m-model",

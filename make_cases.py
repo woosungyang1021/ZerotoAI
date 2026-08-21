@@ -118,10 +118,17 @@ CASES = [
     # 판정 로그가 없는 촬영분이다. 확정 판정 대신 영상에서 뽑아낸
     # 인식 결과(extract_live.py)로만 구역 맵을 채운다.
     dict(
+        # 야간 영상에는 시각 배너가 없어 프레임을 못박을 수 없다. 대신 클립의
+        # 박스 라벨(#4 SOCAR RETURN_VALID)이 로그의 S11 19:32 / S12 19:38 둘로
+        # 좁혀지는데, S11 이라면 19:29:05 에 승인된 윗자리 스윙이 초록으로
+        # 보여야 한다. 클립(같은 녹화인 night2 포함)에서 그 자리가 비어 있어
+        # S12 로 확정. 판정은 클립 시작 전에 이미 확정된 상태라 t=0 에 붙인다.
         slug="night1-return", src="추가/m 모델 야간반납(pending).avi", enc="night",
-        title="야간 반납 판정", group="야간 인식", session=None, clock="야간",
-        summary="가로등만 있는 야간에도 반납 승인이 확정된다. 옆 기체는 아직 보류 상태로 남는다.",
-        expect="반납 승인", kind="ok", anchors=[],
+        title="야간 반납 판정", group="야간 인식", session=12, clock="야간 19:38 무렵",
+        summary="가로등만 있는 야간에 확정된 반납 승인(겹침 100%)이 유지되고, 옆 기체는 아직 보류로 남는다.",
+        expect="반납 승인", kind="ok",
+        anchors=[(0, "19:38:32", 4, "carry")],
+        standing=1,                       # 왼쪽 쏘카 — 클립 시작부터 승인 표시
     ),
     dict(
         slug="night2-m-model", src="추가/m모델 야간인식개선됨(동일조건).avi", enc="night",

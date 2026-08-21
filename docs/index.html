@@ -434,8 +434,8 @@ function buildTally(){
   D.cases.forEach((c,i)=>{
     if(c.report===false) return;              // 판정이 아닌 비교 영상은 이 섹션에서 뺀다
     const parts=[];
-    if(!c.session){
-      // 야간 인식 비교 — 판정한 촬영분이 아니라서 판정 용어 대신 제목을 그대로 쓴다
+    if(c.group && c.group!=='주차 판정'){
+      // 야간 인식 그룹 — 판정 용어 대신 제목을 그대로 쓴다
       parts.push(`<span class="${{ok:'okc',bad:'badc'}[c.kind]||'pendc'}">${c.title}</span>`);
     }else{
       const ok=c.events.filter(e=>!e.violation && !e.carry).length;   // 실제 반납 행위만
@@ -451,7 +451,7 @@ function buildTally(){
     b.innerHTML=`
       <span class="no">CASE ${String(i+1).padStart(2,'0')}</span>
       <span class="cnts">${parts.join(' <span style="color:var(--ink-3)">·</span> ')}</span>
-      ${c.session?`<span class="nm">${c.title}</span>`:''}`;
+      ${(!c.group||c.group==='주차 판정')?`<span class="nm">${c.title}</span>`:''}`;
     b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
     t.appendChild(b);
   });
