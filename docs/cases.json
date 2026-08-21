@@ -84,6 +84,7 @@
    "approx": false,
    "standing": 4,
    "standing_bad": 1,
+   "report": true,
    "events": [
     {
      "session": 5,
@@ -149,6 +150,7 @@
    "approx": false,
    "standing": 3,
    "standing_bad": 1,
+   "report": true,
    "events": [
     {
      "session": 6,
@@ -193,6 +195,7 @@
    "approx": false,
    "standing": 2,
    "standing_bad": 1,
+   "report": true,
    "events": [
     {
      "session": 6,
@@ -279,6 +282,7 @@
    "approx": false,
    "standing": 3,
    "standing_bad": 1,
+   "report": true,
    "events": [
     {
      "session": 6,
@@ -323,6 +327,7 @@
    "approx": true,
    "standing": 3,
    "standing_bad": 1,
+   "report": true,
    "events": []
   },
   {
@@ -345,6 +350,7 @@
    "approx": false,
    "standing": 3,
    "standing_bad": 0,
+   "report": true,
    "events": [
     {
      "session": 7,
@@ -431,6 +437,7 @@
    "approx": false,
    "standing": 2,
    "standing_bad": 0,
+   "report": true,
    "events": [
     {
      "session": 7,
@@ -475,6 +482,7 @@
    "approx": false,
    "standing": 0,
    "standing_bad": 0,
+   "report": true,
    "events": []
   },
   {
@@ -497,6 +505,7 @@
    "approx": false,
    "standing": 0,
    "standing_bad": 0,
+   "report": false,
    "events": []
   },
   {
@@ -519,6 +528,7 @@
    "approx": false,
    "standing": 0,
    "standing_bad": 0,
+   "report": false,
    "events": []
   },
   {
@@ -541,6 +551,7 @@
    "approx": false,
    "standing": 0,
    "standing_bad": 0,
+   "report": false,
    "events": []
   }
  ],

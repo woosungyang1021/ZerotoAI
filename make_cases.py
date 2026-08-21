@@ -126,18 +126,21 @@ CASES = [
     dict(
         slug="night2-m-model", src="추가/m모델 야간인식개선됨(동일조건).avi", enc="night",
         title="m 모델 · 야간 인식", group="야간 인식", session=None, clock="야간",
+        report=False,                     # 반납 판정이 아닌 비교 영상 — 판정 기록 섹션에서 뺀다
         summary="아래 s 모델과 같은 조건에서 m 모델로 바꾼 결과. 어두워도 기체를 계속 잡아낸다.",
         expect="인식 성공", kind="ok", anchors=[],
     ),
     dict(
         slug="night3-s-model", src="추가/s모델 야간인식불량(동일조건).avi", enc="night",
         title="s 모델 · 야간 인식", group="야간 인식", session=None, clock="야간",
+        report=False,
         summary="동일 조건, 더 가벼운 s 모델. 같은 자리에 세워진 기체를 대부분 놓친다.",
         expect="인식 한계", kind="bad", anchors=[],
     ),
     dict(
         slug="night4-light", src="추가/야간 조명 유무 인식률 차이.avi", enc="night",
         title="조명 유무에 따른 차이", group="야간 인식", session=None, clock="야간",
+        report=False,
         summary="같은 자리에서 조명이 없을 때와 켜졌을 때를 이어 붙인 영상.",
         expect="조명 비교", kind="pending", anchors=[],
     ),
@@ -283,6 +286,7 @@ def main():
             "approx": bool(c.get("approx_time")),
             "standing": c.get("standing", 0),
             "standing_bad": c.get("standing_bad", 0),
+            "report": c.get("report", True),
             "events": events,
         })
 

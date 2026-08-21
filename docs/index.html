@@ -432,6 +432,7 @@ function buildTally(){
   const t=$('tally');
   t.innerHTML='';
   D.cases.forEach((c,i)=>{
+    if(c.report===false) return;              // 판정이 아닌 비교 영상은 이 섹션에서 뺀다
     const parts=[];
     if(!c.session){
       // 야간 인식 비교 — 판정한 촬영분이 아니라서 판정 용어 대신 제목을 그대로 쓴다
@@ -454,8 +455,9 @@ function buildTally(){
     b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
     t.appendChild(b);
   });
-  $('logCount').textContent='영상 '+D.cases.length+'편 · 판정 '
-    +D.cases.reduce((n,c)=>n+c.events.length,0)+'건';
+  const shown=D.cases.filter(c=>c.report!==false);
+  $('logCount').textContent='영상 '+shown.length+'편 · 판정 '
+    +shown.reduce((n,c)=>n+c.events.length,0)+'건';
 }
 
 let jumpSeq=0;
@@ -492,6 +494,7 @@ function buildLog(){
   const tb=$('logBody');
   tb.innerHTML='';
   D.cases.forEach((c,ci)=>{
+    if(c.report===false) return;              // 판정이 아닌 비교 영상은 표에서도 뺀다
     const g=document.createElement('tr');
     g.className='grp'; g.dataset.g=ci;
     const nReal=c.events.filter(e=>!e.carry).length;
