@@ -503,7 +503,7 @@
    "id": "night3-s-model",
    "title": "s 모델 · 야간 인식",
    "summary": "동일 조건, 더 가벼운 s 모델. 같은 자리에 세워진 기체를 대부분 놓친다.",
-   "expect": "인식 실패",
+   "expect": "인식 한계",
    "kind": "bad",
    "session": null,
    "group": "야간 인식",

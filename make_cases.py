@@ -133,7 +133,7 @@ CASES = [
         slug="night3-s-model", src="추가/s모델 야간인식불량(동일조건).avi", enc="night",
         title="s 모델 · 야간 인식", group="야간 인식", session=None, clock="야간",
         summary="동일 조건, 더 가벼운 s 모델. 같은 자리에 세워진 기체를 대부분 놓친다.",
-        expect="인식 실패", kind="bad", anchors=[],
+        expect="인식 한계", kind="bad", anchors=[],
     ),
     dict(
         slug="night4-light", src="추가/야간 조명 유무 인식률 차이.avi", enc="night",

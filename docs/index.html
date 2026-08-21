@@ -434,14 +434,19 @@ function buildTally(){
   const t=$('tally');
   t.innerHTML='';
   D.cases.forEach((c,i)=>{
-    const ok=c.events.filter(e=>!e.violation && !e.carry).length;   // 실제 반납 행위만
-    const bad=c.events.filter(e=>e.violation).length;
     const parts=[];
-    if(ok)  parts.push(`<span class="okc">승인 ${ok}</span>`);
-    if(bad) parts.push(`<span class="badc">거부 ${bad}</span>`);
-    if(!ok && !bad) parts.push(`<span class="pendc">보류</span>`);
-    if(c.standing) parts.push(`<span class="carryc">재시작 허가 ${c.standing}</span>`);
-    if(c.standing_bad) parts.push(`<span class="carrybc">불허가 ${c.standing_bad}</span>`);
+    if(!c.session){
+      // 야간 인식 비교 — 판정한 촬영분이 아니라서 판정 용어 대신 성격 라벨을 쓴다
+      parts.push(`<span class="${{ok:'okc',bad:'badc'}[c.kind]||'pendc'}">${c.expect}</span>`);
+    }else{
+      const ok=c.events.filter(e=>!e.violation && !e.carry).length;   // 실제 반납 행위만
+      const bad=c.events.filter(e=>e.violation).length;
+      if(ok)  parts.push(`<span class="okc">승인 ${ok}</span>`);
+      if(bad) parts.push(`<span class="badc">거부 ${bad}</span>`);
+      if(!ok && !bad) parts.push(`<span class="pendc">보류</span>`);
+      if(c.standing) parts.push(`<span class="carryc">재시작 허가 ${c.standing}</span>`);
+      if(c.standing_bad) parts.push(`<span class="carrybc">불허가 ${c.standing_bad}</span>`);
+    }
     const b=document.createElement('button');
     b.className='ty '+c.kind;
     b.innerHTML=`
