@@ -91,17 +91,24 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .island{position:absolute;left:50%;top:1.5%;transform:translateX(-50%);width:33%;height:3.5%;min-height:9px;
   border-radius:99px;background:#0B0B0D;z-index:4;display:flex;align-items:center}
 .island b{width:3.5px;height:3.5px;border-radius:50%;background:#FF3B30;margin-left:9%}
-.ui .ttl{font-size:12px;font-weight:800;letter-spacing:-.02em;padding:6px 11px 0}
+.ui .ttl{font-size:12px;font-weight:700;letter-spacing:0;line-height:1.35;padding:6px 11px 0}
 /* 주행 중 화면 — 실제 앱 화면 구성을 그대로 따른다 */
 .ui .hd{display:flex;align-items:baseline;justify-content:space-between;padding:5px 11px 0}
-.ui .hd .h1{font-size:12px;font-weight:800;letter-spacing:-.03em}
+.ui .hd .h1{font-size:12px;font-weight:700;letter-spacing:0;line-height:1.35}
 .ui .hd .pct{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:800}
 .bat2{position:relative;display:inline-block;width:13px;height:7px;border:1px solid #111;border-radius:2px}
 .bat2::after{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:80%;background:#111;border-radius:1px}
-.ui .zone{display:flex;align-items:center;gap:4px;margin:7px 9px 6px;padding:5px 7px;border-radius:8px;
-  background:#FFF3F3;font-size:6.5px;font-weight:600;white-space:nowrap}
-.ui .zone i{width:3.5px;height:3.5px;border-radius:50%;background:#FF3B30;flex:none}
-.ui .zone b{margin-left:auto;color:#FF3B30}
+.ui .zone{display:flex;align-items:center;gap:3px;margin:7px 9px 6px;padding:5px 6px;border-radius:8px;
+  background:#EDF9F1;font-size:6.5px;font-weight:600;white-space:nowrap;overflow:hidden}
+.ui .zone i{width:3.5px;height:3.5px;border-radius:50%;background:#00A868;flex:none}
+.ui .zone b{margin-left:auto;color:#00A868}
+/* 실제 녹화 폰 위에 같은 배너를 덧입힌다 — 영상 속 자리(top 13.6%, h 4.4%)를 덮는다 */
+.overzone{position:absolute;left:2.5%;right:2.5%;top:13.4%;height:4.8%;z-index:2;display:none;
+  align-items:center;gap:3px;padding:0 7px;border-radius:8px;background:#EDF9F1;
+  color:#16181D;font-size:6.5px;font-weight:600;white-space:nowrap;overflow:hidden}
+.overzone.on{display:flex}
+.overzone i{width:3.5px;height:3.5px;border-radius:50%;background:#00A868;flex:none}
+.overzone b{margin-left:auto;color:#00A868}
 .ui .promo{display:flex;align-items:center;justify-content:center;gap:4px;margin:5px 9px 0;padding:3px 0;
   border-radius:5px;background:#FF8A00;color:#fff;font-size:6.5px;font-weight:700}
 .ui .promo em{background:rgba(255,255,255,.28);border-radius:20px;padding:1px 4px;font-style:normal}
@@ -118,9 +125,11 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 /* 지도 — 실제 반납구역 위성사진. 노란 네모 안이 허용 구역이고 바깥은 붉게 덮는다 */
 .ui .map{position:relative;flex:none;aspect-ratio:260/208;margin:0 9px;border-radius:8px;overflow:hidden;
   background:url('media/zone-map-phone.jpg') center/cover no-repeat}
-.ui .zonebox{position:absolute;left:43.8%;top:45.7%;width:12.3%;height:8.7%;
-  border:1px solid #FF3B30;outline:1px solid rgba(255,255,255,.9);
+.ui .gpsbox{position:absolute;left:39.3%;top:42.1%;width:21.3%;height:15.9%;
+  border:1px dashed #FF8A00;background:rgba(255,138,0,.12);
   box-shadow:0 0 0 999px rgba(255,59,48,.34)}
+.ui .zonebox{position:absolute;left:43.8%;top:45.7%;width:12.3%;height:8.7%;
+  border:1px solid #FF3B30;outline:1px solid rgba(255,255,255,.9)}
 .ui .me{position:absolute;width:6px;height:6px;margin:-3px 0 0 -3px;z-index:2;
   border-radius:50%;background:#2C7CF7;border:1.25px solid #fff;box-shadow:0 0 0 3px rgba(44,124,247,.26)}
 .ui .rider{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:2;white-space:nowrap;
@@ -206,7 +215,9 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   <p class="sub" style="color:var(--ink-3);font-size:11.5px;margin-top:-10px">
     앱 화면은 같은 날 따로 찍은 반납 녹화분입니다. 현장 영상과 같은 순간의 기록은 아니고,
     반납 흐름이 판정과 어떻게 맞물리는지 보이려고 시각을 맞춰 놓았습니다.
-    보류·거부의 앱 화면은 녹화본이 없어 같은 흐름으로 재현했습니다(화면에 <b>재현</b> 표시).</p>
+    보류·거부의 앱 화면은 녹화본이 없어 같은 흐름으로 재현했습니다(화면에 <b>재현</b> 표시).
+    주행 화면의 구역 안내는 시연 시나리오에 맞춰 세 화면 모두 "반납 허가 구역 진입"으로 덧입혔습니다 —
+    GPS 는 주황 허용 범위로 통과시키고, 실제 반납 판정은 카메라가 내립니다.</p>
 
   <div class="wall" id="wall"></div>
 
@@ -284,19 +295,20 @@ $('wall').innerHTML = SCEN.map((s,i) => `
 function phoneMarkup(s,i){
   if(s.phone.real)
     return `<video id="p${i}" muted playsinline preload="auto" poster="${s.phone.poster}">
-              <source src="${s.phone.real}" type="video/mp4"></video>`;
+              <source src="${s.phone.real}" type="video/mp4"></video>
+            <div class="overzone"><i></i>서대문구 신촌동 <b>반납 허가 구역 진입</b></div>`;
   // 재현 화면 — 주행 중 / 준비 / 촬영 / 처리 / 결과.
   // 상단 상태바와 아일랜드는 화면이 바뀌어도 그대로 남는다.
   const me = `style="left:${s.phone.me[0]}%;top:${s.phone.me[1]}%"`;
   const MAP = extra => `
       <div class="map${extra||''}">
-        <div class="zonebox"></div><div class="me" ${me}></div>
+        <div class="gpsbox"></div><div class="zonebox"></div><div class="me" ${me}></div>
         ${extra ? '' : '<span class="rider">라이더 추가</span><span class="refresh">↻</span>'}
       </div>`;
   return `
     <div class="ui" data-st="ride">
       <div class="hd"><span class="h1">1분 이용 중</span><span class="pct">80%<i class="bat2"></i></span></div>
-      <div class="zone"><i></i>서울특별시 서대문구 신촌동 <b>반납 불가 지역</b></div>
+      <div class="zone"><i></i>서대문구 신촌동 <b>반납 허가 구역 진입</b></div>
       ${MAP()}
       <div class="promo"><em>Basic</em> 10분까지 1,000원 적용 중</div>
       <div class="card">
@@ -363,8 +375,11 @@ function paintPhones(t){
   const st = t < FLOW.prep ? 'ride' : t < FLOW.shot ? 'prep'
            : t < FLOW.wait ? 'shot' : t < FLOW.done ? 'wait' : 'done';
   SCEN.forEach((s,i)=>{
-    if(s.phone.real) return;
     const root = mons[i];
+    if(s.phone.real){                       // 실제 녹화 폰 — 주행 화면 동안 구역 안내만 덧입힌다
+      root.querySelector('.overzone').classList.toggle('on', t < FLOW.prep);
+      return;
+    }
     root.querySelectorAll('.ui').forEach(u=>u.classList.toggle('on', u.dataset.st===st));
     const cta = root.querySelector('[data-cta]');
     if(cta) cta.classList.toggle('wait', t >= FLOW.ride);   // 버튼을 누른 뒤 대기 모양
