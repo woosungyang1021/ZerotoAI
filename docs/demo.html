@@ -69,7 +69,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 
 /* 폰 */
 .stage{display:flex;justify-content:center;padding:12px 13px 2px;background:var(--panel-2);flex:1}
-.phone{width:144px;flex:none;border-radius:19px;border:1px solid #2E3948;background:#000;
+.phone{width:160px;flex:none;border-radius:19px;border:1px solid #2E3948;background:#000;
   padding:5px;box-shadow:0 6px 22px rgba(0,0,0,.45)}
 .screen{position:relative;width:100%;aspect-ratio:110/239;border-radius:15px;overflow:hidden;background:#fff}
 .screen video{width:100%;height:100%;display:block;object-fit:cover}
@@ -92,26 +92,45 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   border-radius:99px;background:#0B0B0D;z-index:4;display:flex;align-items:center}
 .island b{width:3.5px;height:3.5px;border-radius:50%;background:#FF3B30;margin-left:9%}
 .ui .ttl{font-size:12px;font-weight:800;letter-spacing:-.02em;padding:6px 11px 0}
-.ui .zone{display:flex;align-items:center;gap:5px;margin:6px 9px;padding:5px 7px;border-radius:7px;
-  background:#FFF3F3;font-size:7px;font-weight:600;white-space:nowrap}
+/* 주행 중 화면 — 실제 앱 화면 구성을 그대로 따른다 */
+.ui .hd{display:flex;align-items:baseline;justify-content:space-between;padding:5px 11px 0}
+.ui .hd .h1{font-size:12px;font-weight:800;letter-spacing:-.03em}
+.ui .hd .pct{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:800}
+.bat2{position:relative;display:inline-block;width:13px;height:7px;border:1px solid #111;border-radius:2px}
+.bat2::after{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:80%;background:#111;border-radius:1px}
+.ui .zone{display:flex;align-items:center;gap:4px;margin:7px 9px 6px;padding:5px 7px;border-radius:8px;
+  background:#FFF3F3;font-size:6.5px;font-weight:600;white-space:nowrap}
+.ui .zone i{width:3.5px;height:3.5px;border-radius:50%;background:#FF3B30;flex:none}
 .ui .zone b{margin-left:auto;color:#FF3B30}
+.ui .promo{display:flex;align-items:center;justify-content:center;gap:4px;margin:5px 9px 0;padding:3px 0;
+  border-radius:5px;background:#FF8A00;color:#fff;font-size:6.5px;font-weight:700}
+.ui .promo em{background:rgba(255,255,255,.28);border-radius:20px;padding:1px 4px;font-style:normal}
+.ui .card{margin:5px 9px 0;padding:4px 2px 0}
+.ui .r1{display:flex;align-items:center;justify-content:space-between;padding:3px 0 6px}
+.ui .r1 .lt{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:800}
+.ui .r1 .lt em{color:#8A91A0;font-size:6.5px;font-weight:600;font-style:normal}
+.ui .r1 .pill{border:1px solid #E4E7EC;border-radius:20px;padding:1px 5px;font-size:6.5px;font-weight:700;color:#6A7180}
+.ui .basic{background:#FF8A00;color:#fff;border-radius:20px;padding:0 4px;font-size:5.5px;font-style:normal;font-weight:700}
+.ui .minus{color:#FF8A00}
+.ui .row.big{margin-top:3px;padding-top:5px;border-top:1px solid #F0F1F4}
+.ui .row.big span{font-size:9px;font-weight:800;color:#16181D}
+.ui .row.big b{font-size:11px;font-weight:800}
 /* 지도 — 실제 반납구역 위성사진. 노란 네모 안이 허용 구역이고 바깥은 붉게 덮는다 */
-.ui .map{position:relative;flex:none;aspect-ratio:1;margin:0 9px;border-radius:7px;overflow:hidden;
+.ui .map{position:relative;flex:none;aspect-ratio:260/208;margin:0 9px;border-radius:8px;overflow:hidden;
   background:url('media/zone-map-phone.jpg') center/cover no-repeat}
-.ui .zonebox{position:absolute;left:40.6%;top:44.7%;width:18.8%;height:10.6%;
+.ui .zonebox{position:absolute;left:43.8%;top:45.7%;width:12.3%;height:8.7%;
   border:1px solid #FF3B30;outline:1px solid rgba(255,255,255,.9);
   box-shadow:0 0 0 999px rgba(255,59,48,.34)}
-.ui .me{position:absolute;left:62%;top:62%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;z-index:2;
-  border-radius:50%;background:#2C7CF7;border:1.5px solid #fff;box-shadow:0 0 0 4px rgba(44,124,247,.24)}
-.ui .mkey{position:absolute;left:5px;right:5px;bottom:5px;z-index:2;display:flex;gap:4px;font-size:6px;font-weight:700}
-.ui .mkey span{background:rgba(255,255,255,.93);border-radius:20px;padding:2px 5px;color:#16181D;display:flex;align-items:center;gap:3px}
-.ui .mkey i{width:5px;height:5px;border-radius:1px;flex:none}
-.ui .mkey i.in{background:#fff;border:1px solid #FF3B30}
-.ui .mkey i.out{background:rgba(255,59,48,.55)}
+.ui .me{position:absolute;width:6px;height:6px;margin:-3px 0 0 -3px;z-index:2;
+  border-radius:50%;background:#2C7CF7;border:1.25px solid #fff;box-shadow:0 0 0 3px rgba(44,124,247,.26)}
+.ui .rider{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:2;white-space:nowrap;
+  background:#fff;border-radius:20px;padding:2px 7px;font-size:6px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.ui .refresh{position:absolute;right:5px;bottom:5px;z-index:2;width:14px;height:14px;border-radius:50%;
+  background:#3A3F47;color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center}
 .ui .rows{padding:7px 11px 0}
 .ui .row{display:flex;justify-content:space-between;padding:3px 0;color:#6A7180;font-size:7.5px}
 .ui .row b{color:#16181D;font-weight:700}
-.ui .cta{margin:8px 9px 10px;padding:8px 0;border-radius:9px;background:#16181D;color:#fff;
+.ui .cta{margin:auto 9px 10px;padding:8px 0;border-radius:9px;background:#16181D;color:#fff;
   text-align:center;font-size:9px;font-weight:700}
 .ui .cta.wait{background:#E9EBEF;color:#8A91A0}
 .ui .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 14px;text-align:center}
@@ -161,7 +180,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 
 @media (max-width:1080px){
   .wall{grid-template-columns:1fr}
-  .phone{width:172px}
+  .phone{width:184px}
   .deck{position:static}
 }
 </style>
@@ -229,7 +248,7 @@ const SCEN = [
     src:'media/case5-fallen-pending.mp4', clip:5.00,
     verdict:'판정 배너 없음 — 확정 전(PENDING)',
     why:'정지 여부 확인 중 · 확정이 아니라 <b>로그에 남지 않음</b>',
-    phone:{ cam:'media/case5-fallen-pending.jpg', res:'pending',
+    phone:{ cam:'media/case5-fallen-pending.jpg', res:'pending', me:[50.0, 50.0],   // 구역 한가운데
             title:'확인하고 있어요', body:'기체가 멈췄는지 확인 중입니다.<br>잠시만 기다려 주세요.' }
   },
   {
@@ -237,7 +256,7 @@ const SCEN = [
     src:'media/case2-on-the-line.mp4', clip:0.80,
     verdict:'17:25:54  #33 GCOO  INVALID_OUT_OF_ZONE',
     why:'겹침 <b>55.8%</b> · 지쿠 #33 · 기준 70% 미달',
-    phone:{ cam:'media/case2-on-the-line.jpg', res:'bad',
+    phone:{ cam:'media/case2-on-the-line.jpg', res:'bad', me:[51.0, 54.3],       // 아랫변에 딱 걸침
             title:'반납할 수 없어요', body:'지정 주차구역을 벗어났습니다.<br>겹침 55.8% · 기준 70%' }
   }
 ];
@@ -268,19 +287,23 @@ function phoneMarkup(s,i){
               <source src="${s.phone.real}" type="video/mp4"></video>`;
   // 재현 화면 — 주행 중 / 준비 / 촬영 / 처리 / 결과.
   // 상단 상태바와 아일랜드는 화면이 바뀌어도 그대로 남는다.
-  const MAP = `
-      <div class="map">
-        <div class="zonebox"></div><div class="me"></div>
-        <div class="mkey"><span><i class="in"></i>반납 가능</span><span><i class="out"></i>반납 불가</span></div>
+  const me = `style="left:${s.phone.me[0]}%;top:${s.phone.me[1]}%"`;
+  const MAP = extra => `
+      <div class="map${extra||''}">
+        <div class="zonebox"></div><div class="me" ${me}></div>
+        ${extra ? '' : '<span class="rider">라이더 추가</span><span class="refresh">↻</span>'}
       </div>`;
   return `
     <div class="ui" data-st="ride">
-      <div class="ttl">1분 이용 중</div>
-      <div class="zone">서대문구 신촌동 <b>반납 불가 지역</b></div>
-      ${MAP}
-      <div class="rows">
-        <div class="row"><span>전기 동력 사용</span><b>230원/분</b></div>
-        <div class="row"><span>예상 요금</span><b>1,000원</b></div>
+      <div class="hd"><span class="h1">1분 이용 중</span><span class="pct">80%<i class="bat2"></i></span></div>
+      <div class="zone"><i></i>서울특별시 서대문구 신촌동 <b>반납 불가 지역</b></div>
+      ${MAP()}
+      <div class="promo"><em>Basic</em> 10분까지 1,000원 적용 중</div>
+      <div class="card">
+        <div class="r1"><span class="lt">⚡ 전기 동력 사용 <em>터보</em></span><span class="pill">230원/분</span></div>
+        <div class="row"><span>결제수단</span><b></b></div>
+        <div class="row"><span>할인/포인트 <em class="basic">Basic</em></span><b class="minus">−430원</b></div>
+        <div class="row big"><span>예상 요금</span><b>1,000원</b></div>
       </div>
       <div class="cta" data-cta>주행 종료하기</div>
     </div>
@@ -299,9 +322,7 @@ function phoneMarkup(s,i){
     <div class="ui" data-st="done">
       <div class="ttl">${s.phone.title}</div>
       <div class="res ${s.phone.res}">${s.phone.body}</div>
-      <div class="map sm">
-        <div class="zonebox"></div><div class="me"></div>
-      </div>
+      ${MAP(' sm')}
       <div class="cta ${s.phone.res==='pending'?'wait':''}">${s.phone.res==='pending'?'확인 중…':'다시 주차하기'}</div>
     </div>
     <div class="mockbar">
