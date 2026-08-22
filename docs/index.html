@@ -176,7 +176,12 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ty .re .carrybc{color:#C4707B}
 .ty .nm{font-size:11px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-.dist{padding:13px 13px 4px}
+.dist{padding:13px 13px 4px;position:relative}
+.disttip{position:absolute;z-index:5;display:none;pointer-events:none;
+  background:#0B1119;border:1px solid var(--rule);border-radius:3px;
+  padding:7px 10px;font-family:var(--mono);font-size:10.5px;line-height:1.6;
+  color:var(--ink-2);white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.45)}
+.disttip b{color:var(--ink);font-weight:500}
 .dist canvas{width:100%;height:auto;display:block}
 
 .logwrap{max-height:430px;overflow:auto}
@@ -369,7 +374,7 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
       <div class="col">
         <div class="panel">
           <div class="head"><h3>겹침 분포</h3><div class="ctl" id="distTabs"></div></div>
-          <div class="dist"><canvas id="dist"></canvas></div>
+          <div class="dist"><canvas id="dist"></canvas><div class="disttip" id="distTip"></div></div>
           <p class="note" id="distNote"></p>
         </div>
       </div>
@@ -410,6 +415,7 @@ fetch('cases.json').then(r=>r.json()).then(d=>{
   buildTally();
   buildLog();
   buildDistTabs();
+  distTipWire();
   drawDist();
   select(0);
 }).catch(err=>{
@@ -598,6 +604,7 @@ const DIST_NOTE={
   case:`점 하나가 판정 한 건, 노란 세로선이 <b>70%</b> 기준선입니다.
     회색 점은 녹화를 다시 시작할 때 기존 주차 기체가 다시 받은 허가 표시입니다.`,
 };
+const DIST_NOTE_TAIL=' 같은 값의 판정은 한 점에 모아 개수를 적었고, 점에 올리면 상세가 보입니다.';
 function buildDistTabs(){
   const box=$('distTabs');
   box.innerHTML='<button data-m="all" class="on">전체</button>'
@@ -606,10 +613,10 @@ function buildDistTabs(){
     const b=e.target.closest('button'); if(!b) return;
     distMode=b.dataset.m;
     box.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
-    $('distNote').innerHTML=DIST_NOTE[distMode==='all'?'all':'case'];
+    $('distNote').innerHTML=DIST_NOTE[distMode==='all'?'all':'case']+DIST_NOTE_TAIL;
     drawDist();
   };
-  $('distNote').innerHTML=DIST_NOTE.all;
+  $('distNote').innerHTML=DIST_NOTE.all+DIST_NOTE_TAIL;
 }
 function drawDist(){
   const cv=$('dist'); if(!cv||!D) return;
@@ -620,8 +627,8 @@ function drawDist(){
        {n:'녹화 시작 직후 일괄 판정', v:D.judgments.filter(j=> j.onstart)}]
     : [(c=>({n:`CASE ${String(+distMode+1).padStart(2,'0')} · ${c.title}`, v:c.events}))(D.cases[+distMode])];
 
-  const L=46, R=14, T=30, B=28;
-  const gH=30+lanes.length*20+8;                    // 묶음 하나의 높이
+  const L=72, R=14, T=34, B=28, STEP=24;
+  const gH=30+lanes.length*STEP+10;                 // 묶음 하나의 높이
   const h=T+B+gH*groups.length;
   const dpr=window.devicePixelRatio||1, w=cv.clientWidth||360;
   cv.width=w*dpr; cv.height=h*dpr;
@@ -629,8 +636,17 @@ function drawDist(){
   x.setTransform(dpr,0,0,dpr,0,0);
   x.clearRect(0,0,w,h);
   const px = v => L + v*(w-L-R);
+  distDots=[];
 
-  x.font='10px JetBrains Mono, monospace'; x.textAlign='center';
+  // 기준선 양쪽을 판정 방향으로 옅게 칠한다 — 어느 쪽이 승인인지 한눈에
+  x.fillStyle='rgba(255,77,94,.05)';  x.fillRect(L, T, px(.7)-L, h-T-B);
+  x.fillStyle='rgba(61,220,151,.055)';x.fillRect(px(.7), T, (w-R)-px(.7), h-T-B);
+  x.font='500 9.5px JetBrains Mono, monospace';
+  x.textAlign='center';
+  x.fillStyle='rgba(255,77,94,.75)';  x.fillText('70% 미만 · 거부', (L+px(.7))/2, T-12);
+  x.fillStyle='rgba(61,220,151,.75)'; x.fillText('70% 이상 · 승인', (px(.7)+w-R)/2, T-12);
+
+  x.font='10px JetBrains Mono, monospace';
   [0,.25,.5,.75,1].forEach(v=>{
     x.strokeStyle='rgba(40,52,69,.8)'; x.lineWidth=1;
     x.beginPath(); x.moveTo(px(v),T); x.lineTo(px(v),h-B); x.stroke();
@@ -640,8 +656,6 @@ function drawDist(){
   x.strokeStyle='#FFD23F'; x.lineWidth=1.4; x.setLineDash([4,3]);
   x.beginPath(); x.moveTo(px(.7),T-6); x.lineTo(px(.7),h-B); x.stroke();
   x.setLineDash([]);
-  x.fillStyle='#FFD23F'; x.font='500 9.5px JetBrains Mono, monospace';
-  x.fillText('70% 기준', px(.7), T-12);
 
   groups.forEach((g,gi)=>{
     const gy=T+gH*gi, label=`${g.n} ${g.v.length}건`;
@@ -655,19 +669,74 @@ function drawDist(){
       return;
     }
     lanes.forEach((lane,li)=>{
-      const cy=gy+30+li*20, hit=g.v.filter(lane.f);
+      const cy=gy+30+li*STEP, hit=g.v.filter(lane.f);
       x.strokeStyle='rgba(40,52,69,.55)'; x.lineWidth=1;
       x.beginPath(); x.moveTo(L,cy); x.lineTo(w-R,cy); x.stroke();
-      x.textAlign='right'; x.font='500 10px JetBrains Mono, monospace';
-      x.globalAlpha=hit.length?1:.35; x.fillStyle=lane.c;
-      x.fillText(lane.k, L-8, cy+3.5); x.globalAlpha=1;
-      hit.forEach(j=>{
-        x.beginPath(); x.arc(px(j.overlap), cy, 4, 0, Math.PI*2);
-        x.globalAlpha=.45; x.fillStyle=lane.c; x.fill(); x.globalAlpha=1;
-        x.lineWidth=1; x.strokeStyle=lane.c; x.stroke();
+
+      // 줄 이름 — 색 칩 + 잉크색 글자 + 건수
+      x.globalAlpha=hit.length?1:.35;
+      x.beginPath(); x.arc(10,cy,2.5,0,Math.PI*2); x.fillStyle=lane.c; x.fill();
+      x.textAlign='left'; x.font='500 10px JetBrains Mono, monospace';
+      x.fillStyle='#8C9BB0';
+      x.fillText(hit.length?`${lane.k} ${hit.length}`:lane.k, 17, cy+3.5);
+      x.globalAlpha=1;
+
+      // 같은 겹침 값은 한 점으로 모은다 — 100% 에 쌓인 판정이 세어진다
+      const byVal={};
+      hit.forEach(j=>{ (byVal[j.overlap]=byVal[j.overlap]||[]).push(j); });
+      Object.keys(byVal).map(Number).sort((a,b)=>a-b).forEach(v=>{
+        const items=byVal[v], n=items.length;
+        const r=n>1?Math.min(9,4.5+1.15*Math.sqrt(n)):4;
+        const cx=px(v);
+        x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2);
+        x.fillStyle=lane.c; x.fill();
+        x.lineWidth=2; x.strokeStyle='#161E2A'; x.stroke();   // 표면 링 — 겹쳐도 경계가 남는다
+        if(n>1){
+          x.font='700 9px JetBrains Mono, monospace'; x.textAlign='center';
+          x.fillStyle='#0E141D'; x.fillText(n, cx, cy+3);
+        }
+        distDots.push({x:cx,y:cy,r,lane,v,items});
       });
     });
   });
+}
+
+/* ── 분포 툴팁 — 점에 올리면 그 판정들의 상세 ── */
+let distDots=[];
+function distTipWire(){
+  const cv=$('dist'), tip=$('distTip'), wrap=cv.parentElement;
+  const find=e=>{
+    if(cv.clientWidth && cv.width!==Math.round(cv.clientWidth*(window.devicePixelRatio||1)))
+      drawDist();                                   // 리사이즈 직후 — 점 좌표를 새로 잡는다
+    const b=cv.getBoundingClientRect(), mx=e.clientX-b.left, my=e.clientY-b.top;
+    let best=null, bd=1e9;
+    distDots.forEach(d=>{
+      const dist=Math.hypot(mx-d.x,my-d.y);
+      if(dist<=d.r+6 && dist<bd){ best=d; bd=dist; }
+    });
+    return best;
+  };
+  const show=(d,e)=>{
+    const pct=(d.v*100).toFixed(1).replace(/\.0$/,'');
+    const rows=d.items.slice(0,5).map(j=>`S${j.session} ${j.time} #${j.track} ${j.brand}`);
+    if(d.items.length>5) rows.push(`외 ${d.items.length-5}건`);
+    tip.innerHTML=`<b>${d.lane.k} · 겹침 ${pct}%${d.items.length>1?' · '+d.items.length+'건':''}</b><br>${rows.join('<br>')}`;
+    tip.style.display='block';
+    const wb=wrap.getBoundingClientRect(), cb=cv.getBoundingClientRect();
+    let lx=(cb.left-wb.left)+d.x+13, ly=(cb.top-wb.top)+d.y-12;
+    const tw=tip.offsetWidth, th=tip.offsetHeight;
+    if(lx+tw>wrap.clientWidth-4) lx=(cb.left-wb.left)+d.x-tw-13;
+    lx=Math.min(Math.max(4,lx), Math.max(4,wrap.clientWidth-tw-4));
+    ly=Math.min(Math.max(4,ly), Math.max(4,wrap.clientHeight-th-4));
+    tip.style.left=lx+'px'; tip.style.top=ly+'px';
+  };
+  cv.addEventListener('mousemove',e=>{
+    const d=find(e);
+    cv.style.cursor=d?'pointer':'default';
+    d?show(d,e):tip.style.display='none';
+  });
+  cv.addEventListener('mouseleave',()=>{ tip.style.display='none'; });
+  cv.addEventListener('click',e=>{ const d=find(e); d?show(d,e):tip.style.display='none'; });
 }
 
 /* ── 영상에서 뽑아낸 프레임별 인식 결과 ── */
