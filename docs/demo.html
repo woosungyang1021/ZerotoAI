@@ -406,6 +406,7 @@ function paintPhones(t){
 }
 
 function tick(){
+  if(ended){ requestAnimationFrame(tick); return; }   // 결과를 띄워 둔 동안은 손대지 않는다
   const t = master();
   // 드리프트 보정 — 첫 영상을 기준으로 나머지를 붙인다
   for(let i=1;i<vids.length;i++){
@@ -422,11 +423,26 @@ function tick(){
     ? '판정 확정 — 승인 / 보류 / 거부가 같은 순간에 갈렸습니다.'
     : `판정까지 ${(HIT-t).toFixed(1)}초`;
 
-  if(t >= LOOP - 0.05) seekAll(0);          // 세 대를 함께 되감는다
+  // 끝나면 되감지 않고 결과 화면(체크리스트)을 그대로 남긴다
+  if(!ended && t >= LOOP - 0.05) endAll();
   requestAnimationFrame(tick);
 }
 
+let ended = false;                          // 끝에 멈춰 결과를 띄워 둔 상태
+
+function endAll(){
+  ended = true;
+  pauseAll();
+  paintPhones(LOOP);                        // 세 폰 모두 결과 화면으로 고정
+  mons.forEach(m=>m.classList.add('hit'));
+  $('fill').style.width = '100%';
+  $('tNow').textContent = '0:'+Math.round(LOOP);
+  $('bPlay').setAttribute('aria-label','처음부터 다시 재생');
+  $('deckNote').textContent = '판정 확정 — 승인 / 보류 / 거부가 같은 순간에 갈렸습니다. 다시 보려면 재생을 누르세요.';
+}
+
 function playAll(){
+  if(ended){ ended = false; seekAll(0); }   // 끝에서 누르면 처음부터
   playing = true;
   $('bPlay').classList.add('on');
   $('bPlay').setAttribute('aria-label','일시정지');
@@ -450,6 +466,7 @@ $('bPlay').onclick = () => playing ? pauseAll() : playAll();
 
 $('track').onclick = e => {
   const r = e.currentTarget.getBoundingClientRect();
+  ended = false;
   seekAll(Math.max(0, Math.min(LOOP, (e.clientX-r.left)/r.width*LOOP)));
 };
 $('mk').style.left = (HIT/LOOP*100)+'%';
