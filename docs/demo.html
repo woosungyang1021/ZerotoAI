@@ -81,7 +81,10 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .plabel{text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink-3);padding:6px 0 9px}
 
 /* 재현 화면 */
-.ui{position:absolute;inset:0;padding-top:6.49%;background:#fff;color:#16181D;font-size:8.5px;display:none;flex-direction:column}
+/* 상태바 자리 비우기 — padding 의 % 는 '너비' 기준이라 높이와 어긋난다.
+   상태바와 같은 6.49% '높이' 를 쓰려면 자리를 차지하는 상자로 밀어내야 한다. */
+.ui{position:absolute;inset:0;background:#fff;color:#16181D;font-size:8.5px;display:none;flex-direction:column}
+.ui::before{content:'';flex:none;height:6.49%}
 .ui.on{display:flex}
 /* 상단은 그리지 않고 실제 녹화본에서 잘라 붙인다 — 세 폰이 픽셀 단위로 같아진다.
    상태바·아일랜드는 항상, 제목줄("1분 이용 중 80%")은 주행 중 화면에만. */
@@ -250,7 +253,7 @@ const SCEN = [
     verdict:'#26 SOCAR  PENDING FALLEN 0.60 — 로그에 없음',
     why:'세워둔 뒤 넘어짐 · 확정이 아니라 <b>로그에 남지 않음</b>',
     phone:{ cam:'media/case5-fallen-pending.jpg', res:'pending', me:[50.0, 50.0],   // 구역 한가운데
-            title:'확인하고 있어요', body:'기체가 멈췄는지 확인 중입니다.<br>잠시만 기다려 주세요.' }
+            title:'반납되었어요', body:'단, 반납 상태가 확정되면 알려드릴게요.' }
   },
   {
     id:'bad', kind:'bad', no:'CASE 02', nm:'반납 거부', tag:'반납 거부',
@@ -325,7 +328,7 @@ function phoneMarkup(s,i){
       <div class="ttl">${s.phone.title}</div>
       <div class="res ${s.phone.res}">${s.phone.body}</div>
       ${MAP(' sm')}
-      <div class="cta ${s.phone.res==='pending'?'wait':''}">${s.phone.res==='pending'?'확인 중…':'다시 주차하기'}</div>
+      <div class="cta ${s.phone.res==='pending'?'wait':''}">${s.phone.res==='pending'?'확인':'다시 주차하기'}</div>
     </div>
     <div class="statbar"></div>
     <span class="badgeSim">재현</span>`;
