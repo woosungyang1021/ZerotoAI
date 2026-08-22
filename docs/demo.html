@@ -74,9 +74,15 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 
 /* 폰 */
 .stage{display:flex;justify-content:center;padding:12px 13px 2px;background:var(--panel-2);flex:1}
-.phone{width:160px;flex:none;border-radius:19px;border:1px solid #2E3948;background:#000;
+/* 폰 크기는 --s 하나로 조절한다. 화면 안 치수가 px 로 흩어져 있어 값을 하나씩
+   키우면 어긋나므로, 설계 크기(150x325.91)를 그대로 두고 통째로 확대한다.
+   transform 은 자리를 차지하지 않으니 폰의 너비·높이는 직접 계산해 준다. */
+.phone{--s:1.4;flex:none;
+  width:calc(150px*var(--s) + 10px); height:calc(325.91px*var(--s) + 10px);
+  border-radius:calc(14px*var(--s));border:1px solid #2E3948;background:#000;
   padding:5px;box-shadow:0 6px 22px rgba(0,0,0,.45)}
-.screen{position:relative;width:100%;aspect-ratio:110/239;border-radius:15px;overflow:hidden;background:#fff}
+.screen{position:relative;width:150px;aspect-ratio:110/239;border-radius:15px;overflow:hidden;
+  background:#fff;transform:scale(var(--s));transform-origin:top left}
 .screen video{width:100%;height:100%;display:block;object-fit:cover}
 .plabel{text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink-3);padding:6px 0 9px}
 
@@ -151,6 +157,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ui .res.bad{background:#FFF1F2;color:#B4232F} .ui .res.pending{background:#FFF7EC;color:#96601A}
 .ui .res b{display:block;font-size:10.5px;font-weight:800;margin-bottom:3px}
 .ui .map.sm{opacity:.55}
+.ui .fine{margin:6px 9px 0;font-size:6.2px;line-height:1.6;color:#8A91A0}
 .ui .navttl{text-align:center;font-size:8px;font-weight:800;padding:2px 0 5px}
 .badgeSim{position:absolute;right:6px;bottom:6px;font-family:var(--mono);font-size:6.5px;letter-spacing:.08em;
   background:rgba(14,20,29,.72);color:#C8D3E2;padding:2px 5px;border-radius:2px}
@@ -184,7 +191,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 
 @media (max-width:1080px){
   .wall{grid-template-columns:1fr}
-  .phone{width:184px}
+  .phone{--s:1.62}
   .deck{position:static}
 }
 </style>
@@ -253,7 +260,8 @@ const SCEN = [
     verdict:'#26 SOCAR  PENDING FALLEN 0.60 — 로그에 없음',
     why:'세워둔 뒤 넘어짐 · 확정이 아니라 <b>로그에 남지 않음</b>',
     phone:{ cam:'media/app-shot.jpg', res:'pending', me:[50.0, 50.0],   // 구역 한가운데
-            title:'반납되었어요', body:'단, 반납 상태가 확정되면 알려드릴게요.' }
+            title:'반납되었어요', body:'단, 반납 상태가 확정되면 알려드릴게요.',
+            note:'기체가 넘어져 있거나 지정 주차구역과 70% 이상 겹치지 않으면, 설치된 컴퓨터 비전 시스템이 자동으로 반납 거부로 처리할 수 있습니다. 확정까지 몇 분이 걸릴 수 있어요.' }
   },
   {
     id:'bad', kind:'bad', no:'CASE 02', nm:'반납 거부', tag:'반납 거부',
@@ -261,7 +269,8 @@ const SCEN = [
     verdict:'17:25:54  #33 GCOO  INVALID_OUT_OF_ZONE',
     why:'겹침 <b>55.8%</b> · 지쿠 #33 · 기준 70% 미달',
     phone:{ cam:'media/app-shot.jpg', res:'bad', me:[51.0, 54.3],       // 아랫변에 딱 걸침
-            title:'반납할 수 없어요', body:'지정 주차구역을 벗어났습니다.<br>겹침 55.8% · 기준 70%' }
+            title:'반납할 수 없어요', body:'지정 주차구역을 벗어났습니다.<br>겹침 55.8% · 기준 70%',
+            note:'설치된 컴퓨터 비전 시스템이 주차 상태를 확인했습니다. 기체를 구역 안으로 옮겨 70% 이상 들어오게 세우고, 넘어지지 않았는지 확인한 뒤 다시 반납해 주세요.' }
   }
 ];
 
@@ -331,6 +340,7 @@ function phoneMarkup(s,i){
       <div class="ttl">${s.phone.title}</div>
       <div class="res ${s.phone.res}">${s.phone.body}</div>
       ${MAP(' sm')}
+      ${s.phone.note ? `<p class="fine">${s.phone.note}</p>` : ''}
       <div class="cta ${s.phone.res==='pending'?'wait':''}">${s.phone.res==='pending'?'확인':'다시 주차하기'}</div>
     </div>
     <div class="statbar"></div>
