@@ -77,7 +77,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
 .head h3{font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--ink-2);font-family:var(--mono);text-transform:uppercase;margin-right:auto}
 .tag{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.06em}
-.stage{background:#080C12;position:relative}
+.stage{background:#080C12;position:relative;cursor:pointer}
 .stage video{width:100%;display:block;aspect-ratio:16/9;object-fit:contain;background:#080C12}
 
 /* 타임라인 */
@@ -87,7 +87,23 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .track .mk.bad{background:var(--alert);box-shadow:0 0 0 2px rgba(255,77,94,.2)}
 .track .mk.ok{background:var(--ok);box-shadow:0 0 0 2px rgba(61,220,151,.2)}
 .track .mk.carry{background:var(--ink-3);box-shadow:0 0 0 2px rgba(94,109,130,.25)}
-.tline{display:flex;justify-content:space-between;padding:7px 12px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);border-top:1px solid var(--rule)}
+/* 재생 컨트롤 바 — 영상 아래, 진행바 바로 밑 */
+.pbar{display:flex;align-items:center;gap:11px;padding:8px 11px;border-top:1px solid var(--rule)}
+.pbtn{width:29px;height:29px;flex:none;display:grid;place-items:center;background:var(--panel-2);
+  border:1px solid var(--rule);border-radius:50%;color:var(--ink);cursor:pointer;
+  transition:border-color .14s,color .14s}
+.pbtn:hover{border-color:var(--line);color:var(--line)}
+.pbtn svg{width:12px;height:12px;fill:currentColor;display:block}
+.ptime{font-family:var(--mono);font-size:11px;color:var(--ink-3);white-space:nowrap;flex:none}
+.ptime b{color:var(--ink);font-weight:500}
+.phint{flex:1;min-width:0;text-align:center;font-family:var(--mono);font-size:10px;
+  color:var(--ink-3);letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pspeed{display:flex;gap:3px;flex:none}
+.pspeed button{background:transparent;border:1px solid transparent;color:var(--ink-3);
+  font-family:var(--mono);font-size:10.5px;padding:3px 7px;border-radius:2px;cursor:pointer}
+.pspeed button:hover{color:var(--ink)}
+.pspeed button.on{border-color:var(--line);color:var(--line)}
+@media(max-width:640px){ .phint{display:none} }
 .ctl{display:flex;gap:6px;padding:0}
 .ctl button{background:var(--panel-2);border:1px solid var(--rule);color:var(--ink-2);font-family:var(--mono);font-size:10.5px;padding:4px 9px;border-radius:2px;cursor:pointer}
 .ctl button:hover{border-color:var(--line);color:var(--ink)}
@@ -238,21 +254,20 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
           <div class="head">
             <h3>재생</h3>
             <span class="tag" id="vTag">—</span>
-            <div class="ctl">
-              <button data-sp="0.5">0.5x</button>
-              <button data-sp="1" class="on">1x</button>
-              <button data-sp="2">2x</button>
-              <button id="bPlay">일시정지</button>
-            </div>
           </div>
           <div class="stage">
             <video id="cam" playsinline preload="metadata" muted loop></video>
           </div>
           <div class="track" id="track"><div class="fill" id="fill"></div></div>
-          <div class="tline">
-            <span id="tNow">0:00</span>
-            <span class="tag">막대는 판정이 내려진 지점입니다 · 클릭하면 그 장면으로 이동</span>
-            <span id="tEnd">0:00</span>
+          <div class="pbar">
+            <button class="pbtn" id="bPlay" type="button" aria-label="일시정지"></button>
+            <span class="ptime"><b id="tNow">0:00</b> / <span id="tEnd">0:00</span></span>
+            <span class="phint">막대는 판정이 내려진 지점 · 눌러서 그 장면으로 이동</span>
+            <span class="pspeed">
+              <button data-sp="0.5" type="button">0.5x</button>
+              <button data-sp="1" type="button" class="on">1x</button>
+              <button data-sp="2" type="button">2x</button>
+            </span>
           </div>
         </div>
 
@@ -682,7 +697,7 @@ function select(i){
 
   vid.src=cur.video; vid.poster=cur.poster;
   vid.play().catch(()=>{});
-  $('bPlay').textContent='일시정지';
+  syncPlayBtn();
 
   // 타임라인 마커
   const tr=$('track');
@@ -752,10 +767,20 @@ $('track').onclick=e=>{
   const r=e.currentTarget.getBoundingClientRect();
   vid.currentTime=(e.clientX-r.left)/r.width*(vid.duration||cur.duration);
 };
-$('bPlay').onclick=()=>{
-  if(vid.paused){ vid.play(); $('bPlay').textContent='일시정지'; }
-  else { vid.pause(); $('bPlay').textContent='재생'; }
-};
+/* 재생/정지 — 버튼과 영상 클릭 양쪽. 아이콘은 실제 재생 상태를 따라간다 */
+const ICON_PLAY ='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_PAUSE='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+function syncPlayBtn(){
+  const b=$('bPlay');
+  b.innerHTML = vid.paused ? ICON_PLAY : ICON_PAUSE;
+  b.setAttribute('aria-label', vid.paused ? '재생' : '일시정지');
+}
+const togglePlay=()=>{ vid.paused ? vid.play().catch(()=>{}) : vid.pause(); };
+$('bPlay').onclick=togglePlay;
+document.querySelector('.stage').onclick=togglePlay;
+vid.addEventListener('play', syncPlayBtn);
+vid.addEventListener('pause', syncPlayBtn);
+syncPlayBtn();
 document.querySelectorAll('[data-sp]').forEach(b=>{
   b.onclick=()=>{
     vid.playbackRate=+b.dataset.sp;
