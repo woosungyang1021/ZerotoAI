@@ -149,10 +149,15 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ty.ok{border-left-color:var(--ok)} .ty.bad{border-left-color:var(--alert)} .ty.pending{border-left-color:var(--warn)} .ty.info{border-left-color:#4DA6FF}
 .ty .no{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);letter-spacing:.12em}
 .ty .cnts{font-size:14.5px;font-weight:750;letter-spacing:-.015em}
+.ty .re{font-size:11.5px;font-weight:600;margin-top:1px}
+/* 한글은 글자 사이에서도 줄이 바뀐다 — 항목을 통째로만 넘어가게 묶는다 */
+.ty .cnts>span,.ty .re>span{display:inline-block;white-space:nowrap}
+.ty .cnts>span:not(:last-child)::after,.ty .re>span:not(:last-child)::after{
+  content:' ·';color:var(--ink-3);font-weight:400}
 .ty .cnts .okc{color:var(--ok)} .ty .cnts .badc{color:var(--alert)} .ty .cnts .pendc{color:var(--warn)}
-.ty .cnts .carryc{color:var(--ink-2);font-weight:600;font-size:12px}
-.ty .cnts .carrybc{color:#C4707B;font-weight:600;font-size:12px}
 .ty .cnts .infoc{color:#4DA6FF}
+.ty .re .carryc{color:var(--ink-2)}
+.ty .re .carrybc{color:#C4707B}
 .ty .nm{font-size:11px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .dist{padding:13px 13px 4px}
@@ -435,7 +440,7 @@ function buildTally(){
   t.innerHTML='';
   D.cases.forEach((c,i)=>{
     if(c.report===false) return;              // 판정이 아닌 비교 영상은 이 섹션에서 뺀다
-    const parts=[];
+    const parts=[], re=[];                    // 판정 결과 / 재시작 집계를 줄로 나눈다
     if(c.group && c.group!=='주차 판정'){
       // 야간 인식 그룹 — 판정 용어 대신 제목을 그대로 쓴다
       parts.push(`<span class="${{ok:'okc',bad:'badc',info:'infoc'}[c.kind]||'pendc'}">${c.title}</span>`);
@@ -445,14 +450,15 @@ function buildTally(){
       if(ok)  parts.push(`<span class="okc">승인 ${ok}</span>`);
       if(bad) parts.push(`<span class="badc">거부 ${bad}</span>`);
       if(!ok && !bad) parts.push(`<span class="pendc">보류</span>`);
-      if(c.standing) parts.push(`<span class="carryc">재시작 허가 ${c.standing}</span>`);
-      if(c.standing_bad) parts.push(`<span class="carrybc">불허가 ${c.standing_bad}</span>`);
+      if(c.standing) re.push(`<span class="carryc">재시작 허가 ${c.standing}</span>`);
+      if(c.standing_bad) re.push(`<span class="carrybc">불허가 ${c.standing_bad}</span>`);
     }
     const b=document.createElement('button');
     b.className='ty '+c.kind;
     b.innerHTML=`
       <span class="no">CASE ${String(i+1).padStart(2,'0')}</span>
-      <span class="cnts">${parts.join(' <span style="color:var(--ink-3)">·</span> ')}</span>
+      <span class="cnts">${parts.join('')}</span>
+      ${re.length?`<span class="re">${re.join('')}</span>`:''}
       ${(!c.group||c.group==='주차 판정')?`<span class="nm">${c.title}</span>`:''}`;
     b.onclick=()=>{ select(i); $('viewer').scrollIntoView({block:'start'}); };
     t.appendChild(b);
