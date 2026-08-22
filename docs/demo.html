@@ -38,7 +38,12 @@ a{color:inherit}
 
 h2.title{font-size:16px;font-weight:750;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;margin:26px 0 4px}
 h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:none}
-.sub{color:var(--ink-2);font-size:12.5px;margin-bottom:16px;padding-left:13px;max-width:1000px}
+.sub{color:var(--ink-2);font-size:13px;margin-bottom:9px;padding-left:13px;max-width:1000px}
+.sub b{color:var(--ink);font-weight:700}
+.notes{list-style:none;margin:0 0 16px;padding-left:13px;display:flex;flex-direction:column;gap:3px}
+.notes li{position:relative;padding-left:11px;font-size:11px;color:var(--ink-3)}
+.notes li::before{content:'';position:absolute;left:0;top:.55em;width:5px;height:1px;background:var(--ink-3)}
+.notes li b{color:var(--ink-2);font-weight:600}
 
 /* ── 모니터 월 ── */
 .wall{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -209,15 +214,13 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   </header>
 
   <h2 class="title">반납 판정 시연</h2>
-  <p class="sub">같은 주차구역에서 벌어지는 세 가지 상황입니다. 왼쪽부터 정상 반납, 판정 보류, 반납 거부.
-    위는 현장 카메라(판정 오버레이가 입혀진 실제 영상), 아래는 이용자가 보는 앱 화면입니다.
-    세 화면 모두 <b>22초 지점에서 판정이 동시에</b> 떨어지도록 맞춰 두었습니다.</p>
-  <p class="sub" style="color:var(--ink-3);font-size:11.5px;margin-top:-10px">
-    앱 화면은 같은 날 따로 찍은 반납 녹화분입니다. 현장 영상과 같은 순간의 기록은 아니고,
-    반납 흐름이 판정과 어떻게 맞물리는지 보이려고 시각을 맞춰 놓았습니다.
-    보류·거부의 앱 화면은 녹화본이 없어 같은 흐름으로 재현했습니다(화면에 <b>재현</b> 표시).
-    주행 화면의 구역 안내는 시연 시나리오에 맞춰 세 화면 모두 "반납 허가 구역 진입"으로 덧입혔습니다 —
-    GPS 는 주황 허용 범위로 통과시키고, 실제 반납 판정은 카메라가 내립니다.</p>
+  <p class="sub">같은 주차구역에서 만든 세 상황 — <b>승인 · 보류 · 거부</b>가 <b>22초</b>에 동시에 갈립니다.
+    위는 현장 카메라, 아래는 이용자 앱 화면입니다.</p>
+  <ul class="notes">
+    <li>GPS는 <b>주황 허용 범위</b>로 셋 다 통과 — 최종 판정은 <b>카메라</b>가 내립니다</li>
+    <li>앱 화면은 같은 날 따로 찍은 실제 녹화분 — 판정 흐름에 맞춰 시각만 맞췄습니다</li>
+    <li>보류·거부 폰과 구역 안내 배너는 같은 화면 구성으로 재현 (화면에 <b>재현</b> 표시)</li>
+  </ul>
 
   <div class="wall" id="wall"></div>
 
