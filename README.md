@@ -19,7 +19,7 @@
 
 - 검출/세그먼트: YOLO26m-seg (배포본 — s 모델은 야간 비교용으로만 씀)
 - 디바이스: Jetson Orin Nano (현장 추론 초당 2~3회)
-- 판정 기록: 7개 세션 49건 (위반 21 / 정상 28)
+- 판정 기록: 12개 세션 61건 (위반 24 / 정상 37)
 
 ## 시연 케이스 11편
 
@@ -87,7 +87,7 @@ make_cases.py      judgments.jsonl + 원본 영상 → docs/ 데이터 생성
 extract_live.py    영상 오버레이 → 프레임별 기체 좌표 추출
 make_results.py    원본 추론 결과 생성
 replay_server.py   로컬 확인용 간이 서버
-judgments.jsonl    젯슨이 남긴 판정 로그 (원본, 49건)
+judgments.jsonl    젯슨이 남긴 판정 로그 (원본, 61건)
 judge_calib.json   주차구역 폴리곤 캘리브레이션
 ```
 

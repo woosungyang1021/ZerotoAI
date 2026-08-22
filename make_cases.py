@@ -38,6 +38,10 @@ ZONE_NAME = "유억겸 기념관 앞"
 # 세션이 바뀔 때마다 같은 기체가 다시 계수되므로 구분해 둔다.
 # 실측: 시작부 판정은 frame 69~75 에 몰려 있고, 그 다음 판정은 201 부터다.
 ONSTART_FRAME = 100
+# 결과보고서 Ⅴ장 6절의 현장 검증은 이 날 주간 세션만 집계했다. 8/20 야간분은
+# 모델 인식 비교용으로 따로 찍은 것이라 검증 집계에서 뺐다. 보고서는 제출돼
+# 수정할 수 없으므로 사이트도 주간/야간을 갈라서 보여준다.
+REPORT_DATE = "2026-08-19"
 
 BRAND_KO = {"SOCAR": "쏘카일레클", "SWING": "스윙", "GCOO": "지쿠"}
 STATUS_KO = {
@@ -305,6 +309,20 @@ def main():
         if j["violation"]:
             reasons[j["state"]] = reasons.get(j["state"], 0) + 1
 
+    # 주간(보고서 기준일) / 야간 — 세션은 날짜를 걸치지 않으므로 세션 단위로 가른다
+    day_sess = {i for i, s in enumerate(sessions, 1)
+                if s[0]["ts"].startswith(REPORT_DATE)}
+    night_sess = set(range(1, len(sessions) + 1)) - day_sess
+
+    def tally(pick):
+        sel = [j for j in all_j if j["session"] in pick]
+        bad = sum(1 for j in sel if j["violation"])
+        return {"sessions": len(pick), "nos": sorted(pick),   # nos — 페이지에서 점을 가를 때 쓴다
+                "judgments": len(sel), "violations": bad,
+                "valid": len(sel) - bad}
+
+    day, night = tally(day_sess), tally(night_sess)
+
     OUT_JSON.parent.mkdir(exist_ok=True)
     json.dump({
         "built": datetime.date.today().isoformat(),
@@ -316,6 +334,7 @@ def main():
             "sessions": len(sessions), "cases": len(cases),
             "judgments": len(all_j), "violations": viol, "valid": len(all_j) - viol,
             "brands": brands, "reasons": reasons,
+            "day": day, "night": night,
         },
         "cases": cases,
         "judgments": all_j,
@@ -325,6 +344,8 @@ def main():
     print(f"케이스 {len(cases)}개 · 케이스 내 판정 "
           f"{sum(len(c['events']) for c in cases)}건 · 전체 판정 {len(all_j)}건 "
           f"(위반 {viol} / 정상 {len(all_j)-viol})")
+    print(f"  주간 {day['sessions']}회 {day['judgments']}건 · "
+          f"야간 {night['sessions']}회 {night['judgments']}건")
     for c in cases:
         sess_txt = f"세션{c['session']}" if c["session"] else "기록없음"
         print(f"  {c['id']:<18} {c['group']:<8} {c['duration']:>6.1f}s  {sess_txt:<8} "

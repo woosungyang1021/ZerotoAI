@@ -61,6 +61,34 @@
   "reasons": {
    "구역 이탈": 21,
    "전도": 3
+  },
+  "day": {
+   "sessions": 7,
+   "nos": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "judgments": 49,
+   "violations": 21,
+   "valid": 28
+  },
+  "night": {
+   "sessions": 5,
+   "nos": [
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "judgments": 12,
+   "violations": 3,
+   "valid": 9
   }
  },
  "cases": [
