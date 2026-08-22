@@ -237,3 +237,9 @@ desktop.ini
 /*.mp4
 # 야간 원본 영상 + 기존과 동일한 로그 사본
 추가/
+
+# Claude Code 로컬 도구 (저장소에 넣지 않음)
+.claude/
+
+# Netlify 로컬 폴더
+.netlify
