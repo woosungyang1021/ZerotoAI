@@ -81,29 +81,16 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .plabel{text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink-3);padding:6px 0 9px}
 
 /* 재현 화면 */
-.ui{position:absolute;inset:0;padding-top:6.2%;background:#fff;color:#16181D;font-size:8.5px;display:none;flex-direction:column}
+.ui{position:absolute;inset:0;padding-top:6.49%;background:#fff;color:#16181D;font-size:8.5px;display:none;flex-direction:column}
 .ui.on{display:flex}
-/* 아이폰 상단 — 실제 녹화본과 같은 모양으로 맞춘다 */
-.mockbar{position:absolute;left:0;right:0;top:0;height:6.2%;z-index:3;background:#fff;
-  display:flex;align-items:center;justify-content:space-between;padding:0 9px;font-size:7px;font-weight:800}
-.mockbar .ic{display:flex;align-items:center;gap:3px}
-.sig{display:inline-flex;align-items:flex-end;gap:1px;height:6px}
-.sig s{width:1.5px;background:#111;border-radius:.5px}
-.sig s:nth-child(1){height:40%} .sig s:nth-child(2){height:68%} .sig s:nth-child(3){height:100%}
-.bat{position:relative;display:inline-block;width:12px;height:6.5px;border:1px solid #111;border-radius:2px;opacity:.9}
-.bat::after{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:76%;background:#111;border-radius:1px}
-.bat::before{content:'';position:absolute;right:-2.5px;top:1.8px;width:1.5px;height:2.4px;background:#111;border-radius:0 1px 1px 0}
-.island{position:absolute;left:50%;top:1.5%;transform:translateX(-50%);width:33%;height:3.5%;min-height:9px;
-  border-radius:99px;background:#0B0B0D;z-index:4;display:flex;align-items:center}
-.island b{width:3.5px;height:3.5px;border-radius:50%;background:#FF3B30;margin-left:9%}
+/* 상단은 그리지 않고 실제 녹화본에서 잘라 붙인다 — 세 폰이 픽셀 단위로 같아진다.
+   상태바·아일랜드는 항상, 제목줄("1분 이용 중 80%")은 주행 중 화면에만. */
+.statbar{position:absolute;left:0;right:0;top:0;height:6.49%;z-index:3;
+  background:url('media/app-bar.jpg') top center/100% auto no-repeat}
+.apptitle{flex:none;height:6.69%;background:url('media/app-title.jpg') top center/100% auto no-repeat}
 .ui .ttl{font-size:12px;font-weight:700;letter-spacing:0;line-height:1.35;padding:6px 11px 0}
-/* 주행 중 화면 — 실제 앱 화면 구성을 그대로 따른다 */
-.ui .hd{display:flex;align-items:baseline;justify-content:space-between;padding:5px 11px 0}
-.ui .hd .h1{font-size:12px;font-weight:700;letter-spacing:0;line-height:1.35}
-.ui .hd .pct{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:800}
-.bat2{position:relative;display:inline-block;width:13px;height:7px;border:1px solid #111;border-radius:2px}
-.bat2::after{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:80%;background:#111;border-radius:1px}
-.ui .zone{display:flex;align-items:center;gap:3px;margin:7px 9px 6px;padding:5px 6px;border-radius:8px;
+/* 구역 배너 — 실제 영상의 배너 자리(top 13.60%)에 이어 붙는다 */
+.ui .zone{display:flex;align-items:center;gap:3px;margin:1.5px 9px 6px;padding:5px 6px;border-radius:8px;
   background:#EDF9F1;font-size:6.5px;font-weight:600;white-space:nowrap;overflow:hidden}
 .ui .zone i{width:3.5px;height:3.5px;border-radius:50%;background:#00A868;flex:none}
 .ui .zone b{margin-left:auto;color:#00A868}
@@ -259,9 +246,9 @@ const SCEN = [
   },
   {
     id:'pending', kind:'pending', no:'CASE 05', nm:'판정 보류', tag:'반납 보류',
-    src:'media/case5-fallen-pending.mp4', clip:5.00,
-    verdict:'판정 배너 없음 — 확정 전(PENDING)',
-    why:'정지 여부 확인 중 · 확정이 아니라 <b>로그에 남지 않음</b>',
+    src:'media/case5-fallen-pending.mp4', clip:15.73,
+    verdict:'#26 SOCAR  PENDING FALLEN 0.60 — 로그에 없음',
+    why:'세워둔 뒤 넘어짐 · 확정이 아니라 <b>로그에 남지 않음</b>',
     phone:{ cam:'media/case5-fallen-pending.jpg', res:'pending', me:[50.0, 50.0],   // 구역 한가운데
             title:'확인하고 있어요', body:'기체가 멈췄는지 확인 중입니다.<br>잠시만 기다려 주세요.' }
   },
@@ -310,7 +297,7 @@ function phoneMarkup(s,i){
       </div>`;
   return `
     <div class="ui" data-st="ride">
-      <div class="hd"><span class="h1">1분 이용 중</span><span class="pct">80%<i class="bat2"></i></span></div>
+      <div class="apptitle"></div>
       <div class="zone"><i></i>서대문구 신촌동 <b>반납 허가 구역 진입</b></div>
       ${MAP()}
       <div class="promo"><em>Basic</em> 10분까지 1,000원 적용 중</div>
@@ -340,11 +327,7 @@ function phoneMarkup(s,i){
       ${MAP(' sm')}
       <div class="cta ${s.phone.res==='pending'?'wait':''}">${s.phone.res==='pending'?'확인 중…':'다시 주차하기'}</div>
     </div>
-    <div class="mockbar">
-      <span>5:55</span>
-      <span class="ic"><i class="sig"><s></s><s></s><s></s></i><i class="bat"></i></span>
-    </div>
-    <i class="island"><b></b></i>
+    <div class="statbar"></div>
     <span class="badgeSim">재현</span>`;
 }
 
