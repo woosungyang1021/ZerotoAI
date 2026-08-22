@@ -76,17 +76,38 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .plabel{text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink-3);padding:6px 0 9px}
 
 /* 재현 화면 */
-.ui{position:absolute;inset:0;background:#fff;color:#16181D;font-size:8.5px;display:none;flex-direction:column}
+.ui{position:absolute;inset:0;padding-top:6.2%;background:#fff;color:#16181D;font-size:8.5px;display:none;flex-direction:column}
 .ui.on{display:flex}
-.ui .sbar{display:flex;align-items:center;justify-content:space-between;padding:5px 10px 2px;font-size:8px;font-weight:700}
+/* 아이폰 상단 — 실제 녹화본과 같은 모양으로 맞춘다 */
+.mockbar{position:absolute;left:0;right:0;top:0;height:6.2%;z-index:3;background:#fff;
+  display:flex;align-items:center;justify-content:space-between;padding:0 9px;font-size:7px;font-weight:800}
+.mockbar .ic{display:flex;align-items:center;gap:3px}
+.sig{display:inline-flex;align-items:flex-end;gap:1px;height:6px}
+.sig s{width:1.5px;background:#111;border-radius:.5px}
+.sig s:nth-child(1){height:40%} .sig s:nth-child(2){height:68%} .sig s:nth-child(3){height:100%}
+.bat{position:relative;display:inline-block;width:12px;height:6.5px;border:1px solid #111;border-radius:2px;opacity:.9}
+.bat::after{content:'';position:absolute;left:1px;top:1px;bottom:1px;width:76%;background:#111;border-radius:1px}
+.bat::before{content:'';position:absolute;right:-2.5px;top:1.8px;width:1.5px;height:2.4px;background:#111;border-radius:0 1px 1px 0}
+.island{position:absolute;left:50%;top:1.5%;transform:translateX(-50%);width:33%;height:3.5%;min-height:9px;
+  border-radius:99px;background:#0B0B0D;z-index:4;display:flex;align-items:center}
+.island b{width:3.5px;height:3.5px;border-radius:50%;background:#FF3B30;margin-left:9%}
 .ui .ttl{font-size:12px;font-weight:800;letter-spacing:-.02em;padding:6px 11px 0}
-.ui .zone{display:flex;align-items:center;gap:4px;margin:6px 9px;padding:5px 7px;border-radius:7px;
-  background:#FFF3F3;font-size:7.5px;font-weight:600}
+.ui .zone{display:flex;align-items:center;gap:5px;margin:6px 9px;padding:5px 7px;border-radius:7px;
+  background:#FFF3F3;font-size:7px;font-weight:600;white-space:nowrap}
 .ui .zone b{margin-left:auto;color:#FF3B30}
-.ui .map{flex:1;margin:0 9px;border-radius:7px;background:
-  repeating-linear-gradient(58deg,#FBE9DF 0 13px,#FDF1EA 13px 26px);position:relative}
-.ui .map::after{content:'';position:absolute;left:50%;top:52%;width:11px;height:11px;margin:-5px 0 0 -5px;
-  border-radius:50%;background:#2C7CF7;box-shadow:0 0 0 5px rgba(44,124,247,.22)}
+/* 지도 — 실제 반납구역 위성사진. 노란 네모 안이 허용 구역이고 바깥은 붉게 덮는다 */
+.ui .map{position:relative;flex:none;aspect-ratio:1;margin:0 9px;border-radius:7px;overflow:hidden;
+  background:url('media/zone-map-phone.jpg') center/cover no-repeat}
+.ui .zonebox{position:absolute;left:40.6%;top:44.7%;width:18.8%;height:10.6%;
+  border:1px solid #FF3B30;outline:1px solid rgba(255,255,255,.9);
+  box-shadow:0 0 0 999px rgba(255,59,48,.34)}
+.ui .me{position:absolute;left:62%;top:62%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;z-index:2;
+  border-radius:50%;background:#2C7CF7;border:1.5px solid #fff;box-shadow:0 0 0 4px rgba(44,124,247,.24)}
+.ui .mkey{position:absolute;left:5px;right:5px;bottom:5px;z-index:2;display:flex;gap:4px;font-size:6px;font-weight:700}
+.ui .mkey span{background:rgba(255,255,255,.93);border-radius:20px;padding:2px 5px;color:#16181D;display:flex;align-items:center;gap:3px}
+.ui .mkey i{width:5px;height:5px;border-radius:1px;flex:none}
+.ui .mkey i.in{background:#fff;border:1px solid #FF3B30}
+.ui .mkey i.out{background:rgba(255,59,48,.55)}
 .ui .rows{padding:7px 11px 0}
 .ui .row{display:flex;justify-content:space-between;padding:3px 0;color:#6A7180;font-size:7.5px}
 .ui .row b{color:#16181D;font-weight:700}
@@ -103,9 +124,11 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.45)}
 .ui .camtip{position:absolute;left:8px;right:8px;top:8px;background:rgba(255,255,255,.94);border-radius:20px;
   padding:4px 8px;font-size:7px;font-weight:600;text-align:center}
-.ui .res{margin:0 9px;border-radius:9px;padding:9px 10px;font-size:8px;line-height:1.5}
+.ui .res{margin:5px 9px 0;border-radius:9px;padding:9px 10px;font-size:8px;line-height:1.55}
 .ui .res.bad{background:#FFF1F2;color:#B4232F} .ui .res.pending{background:#FFF7EC;color:#96601A}
 .ui .res b{display:block;font-size:10.5px;font-weight:800;margin-bottom:3px}
+.ui .map.sm{opacity:.55}
+.ui .navttl{text-align:center;font-size:8px;font-weight:800;padding:2px 0 5px}
 .badgeSim{position:absolute;right:6px;bottom:6px;font-family:var(--mono);font-size:6.5px;letter-spacing:.08em;
   background:rgba(14,20,29,.72);color:#C8D3E2;padding:2px 5px;border-radius:2px}
 
@@ -243,13 +266,18 @@ function phoneMarkup(s,i){
   if(s.phone.real)
     return `<video id="p${i}" muted playsinline preload="auto" poster="${s.phone.poster}">
               <source src="${s.phone.real}" type="video/mp4"></video>`;
-  // 재현 화면 — 주행 중 / 준비 / 촬영 / 처리 / 결과
+  // 재현 화면 — 주행 중 / 준비 / 촬영 / 처리 / 결과.
+  // 상단 상태바와 아일랜드는 화면이 바뀌어도 그대로 남는다.
+  const MAP = `
+      <div class="map">
+        <div class="zonebox"></div><div class="me"></div>
+        <div class="mkey"><span><i class="in"></i>반납 가능</span><span><i class="out"></i>반납 불가</span></div>
+      </div>`;
   return `
     <div class="ui" data-st="ride">
-      <div class="sbar"><span>5:54</span><span>●●● ⌁ 80%</span></div>
       <div class="ttl">1분 이용 중</div>
-      <div class="zone">서울특별시 서대문구 신촌동 <b>반납 불가 지역</b></div>
-      <div class="map"></div>
+      <div class="zone">서대문구 신촌동 <b>반납 불가 지역</b></div>
+      ${MAP}
       <div class="rows">
         <div class="row"><span>전기 동력 사용</span><b>230원/분</b></div>
         <div class="row"><span>예상 요금</span><b>1,000원</b></div>
@@ -257,27 +285,30 @@ function phoneMarkup(s,i){
       <div class="cta" data-cta>주행 종료하기</div>
     </div>
     <div class="ui" data-st="prep">
-      <div class="sbar"><span>5:55</span><span>●●● ⌁ 80%</span></div>
       <div class="mid"><h4>반납 준비 중이에요</h4><p>앱을 종료하지 말고 기다려 주세요.</p><div class="spin"></div></div>
     </div>
     <div class="ui" data-st="shot">
-      <div class="sbar"><span>5:55</span><span>●●● ⌁ 80%</span></div>
+      <div class="navttl">반납 사진 촬영</div>
       <div class="cam" style="background-image:url('${s.phone.cam}')">
         <div class="camtip">✋ 견인 구역에 반납하지 않으려면?</div>
       </div>
     </div>
     <div class="ui" data-st="wait">
-      <div class="sbar"><span>5:55</span><span>●●● ⌁ 80%</span></div>
       <div class="mid"><div class="spin"></div><p>주차 상태를 확인하고 있어요</p></div>
     </div>
     <div class="ui" data-st="done">
-      <div class="sbar"><span>5:55</span><span>●●● ⌁ 80%</span></div>
       <div class="ttl">${s.phone.title}</div>
-      <div class="mid" style="flex:0;padding:0"></div>
-      <div class="res ${s.phone.res}"><b>${s.phone.title}</b>${s.phone.body}</div>
-      <div class="map" style="flex:1;opacity:.5"></div>
+      <div class="res ${s.phone.res}">${s.phone.body}</div>
+      <div class="map sm">
+        <div class="zonebox"></div><div class="me"></div>
+      </div>
       <div class="cta ${s.phone.res==='pending'?'wait':''}">${s.phone.res==='pending'?'확인 중…':'다시 주차하기'}</div>
     </div>
+    <div class="mockbar">
+      <span>5:55</span>
+      <span class="ic"><i class="sig"><s></s><s></s><s></s></i><i class="bat"></i></span>
+    </div>
+    <i class="island"><b></b></i>
     <span class="badgeSim">재현</span>`;
 }
 
