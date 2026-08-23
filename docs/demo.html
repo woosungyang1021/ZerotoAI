@@ -250,9 +250,6 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .feed .cap{display:block;font-family:var(--mono);font-size:8.5px;color:var(--ink-3);margin-top:7px;line-height:1.5}
 .feed .cap b{display:block;color:var(--ink-2);font-weight:500}
 .link .hub{align-self:center;flex:none;width:132px;position:relative;z-index:1}
-.link .hub .stop{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:8.5px;font-style:normal;
-  color:var(--warn);border:1px solid rgba(255,162,63,.38);background:rgba(255,162,63,.08);
-  padding:2px 6px;border-radius:2px}
 .link .hub b{display:block;font-family:var(--mono);font-size:10.5px;color:var(--ink);font-weight:500}
 .link .hub span{display:block;font-family:var(--mono);font-size:9px;color:var(--ink-3);margin-top:3px;line-height:1.5}
 .link .hub i{display:flex;align-items:center;gap:5px;margin-top:7px;font-family:var(--mono);
@@ -343,9 +340,8 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
       <b>EDGE · 현장</b>
       <span>Jetson Orin Nano<br>추론 2~3 fps</span>
       <i>가동 중</i>
-      <em class="stop">연속 영상 여기서 끝</em>
     </div>
-    <p class="linknote"><b>연속 영상은 현장에 머뭅니다</b> — 관제로는 판정 로그만,
+    <p class="linknote"><b>정상 반납 시 영상은 현장에 머뭅니다</b> — 관제로는 판정 로그만,
       위반으로 확정될 때만 8초 클립이 따라갑니다</p>
   </div>
 
@@ -443,7 +439,7 @@ $('wall').innerHTML = SCEN.map((s,i) => `
         <span class="ccb res ${s.cc.cls}">${s.cc.b}</span>
       </div>
       <div class="ccscreen">
-      <div class="ccwait">연속 영상 수신 없음 — 판정 결과만 올라옵니다</div>
+      <div class="ccwait">수신 대기 중 — 판정이 확정되면 올라옵니다</div>
       <div class="ccgot">
         <div class="ccl">
           <div class="l1">${s.cc.l1}</div>
