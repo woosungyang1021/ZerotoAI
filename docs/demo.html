@@ -21,7 +21,7 @@
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 .hazard{height:5px;background:repeating-linear-gradient(115deg,var(--line) 0 14px,#0E141D 14px 28px);opacity:.85}
-.shell{max-width:1500px;margin:0 auto;padding:0 20px 40px}
+.shell{position:relative;max-width:1500px;margin:0 auto;padding:0 20px 40px}
 
 /* ── 헤더 ── */
 .bar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:16px 0 14px;border-bottom:1px solid var(--rule)}
@@ -251,20 +251,22 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .link .hub i::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ok);
   box-shadow:0 0 0 3px rgba(61,220,151,.15);animation:breathe 2.6s ease-in-out infinite}
 
-/* 장비에서 각 모니터의 관제 수신 박스를 향해 쏜다. 목표 좌표는 JS 가 실측해 넣는다. */
-.shot{position:absolute;left:50%;top:44%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;
-  border-radius:50%;opacity:0;pointer-events:none;z-index:6}
-.shot.ok{background:var(--ok);box-shadow:0 0 10px rgba(61,220,151,.85)}
-.shot.bad{background:var(--alert);box-shadow:0 0 10px rgba(255,77,94,.85)}
-.shot.big{width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:3px}
-.link.on .shot{animation:shoot 1.7s cubic-bezier(.3,.55,.4,1) infinite}
-.link.on .shot.d2{animation-delay:.55s}
-@keyframes shoot{
-  0%{transform:translate(0,0) scale(.4);opacity:0}
-  10%{transform:translate(0,0) scale(1);opacity:1}
-  82%{opacity:1}
-  100%{transform:translate(var(--tx,0px),var(--ty,-180px)) scale(.65);opacity:0}
-}
+/* 장비에서 각 모니터의 관제 수신 박스까지 선로를 깔고, 그 위로 데이터가 흐른다.
+   경로는 JS 가 두 요소의 실제 좌표를 재어 그린다. */
+.wires{position:absolute;left:0;top:0;pointer-events:none;z-index:4;overflow:visible}
+.wires .rail{fill:none;stroke:rgba(94,109,130,.34);stroke-width:1}
+.wires .rail.pending{stroke:rgba(94,109,130,.26);stroke-dasharray:3 5}
+.wires .flow{fill:none;stroke-width:2;stroke-linecap:round;opacity:0}
+.wires .flow.ok{stroke:var(--ok)}
+.wires .flow.bad{stroke:var(--alert)}
+.wires .flow.clip{stroke-width:5;opacity:0}
+.wires.on .flow{opacity:.95;animation:dash 1.9s linear infinite}
+.wires.on .flow.clip{opacity:.85;animation-delay:.5s}
+@keyframes dash{from{stroke-dashoffset:var(--off)}to{stroke-dashoffset:0}}
+/* 선로가 닿는 자리 — 관제 박스 아래에 작은 접점 */
+.wires .port{fill:rgba(94,109,130,.5)}
+.wires.on .port.ok{fill:var(--ok)}
+.wires.on .port.bad{fill:var(--alert)}
 .linknote{position:absolute;left:0;right:0;bottom:8px;text-align:center;z-index:1;font-family:var(--mono);font-size:9px;color:var(--ink-3)}
 .linknote b{color:var(--ink-2);font-weight:500}
 @media (max-width:1080px){
@@ -319,12 +321,13 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   <h2 class="title">반납 판정 시연</h2>
   <p class="sub">GPS로는 셋 다 정상 반납 — 카메라가 보면 <b>승인 · 보류 · 거부</b>로 갈립니다.</p>
 
+  <svg class="wires" id="wires" aria-hidden="true"></svg>
   <div class="wall" id="wall"></div>
 
   <div class="link" id="link">
     <div class="feed">
       <div class="feedbar"><s></s></div>
-      <span class="cap"><b>카메라 원본</b>1280×720 · 2 fps</span>
+      <span class="cap"><b>카메라 원본</b>1920×1080</span>
     </div>
     <img class="dev" src="media/edge-device.png" alt="현장 장비 — Jetson Orin Nano + 카메라">
     <div class="hub">
@@ -333,9 +336,6 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
       <i>가동 중</i>
       <em class="stop">영상은 여기서 끝</em>
     </div>
-    <b class="shot ok"       data-to="0"></b>
-    <b class="shot bad"      data-to="2"></b>
-    <b class="shot bad big d2" data-to="2"></b>
     <p class="linknote">관제로 가는 것은 <b>판정 결과뿐</b> — 영상 스트림은 현장을 벗어나지 않습니다</p>
   </div>
 
@@ -548,9 +548,9 @@ function setHit(on){
   if(on===hitState) return;
   hitState=on;
   mons.forEach(m=>m.classList.toggle('hit', on));
-  const lk=$('link');
-  if(on) aimShots();                           // 쏘기 직전에 목표를 다시 잰다
-  lk.classList.toggle('on', on);               // 판정이 나야 관제로 나간다
+  if(on) aimShots();                           // 흐르기 직전에 선로를 다시 잰다
+  $('link').classList.toggle('on', on);        // 판정이 나야 관제로 나간다
+  $('wires').classList.toggle('on', on);
   const c=$('ccclip');
   if(c){
     if(on){ if(c.currentTime<18.7||c.currentTime>26.9) c.currentTime=18.8; c.play().catch(()=>{}); }
@@ -558,21 +558,40 @@ function setHit(on){
   }
 }
 
-/* 총알의 도착점 — 각 모니터의 관제 수신 박스 한가운데를 실제 좌표로 잰다 */
+/* 장비 -> 관제 박스 선로를 실제 좌표로 그린다. 흐르는 것은 선 위의 짧은 빛이다. */
 function aimShots(){
-  const lk=$('link'); if(!lk) return;
-  const lr=lk.getBoundingClientRect();
-  if(!lr.width) return;                        // 아직 그려지지 않았다
-  const ox=lr.left+lr.width/2, oy=lr.top+lr.height*0.44;
-  lk.querySelectorAll('.shot').forEach(sh=>{
-    const m=mons[+sh.dataset.to]; if(!m) return;
-    const box=(m.querySelector('.cc')||m).getBoundingClientRect();
-    sh.style.setProperty('--tx', Math.round(box.left+box.width/2-ox)+'px');
-    sh.style.setProperty('--ty', Math.round(box.top+box.height/2-oy)+'px');
+  const sv=$('wires'), lk=$('link'), shell=document.querySelector('.shell');
+  if(!sv || !lk || !shell) return;
+  const sr=shell.getBoundingClientRect(), lr=lk.getBoundingClientRect();
+  if(!lr.width || !sr.width) return;            // 아직 그려지지 않았다
+  const ox=lr.left+lr.width/2-sr.left, oy=lr.top+lr.height*0.30-sr.top;
+
+  const legs = SCEN.map((sc,i)=>{
+    const b=mons[i].querySelector('.cc').getBoundingClientRect();
+    const tx=b.left+b.width/2-sr.left, ty=b.bottom-sr.top-2;
+    const my=(oy+ty)/2;                         // 세로로 벌렸다 모이는 완만한 S 자
+    return {kind:sc.kind, d:`M ${ox.toFixed(1)} ${oy.toFixed(1)} C ${ox.toFixed(1)} ${my.toFixed(1)}, ${tx.toFixed(1)} ${my.toFixed(1)}, ${tx.toFixed(1)} ${ty.toFixed(1)}`,
+            tx:tx.toFixed(1), ty:ty.toFixed(1)};
+  });
+
+  sv.setAttribute('viewBox', `0 0 ${Math.round(sr.width)} ${Math.round(sr.height)}`);
+  sv.style.width=Math.round(sr.width)+'px'; sv.style.height=Math.round(sr.height)+'px';
+  sv.innerHTML =
+    legs.map(l=>`<path class="rail ${l.kind}" d="${l.d}"/>`).join('') +
+    legs.filter(l=>l.kind!=='pending').map(l=>`<path class="flow ${l.kind}" d="${l.d}"/>`).join('') +
+    legs.filter(l=>l.kind==='bad').map(l=>`<path class="flow clip ${l.kind}" d="${l.d}"/>`).join('') +
+    legs.map(l=>`<circle class="port ${l.kind}" cx="${l.tx}" cy="${l.ty}" r="2.6"/>`).join('');
+
+  // 선분 하나가 선로 전체를 훑도록 길이를 재어 넣는다
+  sv.querySelectorAll('.flow').forEach(pth=>{
+    const len=pth.getTotalLength();
+    const seg=pth.classList.contains('clip')?34:16;   // 클립은 더 길고 굵다
+    pth.style.strokeDasharray=`${seg} ${len}`;
+    pth.style.setProperty('--off', (len+seg)+'px');
   });
 }
 addEventListener('resize', aimShots);
-{ const d=document.querySelector('.link .dev');   // 사진이 늦게 떠도 조준이 어긋나지 않게
+{ const d=document.querySelector('.link .dev');   // 사진이 늦게 떠도 선로가 어긋나지 않게
   if(d) d.addEventListener('load', aimShots, {once:true}); }
 
 function paintPhones(t){
