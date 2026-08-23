@@ -85,7 +85,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 /* 재현 화면 */
 /* 상태바 자리 비우기 — padding 의 % 는 '너비' 기준이라 높이와 어긋난다.
    상태바와 같은 6.49% '높이' 를 쓰려면 자리를 차지하는 상자로 밀어내야 한다. */
-.ui{position:absolute;inset:0;background:#fff;color:#16181D;font-size:8.5px;display:none;flex-direction:column}
+.ui{position:absolute;inset:0;background:#fff;color:#16181D;font-size:8.5px;display:none;flex-direction:column;word-break:keep-all}
 .ui::before{content:'';flex:none;height:6.49%}
 .ui.on{display:flex}
 /* 상단은 그리지 않고 실제 녹화본에서 잘라 붙인다 — 세 폰이 픽셀 단위로 같아진다.
@@ -260,8 +260,9 @@ const SCEN = [
     verdict:'#26 SOCAR  PENDING FALLEN 0.60 — 로그에 없음',
     why:'세워둔 뒤 넘어짐 · 확정이 아니라 <b>로그에 남지 않음</b>',
     phone:{ cam:'media/app-shot.jpg', res:'pending', me:[50.0, 50.0],   // 구역 한가운데
-            title:'반납되었어요', body:'단, 반납 상태가 확정되면 알려드릴게요.',
-            guide:{ h:'주차 확인 중', items:[
+            title:'반납되었어요',
+            body:'<b>AI가 반납 상태를 판별하고 있어요</b>확정되면 알려드릴게요.',
+            guide:{ h:'알아두세요', items:[
               '결과는 알림으로 보내드려요',
               '기준에 맞지 않으면 반납이 취소될 수 있어요' ] } }
   },
@@ -271,7 +272,8 @@ const SCEN = [
     verdict:'17:25:54  #33 GCOO  INVALID_OUT_OF_ZONE',
     why:'겹침 <b>55.8%</b> · 지쿠 #33 · 기준 70% 미달',
     phone:{ cam:'media/app-shot.jpg', res:'bad', me:[51.0, 54.3],       // 아랫변에 딱 걸침
-            title:'반납할 수 없어요', body:'지정 주차구역을 벗어났습니다.<br>겹침 55.8% · 기준 70%',
+            title:'반납할 수 없어요',
+            body:'<b>AI가 주차 상태를 확인했어요</b>지정 주차구역을 벗어났습니다.<br>겹침 55.8% · 기준 70%',
             guide:{ h:'다시 세울 때 확인해 주세요', check:true, items:[
               '주차구역 선 안으로 세우기',
               '넘어지지 않게 세우기' ] } }
