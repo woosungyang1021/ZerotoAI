@@ -251,7 +251,8 @@ const SCEN = [
     src:'media/case1-normal-return.mp4', clip:93.09,
     verdict:'17:16:54  #14 SOCAR  RETURN_VALID',
     why:'겹침 <b>100.0%</b> · 쏘카일레클 #14 · 기체 서 있음',
-    phone:{ real:'media/app-return.mp4', poster:'media/app-return.jpg', at:FLOW.ride }
+    phone:{ real:'media/app-return.mp4', poster:'media/app-return.jpg', at:FLOW.ride,
+            hold:12.3 }   // 영상 12.7초부터 홈 화면 — 그 전에 멈춰 완료 화면을 남긴다
   },
   {
     id:'pending', kind:'pending', no:'CASE 05', nm:'판정 보류', tag:'반납 보류',
@@ -375,6 +376,12 @@ function syncApp(t, force){
     return;
   }
   const want = t - a;
+  const hold = SCEN[0].phone.hold;
+  if(hold && want >= hold){                    // 완료 화면에서 멈춘다 — 홈으로 넘어가지 않게
+    if(Math.abs(app.currentTime - hold) > 0.1) app.currentTime = hold;
+    if(!app.paused) app.pause();
+    return;
+  }
   if(want >= app.duration - 0.05){ app.pause(); return; }
   if(force || Math.abs(app.currentTime - want) > 0.4) app.currentTime = want;
   if(playing && app.paused) app.play().catch(()=>{});
