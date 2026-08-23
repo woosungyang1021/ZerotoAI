@@ -343,9 +343,10 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
       <b>EDGE · 현장</b>
       <span>Jetson Orin Nano<br>추론 2~3 fps</span>
       <i>가동 중</i>
-      <em class="stop">영상은 여기서 끝</em>
+      <em class="stop">연속 영상 여기서 끝</em>
     </div>
-    <p class="linknote">관제로 가는 것은 <b>판정 결과뿐</b> — 영상 스트림은 현장을 벗어나지 않습니다</p>
+    <p class="linknote"><b>연속 영상은 현장에 머뭅니다</b> — 관제로는 판정 로그만,
+      위반으로 확정될 때만 8초 클립이 따라갑니다</p>
   </div>
 
   <div class="deck">
@@ -442,7 +443,7 @@ $('wall').innerHTML = SCEN.map((s,i) => `
         <span class="ccb res ${s.cc.cls}">${s.cc.b}</span>
       </div>
       <div class="ccscreen">
-      <div class="ccwait">영상 스트림 없음 — 판정 결과만 전송됩니다</div>
+      <div class="ccwait">연속 영상 수신 없음 — 판정 결과만 올라옵니다</div>
       <div class="ccgot">
         <div class="ccl">
           <div class="l1">${s.cc.l1}</div>
