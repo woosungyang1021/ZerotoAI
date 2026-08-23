@@ -284,7 +284,7 @@ const SCEN = [
   {
     id:'pending', kind:'pending', no:'CASE 05', nm:'판정 보류', tag:'반납 보류',
     src:'media/case5-fallen-pending.mp4', clip:15.73,
-    verdict:'#26 SOCAR  PENDING FALLEN 0.60 — 로그에 없음',
+    verdict:'#28 SOCAR  PENDING FALLEN 0.60 — 로그에 없음',
     why:'세워둔 뒤 넘어짐 · 확정이 아니라 <b>로그에 남지 않음</b>',
     phone:{ cam:'media/app-shot.jpg', res:'pending', me:[50.0, 50.0],   // 구역 한가운데
             title:'반납되었어요',
@@ -298,8 +298,10 @@ const SCEN = [
   {
     id:'bad', kind:'bad', no:'CASE 02', nm:'반납 거부', tag:'반납 거부',
     src:'media/case2-on-the-line.mp4', clip:0.80,
-    verdict:'17:25:54  #33 GCOO  INVALID_OUT_OF_ZONE',
-    why:'겹침 <b>55.8%</b> · 지쿠 #33 · 기준 70% 미달',
+    // 실제 기체는 쏘카일레클이다. 로그와 영상 배너의 GCOO 는 브랜드 오분류로,
+    // 이 케이스의 요지(구역 겹침 55.8%)와는 무관하다.
+    verdict:'17:25:54  #33 SOCAR  INVALID_OUT_OF_ZONE',
+    why:'겹침 <b>55.8%</b> · 쏘카일레클 #33 · 기준 70% 미달',
     phone:{ cam:'media/app-shot.jpg', res:'bad', me:[51.0, 54.3],       // 아랫변에 딱 걸침
             title:'반납할 수 없어요',
             body:'<b>AI가 주차 상태를 확인했어요</b>지정 주차구역을 벗어났습니다.<br>겹침 55.8% · 기준 70%',
@@ -307,7 +309,7 @@ const SCEN = [
               '주차구역 선 안으로 세우기',
               '넘어지지 않게 세우기' ] } },
     // 클립 0.3 MB = case2 영상 1,128,332 B / 29.7 s × 8 s. 판정(22.8초) 전후 4초
-    cc:{ b:'클립 수신', cls:'bad', l1:'17:25:54 #33 GCOO INVALID_OUT_OF_ZONE',
+    cc:{ b:'클립 수신', cls:'bad', l1:'17:25:54 #33 SOCAR INVALID_OUT_OF_ZONE',
          l2:'겹침 55.8% · 지면 (3.20, 2.73)', l3:'로그 <b>157 B</b> + <em>클립 8초 ≈ 0.3 MB</em>', clip:true }
   }
 ];
