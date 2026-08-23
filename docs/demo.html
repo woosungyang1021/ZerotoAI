@@ -136,7 +136,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ui .rows{padding:7px 11px 0}
 .ui .row{display:flex;justify-content:space-between;padding:3px 0;color:#6A7180;font-size:7.5px}
 .ui .row b{color:#16181D;font-weight:700}
-.ui .cta{margin:auto 9px 10px;padding:8px 0;border-radius:9px;background:#16181D;color:#fff;
+.ui .cta{margin:auto 9px 9px;padding:9.5px 0;border-radius:12px;background:#16181D;color:#fff;
   text-align:center;font-size:9px;font-weight:700}
 .ui .cta.wait{background:#E9EBEF;color:#8A91A0}
 .ui .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:0 14px;text-align:center}
@@ -149,16 +149,23 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.45)}
 .ui .camtip{position:absolute;left:8px;right:8px;top:8px;background:rgba(255,255,255,.94);border-radius:20px;
   padding:4px 8px;font-size:7px;font-weight:600;text-align:center}
-.ui .res{margin:5px 9px 0;border-radius:9px;padding:9px 10px;font-size:8px;line-height:1.55}
-.ui .res.bad{background:#FFF1F2;color:#B4232F} .ui .res.pending{background:#FFF7EC;color:#96601A}
-.ui .res b{display:block;font-size:10.5px;font-weight:800;margin-bottom:3px}
-.ui .map.sm{opacity:.55}
-.ui .guide{margin:6px 9px 0;background:#F5F6F8;border-radius:8px;padding:6px 8px 7px}
+/* 결과 화면 — 색면 카드 대신 상태 아이콘 + 제목 + 부연으로 위계를 잡는다 */
+.ui .rico{width:22px;height:22px;border-radius:50%;margin:4px 0 7px 11px;flex:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;line-height:1}
+.ui .rico.pending{background:#FF8A00} .ui .rico.bad{background:#FF3B30}
+.ui .rttl{font-size:13px;font-weight:800;letter-spacing:-.02em;line-height:1.3;padding:0 11px}
+.ui .rsub{font-size:7.2px;line-height:1.6;color:#8A91A0;padding:3px 11px 0}
+.ui .facts{margin:8px 11px 0;border-top:1px solid #EEF0F3}
+.ui .fact{display:flex;justify-content:space-between;align-items:center;padding:3.8px 0;
+  font-size:7.2px;color:#8A91A0;border-bottom:1px solid #F4F5F7}
+.ui .fact b{color:#16181D;font-weight:700;font-size:7.8px}
+.ui .map.sm{margin:8px 29px 0}
+.ui .guide{margin:9px 11px 0;padding:7px 0 0;border-top:1px solid #EEF0F3}
 .ui .gh{display:flex;align-items:center;gap:4px;margin-bottom:3px}
-.ui .gh b{font-size:7px;font-weight:800;color:#16181D}
+.ui .gh b{font-size:7.5px;font-weight:800;color:#16181D}
 .ui .gh em{margin-left:auto;font-style:normal;font-size:5.2px;font-weight:800;color:#2C7CF7;
   background:#E8F1FE;border-radius:20px;padding:1px 4px;letter-spacing:-.02em}
-.ui .guide span{display:block;position:relative;padding-left:8px;font-size:6.2px;line-height:1.75;color:#6A7180}
+.ui .guide span{display:block;position:relative;padding-left:9px;font-size:6.8px;line-height:1.85;color:#6A7180}
 .ui .guide span::before{content:'';position:absolute;left:2px;top:5px;width:2.5px;height:2.5px;
   border-radius:50%;background:#C3C8D2}
 .ui .guide.check span::before{content:'✓';left:1px;top:0;width:auto;height:auto;
@@ -288,7 +295,8 @@ const SCEN = [
     why:'쏘카일레클 #28 · 세워둔 뒤 넘어짐 · 확정이 아니라 <b>로그에 남지 않음</b>',
     phone:{ cam:'media/app-shot.jpg', res:'pending', me:[50.0, 50.0],   // 구역 한가운데
             title:'반납되었어요',
-            body:'<b>AI가 반납 상태를 판별하고 있어요</b>확정되면 알려드릴게요.',
+            sub:'AI가 반납 상태를 판별하고 있어요.<br>확정되면 알림으로 알려드릴게요.',
+            facts:[['상태','AI 판별 중']],   // 확정 전이라 겹침 값은 아직 없다
             guide:{ h:'알아두세요', items:[
               '결과는 알림으로 보내드려요',
               '기준에 맞지 않으면 반납이 취소될 수 있어요' ] } },
@@ -304,7 +312,8 @@ const SCEN = [
     why:'겹침 <b>55.8%</b> · 쏘카일레클 #33 · 기준 70% 미달',
     phone:{ cam:'media/app-shot.jpg', res:'bad', me:[51.0, 54.3],       // 아랫변에 딱 걸침
             title:'반납할 수 없어요',
-            body:'<b>AI가 주차 상태를 확인했어요</b>지정 주차구역을 벗어났습니다.<br>겹침 55.8% · 기준 70%',
+            sub:'AI가 주차 상태를 확인했어요.<br>지정 주차구역을 벗어났습니다.',
+            facts:[['구역 겹침','55.8%'],['반납 기준','70% 이상']],
             guide:{ h:'다시 세울 때 확인해 주세요', check:true, items:[
               '주차구역 선 안으로 세우기',
               '넘어지지 않게 세우기' ] } },
@@ -394,8 +403,11 @@ function phoneMarkup(s,i){
       <div class="mid"><div class="spin"></div><p>주차 상태를 확인하고 있어요</p></div>
     </div>
     <div class="ui" data-st="done">
-      <div class="ttl">${s.phone.title}</div>
-      <div class="res ${s.phone.res}">${s.phone.body}</div>
+      <div class="rico ${s.phone.res}">${s.phone.res==='pending' ? '…' : '!'}</div>
+      <div class="rttl">${s.phone.title}</div>
+      <div class="rsub">${s.phone.sub}</div>
+      ${s.phone.facts ? `<div class="facts">${s.phone.facts
+        .map(([k,v])=>`<div class="fact"><span>${k}</span><b>${v}</b></div>`).join('')}</div>` : ''}
       ${MAP(' sm')}
       ${s.phone.guide ? `
         <div class="guide${s.phone.guide.check?' check':''}">
