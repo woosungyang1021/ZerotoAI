@@ -169,6 +169,30 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 
 /* 근거 */
 .why{padding:10px 13px 12px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:10.5px;color:var(--ink-2)}
+
+/* 관제 수신 — 이 케이스에서 관리주체 서버로 실제 넘어가는 것. 판정 전엔 대기, 판정 순간 갱신 */
+.cc{margin:0 13px 12px;background:#0B1119;border:1px solid var(--rule);border-radius:3px;
+  padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-height:86px}
+.cchead{display:flex;align-items:center;gap:8px}
+.cchead .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--ink-3);margin-right:auto}
+.ccb{font-family:var(--mono);font-size:9.5px;font-weight:500;padding:2px 7px;border-radius:2px;border:1px solid;white-space:nowrap}
+.ccb.waitb{color:var(--ink-3);border-color:rgba(94,109,130,.4);background:rgba(94,109,130,.08)}
+.ccb.ok{color:var(--ok);border-color:rgba(61,220,151,.45);background:rgba(61,220,151,.1)}
+.ccb.bad{color:var(--alert);border-color:rgba(255,77,94,.45);background:rgba(255,77,94,.1)}
+.ccb.pending{color:var(--warn);border-color:rgba(255,162,63,.45);background:rgba(255,162,63,.1)}
+.ccwait{font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.ccgot{display:none;align-items:center;gap:9px}
+.ccl{flex:1;min-width:0}
+.ccl .l1{font-family:var(--mono);font-size:10px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccl .l2{font-family:var(--mono);font-size:9.5px;color:var(--ink-2);margin-top:2px}
+.ccl .l3{font-family:var(--mono);font-size:9.5px;color:var(--ink-3);margin-top:3px}
+.ccl .l3 b{color:#4DA6FF;font-weight:500}
+.ccl .l3 em{font-style:normal;color:var(--alert)}
+.ccclip{width:96px;flex:none;border-radius:2px;border:1px solid rgba(255,77,94,.4);display:block}
+.mon.hit .ccgot{display:flex}
+.mon.hit .ccwait,.mon.hit .ccb.waitb{display:none}
+.cc .ccb.res{display:none}
+.mon.hit .cc .ccb.res{display:inline-block}
 .why b{color:var(--ink);font-weight:500}
 
 /* ── 재생바 ── */
@@ -212,7 +236,6 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
     </div>
     <div class="stat"><i class="led"></i><span id="conn">3대 동시 재생</span></div>
     <div class="stat">구역 <b>유억겸 기념관 앞</b></div>
-    <a class="back" href="monitor.html">관제 콘솔 →</a>
     <a class="back" href="index.html">← 판정 리포트</a>
   </header>
 
@@ -253,7 +276,10 @@ const SCEN = [
     verdict:'17:16:54  #14 SOCAR  RETURN_VALID',
     why:'겹침 <b>100.0%</b> · 쏘카일레클 #14 · 기체 서 있음',
     phone:{ real:'media/app-return.mp4', poster:'media/app-return.jpg', at:FLOW.ride,
-            hold:12.3 }   // 영상 12.7초부터 홈 화면 — 그 전에 멈춰 완료 화면을 남긴다
+            hold:12.3 },  // 영상 12.7초부터 홈 화면 — 그 전에 멈춰 완료 화면을 남긴다
+    // 관제로 넘어가는 것 — judgments.jsonl 의 실제 로그. 123 B 는 그 로그 JSON 크기
+    cc:{ b:'로그 수신', cls:'ok', l1:'17:16:54 #14 SOCAR RETURN_VALID',
+         l2:'겹침 100% · 지면 (2.26, 1.41)', l3:'로그 <b>123 B</b> · 영상 없음' }
   },
   {
     id:'pending', kind:'pending', no:'CASE 05', nm:'판정 보류', tag:'반납 보류',
@@ -265,7 +291,9 @@ const SCEN = [
             body:'<b>AI가 반납 상태를 판별하고 있어요</b>확정되면 알려드릴게요.',
             guide:{ h:'알아두세요', items:[
               '결과는 알림으로 보내드려요',
-              '기준에 맞지 않으면 반납이 취소될 수 있어요' ] } }
+              '기준에 맞지 않으면 반납이 취소될 수 있어요' ] } },
+    cc:{ b:'수신 없음', cls:'pending', l1:'전송된 판정 없음',
+         l2:'보류는 확정 전 — 로그도 영상도 가지 않는다' }
   },
   {
     id:'bad', kind:'bad', no:'CASE 02', nm:'반납 거부', tag:'반납 거부',
@@ -277,7 +305,10 @@ const SCEN = [
             body:'<b>AI가 주차 상태를 확인했어요</b>지정 주차구역을 벗어났습니다.<br>겹침 55.8% · 기준 70%',
             guide:{ h:'다시 세울 때 확인해 주세요', check:true, items:[
               '주차구역 선 안으로 세우기',
-              '넘어지지 않게 세우기' ] } }
+              '넘어지지 않게 세우기' ] } },
+    // 클립 0.3 MB = case2 영상 1,128,332 B / 29.7 s × 8 s. 판정(22.8초) 전후 4초
+    cc:{ b:'클립 수신', cls:'bad', l1:'17:25:54 #33 GCOO INVALID_OUT_OF_ZONE',
+         l2:'겹침 55.8% · 지면 (3.20, 2.73)', l3:'로그 <b>157 B</b> + <em>클립 8초 ≈ 0.3 MB</em>', clip:true }
   }
 ];
 
@@ -298,6 +329,23 @@ $('wall').innerHTML = SCEN.map((s,i) => `
       <div class="phone"><div class="screen">${phoneMarkup(s,i)}</div></div>
     </div>
     <p class="plabel">${s.phone.real ? '실제 앱 화면 녹화' : '앱 연동 재현 화면'}</p>
+    <div class="cc">
+      <div class="cchead">
+        <span class="lbl">관제 수신</span>
+        <span class="ccb waitb">대기</span>
+        <span class="ccb res ${s.cc.cls}">${s.cc.b}</span>
+      </div>
+      <div class="ccwait">영상 스트림 없음 — 판정 결과만 전송됩니다</div>
+      <div class="ccgot">
+        <div class="ccl">
+          <div class="l1">${s.cc.l1}</div>
+          <div class="l2">${s.cc.l2}</div>
+          ${s.cc.l3?`<div class="l3">${s.cc.l3}</div>`:''}
+        </div>
+        ${s.cc.clip?`<video class="ccclip" id="ccclip" muted playsinline preload="metadata"
+          src="media/case2-on-the-line.mp4#t=18.8,26.8" poster="media/case2-on-the-line.jpg"></video>`:''}
+      </div>
+    </div>
     <div class="why">${s.why}</div>
   </div>`).join('');
 
@@ -390,6 +438,19 @@ function syncApp(t, force){
   if(playing && app.paused) app.play().catch(()=>{});
 }
 
+/* 관제 수신 스트립 — 판정 순간에 열리고, 거부 증거 클립(판정 전후 4초)이 함께 돈다 */
+let hitState=null;
+function setHit(on){
+  if(on===hitState) return;
+  hitState=on;
+  mons.forEach(m=>m.classList.toggle('hit', on));
+  const c=$('ccclip');
+  if(c){
+    if(on){ if(c.currentTime<18.7||c.currentTime>26.9) c.currentTime=18.8; c.play().catch(()=>{}); }
+    else c.pause();
+  }
+}
+
 function paintPhones(t){
   const st = t < FLOW.prep ? 'ride' : t < FLOW.shot ? 'prep'
            : t < FLOW.wait ? 'shot' : t < FLOW.done ? 'wait' : 'done';
@@ -415,7 +476,7 @@ function tick(){
   }
   syncApp(t, false);
   paintPhones(t);
-  mons.forEach(m=>m.classList.toggle('hit', t >= HIT));
+  setHit(t >= HIT);
 
   $('fill').style.width = (t/LOOP*100).toFixed(2)+'%';
   $('tNow').textContent = '0:'+String(Math.floor(t)).padStart(2,'0');
@@ -434,7 +495,7 @@ function endAll(){
   ended = true;
   pauseAll();
   paintPhones(LOOP);                        // 세 폰 모두 결과 화면으로 고정
-  mons.forEach(m=>m.classList.add('hit'));
+  setHit(true);
   $('fill').style.width = '100%';
   $('tNow').textContent = '0:'+Math.round(LOOP);
   $('bPlay').setAttribute('aria-label','처음부터 다시 재생');
@@ -463,6 +524,8 @@ function pauseAll(){
   vids.forEach(v=>v.pause()); app.pause();
 }
 $('bPlay').onclick = () => playing ? pauseAll() : playAll();
+{ const c=$('ccclip');
+  if(c) c.addEventListener('timeupdate',()=>{ if(c.currentTime>=26.8) c.currentTime=18.8; }); }
 
 $('track').onclick = e => {
   const r = e.currentTarget.getBoundingClientRect();
