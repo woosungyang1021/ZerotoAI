@@ -89,18 +89,19 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 #viewer{position:relative}
 .homo{position:absolute;inset:0;pointer-events:none;z-index:4;display:none;overflow:visible}
 .homo.on{display:block}
-/* 선 색은 마젠타 — 영상의 파란 구역선, 맵의 노란 테두리, 판정색(초록·빨강·주황)
-   어디와도 겹치지 않는 유일한 자리다. 밝은 영상 위에서도 죽지 않게 어두운
-   케이싱을 깔고 그 위에 얹는다. */
-.homo .case{fill:none;stroke:#080C12;stroke-width:6;stroke-linecap:round;opacity:.7}
-.homo .wire{fill:none;stroke:#FF2FB4;stroke-width:2.6;stroke-linecap:round;
+/* 주석선이라 색을 쓰지 않는다. 판정색(초록·빨강·주황)·구역 노랑·영상 파랑을
+   모두 피해야 하는데, 색을 하나 더 들이면 그 색이 무슨 뜻인지 묻게 된다.
+   흰 선 + 어두운 케이싱이면 밝은 영상 위에서도 죽지 않고 뜻도 안 생긴다. */
+.homo .case{fill:none;stroke:#080C12;stroke-width:6.5;stroke-linecap:round;opacity:.75}
+.homo .wire{fill:none;stroke:#FFFFFF;stroke-width:2.4;stroke-linecap:round;
   stroke-dasharray:7 9;animation:flow 1s linear infinite}
 @keyframes flow{to{stroke-dashoffset:-16}}
-.homo .knob{fill:#FF2FB4;stroke:#080C12;stroke-width:2.2}
-.homo .num{fill:#1A0512;font-family:var(--sans);font-size:10px;font-weight:800;
+.homo .knob{fill:#FFFFFF;stroke:#080C12;stroke-width:2.2}
+.homo .num{fill:#0E141D;font-family:var(--sans);font-size:10px;font-weight:800;
   text-anchor:middle;dominant-baseline:central}
-.homo .pulse{fill:none;stroke:#FF2FB4;stroke-width:2.4;animation:ping 1.6s ease-out infinite}
-@keyframes ping{0%{r:7;opacity:.85}100%{r:17;opacity:0}}
+/* 뷰어가 한 줄로 접히면 영상과 구역 맵 사이에 다른 패널이 끼어, 대응선이 그
+   위를 가로질러 버린다. 나란히 놓일 때만 쓸 수 있는 설명이라 아예 감춘다. */
+@media(max-width:980px){ #homoBtn{display:none} .homo{display:none!important} }
 .stage video{width:100%;display:block;aspect-ratio:16/9;object-fit:contain;background:#080C12}
 
 /* 타임라인 */
@@ -158,7 +159,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:3px;cursor:pointer;
   transition:color .14s,border-color .14s,background .14s}
 .tabs-alt:hover{color:var(--ink);border-color:var(--ink-3)}
-.tabs-alt.on{background:#FF2FB4;border-color:#FF2FB4;color:#1A0512;font-weight:800}
+.tabs-alt.on{background:#FFFFFF;border-color:#FFFFFF;color:#0E141D;font-weight:800}
 
 /* 반납구역 위치 — 위성사진 위에 핀을 얹는다 (구역 맵 패널의 탭) */
 .locinfo{padding:13px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--rule)}
@@ -1015,21 +1016,49 @@ function drawHomo(){
 
   svg.setAttribute('viewBox', `0 0 ${host.width} ${host.height}`);
   svg.setAttribute('width', host.width); svg.setAttribute('height', host.height);
-  // 선이 서로 교차하므로 양 끝에 같은 번호를 달아 짝을 못박는다
-  const seg=HOMO_IMG.map((p,i)=>{
-    const z=D.zone_poly[i];
-    const x1=vb.x+p[0]*vb.w-host.left, y1=vb.y+p[1]*vb.h-host.top;
-    const x2=cb.left+z[0]*cb.width-host.left, y2=cb.top+z[1]*cb.height-host.top;
-    // 위아래로 갈라 띄워야 네 선이 겹쳐 보이지 않는다
-    const lift=(i<2?-1:1)*Math.min(54, Math.abs(x2-x1)*0.2+16);
-    return {i, x1,y1,x2,y2, d:`M${x1} ${y1} Q${(x1+x2)/2} ${(y1+y2)/2+lift} ${x2} ${y2}`};
+  const pt=HOMO_IMG.map((p,i)=>({
+    i,
+    x1:vb.x+p[0]*vb.w-host.left,      y1:vb.y+p[1]*vb.h-host.top,
+    x2:cb.left+D.zone_poly[i][0]*cb.width-host.left,
+    y2:cb.top +D.zone_poly[i][1]*cb.height-host.top,
+  }));
+
+  // 네 도착점이 작은 사각형에 모여 있어, 먼 쪽 모서리로 가는 선이 가까운 쪽
+  // 모서리를 그대로 관통한다(2번이 1번 끝점 위를 지나갔다). 먼 쪽으로 가는
+  // 선은 사각형 바깥(위/아래)으로 우회시켜 남의 끝점과 맵 안쪽을 피한다.
+  const rT=Math.min(...pt.map(g=>g.y2)), rB=Math.max(...pt.map(g=>g.y2));
+  const rL=Math.min(...pt.map(g=>g.x2)), rR=Math.max(...pt.map(g=>g.x2));
+  const OUT=Math.max(34, Math.min(60, (rB-rT)*0.26));
+  pt.forEach(g=>{
+    const far = (g.x2-rL) > (rR-rL)*0.5;                   // 사각형의 먼 쪽 모서리인가
+    g.lane = far ? (g.y2 <= (rT+rB)/2 ? rT-OUT : rB+OUT)
+                 : (g.y1+g.y2)/2;
   });
+  const c0=pt.reduce((s,g)=>s+g.lane,0)/pt.length;
+  pt.forEach(g=>{ g.lane += (g.lane-c0)*0.12; });          // 무리에서 조금 더 벌린다
+  const order=[...pt].sort((a,b)=>a.lane-b.lane);
+  const MIN=26;
+  for(let k=1;k<order.length;k++)
+    order[k].lane = Math.max(order[k].lane, order[k-1].lane+MIN);
+
+  const seg=pt.map(g=>{
+    // 2차 베지에의 t=0.5 지점이 차선에 오도록 제어점 y 를 역산한다
+    const cy=(4*g.lane-g.y1-g.y2)/2, cx=(g.x1+g.x2)/2;
+    // 화살촉이 도착 배지를 덮지 않게 끝을 조금 앞에서 끊는다
+    let dx=g.x2-cx, dy=g.y2-cy, L=Math.hypot(dx,dy)||1;
+    const ex=g.x2-dx/L*15, ey=g.y2-dy/L*15;
+    return {...g, d:`M${g.x1} ${g.y1} Q${cx} ${cy} ${ex} ${ey}`};
+  });
+
   const badge=(x,y,n)=>`<circle class="knob" cx="${x}" cy="${y}" r="9"/>`
                      + `<text class="num" x="${x}" y="${y}">${n}</text>`;
   svg.innerHTML =
-      seg.map(g=>`<path class="case" d="${g.d}"/>`).join('')
-    + seg.map(g=>`<path class="wire" d="${g.d}" style="animation-delay:${g.i*0.14}s"/>`).join('')
-    + seg.map(g=>`<circle class="pulse" cx="${g.x2}" cy="${g.y2}" r="7"
+      `<defs><marker id="hArrow" viewBox="0 0 12 12" refX="10.5" refY="6"
+         markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto">
+         <path d="M1.5 1.5 L11 6 L1.5 10.5 Z" fill="#FFFFFF" stroke="#080C12"
+               stroke-width="1.6" stroke-linejoin="round"/></marker></defs>`
+    + seg.map(g=>`<path class="case" d="${g.d}"/>`).join('')
+    + seg.map(g=>`<path class="wire" d="${g.d}" marker-end="url(#hArrow)"
                    style="animation-delay:${g.i*0.14}s"/>`).join('')
     + seg.map(g=>badge(g.x1,g.y1,g.i+1)+badge(g.x2,g.y2,g.i+1)).join('');
   svg.classList.add('on');
