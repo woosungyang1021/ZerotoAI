@@ -89,12 +89,18 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 #viewer{position:relative}
 .homo{position:absolute;inset:0;pointer-events:none;z-index:4;display:none;overflow:visible}
 .homo.on{display:block}
-.homo path{fill:none;stroke:#00A8FF;stroke-width:1.4;stroke-dasharray:5 7;opacity:.85;
-  animation:flow 1.1s linear infinite}
-@keyframes flow{to{stroke-dashoffset:-12}}
-.homo circle{fill:none;stroke:#00A8FF;stroke-width:1.6}
-.homo .pulse{animation:ping 1.6s ease-out infinite}
-@keyframes ping{0%{r:4;opacity:.9}100%{r:11;opacity:0}}
+/* 선 색은 마젠타 — 영상의 파란 구역선, 맵의 노란 테두리, 판정색(초록·빨강·주황)
+   어디와도 겹치지 않는 유일한 자리다. 밝은 영상 위에서도 죽지 않게 어두운
+   케이싱을 깔고 그 위에 얹는다. */
+.homo .case{fill:none;stroke:#080C12;stroke-width:6;stroke-linecap:round;opacity:.7}
+.homo .wire{fill:none;stroke:#FF2FB4;stroke-width:2.6;stroke-linecap:round;
+  stroke-dasharray:7 9;animation:flow 1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-16}}
+.homo .knob{fill:#FF2FB4;stroke:#080C12;stroke-width:2.2}
+.homo .num{fill:#1A0512;font-family:var(--sans);font-size:10px;font-weight:800;
+  text-anchor:middle;dominant-baseline:central}
+.homo .pulse{fill:none;stroke:#FF2FB4;stroke-width:2.4;animation:ping 1.6s ease-out infinite}
+@keyframes ping{0%{r:7;opacity:.85}100%{r:17;opacity:0}}
 .stage video{width:100%;display:block;aspect-ratio:16/9;object-fit:contain;background:#080C12}
 
 /* 타임라인 */
@@ -152,7 +158,7 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:3px;cursor:pointer;
   transition:color .14s,border-color .14s,background .14s}
 .tabs-alt:hover{color:var(--ink);border-color:var(--ink-3)}
-.tabs-alt.on{background:#00A8FF;border-color:#00A8FF;color:#06121C;font-weight:800}
+.tabs-alt.on{background:#FF2FB4;border-color:#FF2FB4;color:#1A0512;font-weight:800}
 
 /* 반납구역 위치 — 위성사진 위에 핀을 얹는다 (구역 맵 패널의 탭) */
 .locinfo{padding:13px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--rule)}
@@ -1009,16 +1015,23 @@ function drawHomo(){
 
   svg.setAttribute('viewBox', `0 0 ${host.width} ${host.height}`);
   svg.setAttribute('width', host.width); svg.setAttribute('height', host.height);
-  let out='';
-  HOMO_IMG.forEach((p,i)=>{
+  // 선이 서로 교차하므로 양 끝에 같은 번호를 달아 짝을 못박는다
+  const seg=HOMO_IMG.map((p,i)=>{
     const z=D.zone_poly[i];
     const x1=vb.x+p[0]*vb.w-host.left, y1=vb.y+p[1]*vb.h-host.top;
     const x2=cb.left+z[0]*cb.width-host.left, y2=cb.top+z[1]*cb.height-host.top;
-    const mx=(x1+x2)/2, lift=Math.min(46, Math.abs(x2-x1)*0.16);
-    out+=`<path d="M${x1} ${y1} Q${mx} ${(y1+y2)/2-lift} ${x2} ${y2}" style="animation-delay:${i*0.16}s"/>`
-       + `<circle cx="${x1}" cy="${y1}" r="4"/><circle class="pulse" cx="${x2}" cy="${y2}" r="4"/>`;
+    // 위아래로 갈라 띄워야 네 선이 겹쳐 보이지 않는다
+    const lift=(i<2?-1:1)*Math.min(54, Math.abs(x2-x1)*0.2+16);
+    return {i, x1,y1,x2,y2, d:`M${x1} ${y1} Q${(x1+x2)/2} ${(y1+y2)/2+lift} ${x2} ${y2}`};
   });
-  svg.innerHTML=out;
+  const badge=(x,y,n)=>`<circle class="knob" cx="${x}" cy="${y}" r="9"/>`
+                     + `<text class="num" x="${x}" y="${y}">${n}</text>`;
+  svg.innerHTML =
+      seg.map(g=>`<path class="case" d="${g.d}"/>`).join('')
+    + seg.map(g=>`<path class="wire" d="${g.d}" style="animation-delay:${g.i*0.14}s"/>`).join('')
+    + seg.map(g=>`<circle class="pulse" cx="${g.x2}" cy="${g.y2}" r="7"
+                   style="animation-delay:${g.i*0.14}s"/>`).join('')
+    + seg.map(g=>badge(g.x1,g.y1,g.i+1)+badge(g.x2,g.y2,g.i+1)).join('');
   svg.classList.add('on');
 }
 
