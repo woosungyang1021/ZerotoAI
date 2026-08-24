@@ -89,14 +89,16 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 #viewer{position:relative}
 .homo{position:absolute;inset:0;pointer-events:none;z-index:4;display:none;overflow:visible}
 .homo.on{display:block}
-/* 주석선이라 색을 쓰지 않는다. 판정색(초록·빨강·주황)·구역 노랑·영상 파랑을
-   모두 피해야 하는데, 색을 하나 더 들이면 그 색이 무슨 뜻인지 묻게 된다.
-   흰 선 + 어두운 케이싱이면 밝은 영상 위에서도 죽지 않고 뜻도 안 생긴다. */
+/* 양 끝 색은 그 자리에 이미 있는 것을 그대로 쓴다 — 출발은 영상 속 파란
+   기준점(#00A8FF), 도착은 맵의 노란 구역 테두리(#FFD23F). 색이 변하는 것
+   자체가 "이 파란 게 저 노란 게 된다" 를 말한다. 두 색을 곧장 섞으면 탁한
+   회록색을 지나므로 가운데를 흰색으로 띄운다(밝은 영상 위 가시성도 여기서 나온다). */
 .homo .case{fill:none;stroke:#080C12;stroke-width:6.5;stroke-linecap:round;opacity:.75}
-.homo .wire{fill:none;stroke:#FFFFFF;stroke-width:2.4;stroke-linecap:round;
+.homo .wire{fill:none;stroke-width:2.4;stroke-linecap:round;
   stroke-dasharray:7 9;animation:flow 1s linear infinite}
 @keyframes flow{to{stroke-dashoffset:-16}}
-.homo .knob{fill:#FFFFFF;stroke:#080C12;stroke-width:2.2}
+.homo .knob{stroke:#080C12;stroke-width:2.2}
+.homo .knob.a{fill:#00A8FF} .homo .knob.b{fill:#FFD23F}
 .homo .num{fill:#0E141D;font-family:var(--sans);font-size:10px;font-weight:800;
   text-anchor:middle;dominant-baseline:central}
 /* 뷰어가 한 줄로 접히면 영상과 구역 맵 사이에 다른 패널이 끼어, 대응선이 그
@@ -159,7 +161,8 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
   font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:3px;cursor:pointer;
   transition:color .14s,border-color .14s,background .14s}
 .tabs-alt:hover{color:var(--ink);border-color:var(--ink-3)}
-.tabs-alt.on{background:#FFFFFF;border-color:#FFFFFF;color:#0E141D;font-weight:800}
+.tabs-alt.on{background:linear-gradient(90deg,#00A8FF,#FFFFFF 55%,#FFD23F);
+  border-color:#FFD23F;color:#0E141D;font-weight:800}
 
 /* 반납구역 위치 — 위성사진 위에 핀을 얹는다 (구역 맵 패널의 탭) */
 .locinfo{padding:13px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--rule)}
@@ -1050,17 +1053,22 @@ function drawHomo(){
     return {...g, d:`M${g.x1} ${g.y1} Q${cx} ${cy} ${ex} ${ey}`};
   });
 
-  const badge=(x,y,n)=>`<circle class="knob" cx="${x}" cy="${y}" r="9"/>`
-                     + `<text class="num" x="${x}" y="${y}">${n}</text>`;
+  const badge=(x,y,n,k)=>`<circle class="knob ${k}" cx="${x}" cy="${y}" r="9"/>`
+                       + `<text class="num" x="${x}" y="${y}">${n}</text>`;
+  // 그라데이션은 선마다 제 출발→도착 방향을 따라야 해서 하나씩 만든다
+  const grad=seg.map(g=>`<linearGradient id="hg${g.i}" gradientUnits="userSpaceOnUse"
+        x1="${g.x1}" y1="${g.y1}" x2="${g.x2}" y2="${g.y2}">
+        <stop offset="0" stop-color="#00A8FF"/><stop offset=".55" stop-color="#FFFFFF"/>
+        <stop offset="1" stop-color="#FFD23F"/></linearGradient>`).join('');
   svg.innerHTML =
-      `<defs><marker id="hArrow" viewBox="0 0 12 12" refX="10.5" refY="6"
+      `<defs>${grad}<marker id="hArrow" viewBox="0 0 12 12" refX="10.5" refY="6"
          markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto">
-         <path d="M1.5 1.5 L11 6 L1.5 10.5 Z" fill="#FFFFFF" stroke="#080C12"
+         <path d="M1.5 1.5 L11 6 L1.5 10.5 Z" fill="#FFD23F" stroke="#080C12"
                stroke-width="1.6" stroke-linejoin="round"/></marker></defs>`
     + seg.map(g=>`<path class="case" d="${g.d}"/>`).join('')
-    + seg.map(g=>`<path class="wire" d="${g.d}" marker-end="url(#hArrow)"
-                   style="animation-delay:${g.i*0.14}s"/>`).join('')
-    + seg.map(g=>badge(g.x1,g.y1,g.i+1)+badge(g.x2,g.y2,g.i+1)).join('');
+    + seg.map(g=>`<path class="wire" d="${g.d}" stroke="url(#hg${g.i})"
+                   marker-end="url(#hArrow)" style="animation-delay:${g.i*0.14}s"/>`).join('')
+    + seg.map(g=>badge(g.x1,g.y1,g.i+1,'a')+badge(g.x2,g.y2,g.i+1,'b')).join('');
   svg.classList.add('on');
 }
 
