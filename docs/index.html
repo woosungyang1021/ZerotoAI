@@ -84,6 +84,17 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .head h3{font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--ink-2);font-family:var(--mono);text-transform:uppercase;margin-right:auto}
 .tag{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.06em}
 .stage{background:#080C12;position:relative;cursor:pointer}
+/* 호모그래피 대응선 — 영상의 기준점 4개와 구역 맵의 같은 모서리를 잇는다.
+   두 패널에 걸치므로 뷰어 전체를 덮는 SVG 한 장에 그린다. */
+#viewer{position:relative}
+.homo{position:absolute;inset:0;pointer-events:none;z-index:4;display:none;overflow:visible}
+.homo.on{display:block}
+.homo path{fill:none;stroke:#00A8FF;stroke-width:1.4;stroke-dasharray:5 7;opacity:.85;
+  animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-12}}
+.homo circle{fill:none;stroke:#00A8FF;stroke-width:1.6}
+.homo .pulse{animation:ping 1.6s ease-out infinite}
+@keyframes ping{0%{r:4;opacity:.9}100%{r:11;opacity:0}}
 .stage video{width:100%;display:block;aspect-ratio:16/9;object-fit:contain;background:#080C12}
 
 /* 타임라인 */
@@ -137,6 +148,11 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .tabs button+button{border-left:none;border-radius:0 3px 3px 0}
 .tabs button:hover{color:var(--ink)}
 .tabs button.on{background:var(--line);border-color:var(--line);color:#10151D;font-weight:800}
+.tabs-alt{background:var(--panel-2);border:1px solid var(--rule);color:var(--ink-2);font:inherit;
+  font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:3px;cursor:pointer;
+  transition:color .14s,border-color .14s,background .14s}
+.tabs-alt:hover{color:var(--ink);border-color:var(--ink-3)}
+.tabs-alt.on{background:#00A8FF;border-color:#00A8FF;color:#06121C;font-weight:800}
 
 /* 반납구역 위치 — 위성사진 위에 핀을 얹는다 (구역 맵 패널의 탭) */
 .locinfo{padding:13px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--rule)}
@@ -261,6 +277,7 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
   </section>
 
   <section id="viewer">
+    <svg class="homo" id="homo"></svg>
     <div class="viewer">
       <div class="col">
         <div class="panel">
@@ -310,6 +327,8 @@ table.log .ov{font-family:var(--mono);color:var(--ink)}
               <button data-tab="bev" class="on">접지점</button>
               <button data-tab="loc">위치</button>
             </div>
+            <button class="tabs-alt" id="homoBtn" type="button"
+              title="영상의 기준점 4개가 구역 맵의 어느 모서리가 되는지 잇습니다">대응</button>
           </div>
           <div id="tabBev">
             <div class="bev"><canvas id="bevCase" width="900" height="900"></canvas></div>
@@ -962,9 +981,60 @@ $('mapTabs').onclick=e=>{
   $('tabLoc').hidden=showBev;
   $('bevCount').style.display=showBev?'':'none';   // 인식 대수는 접지점 탭에서만 의미가 있다
   if(showBev) drawCase();          // 숨겨진 동안 폭 0 으로 그려졌을 수 있다 — 다시 맞춘다
+  drawHomo();
 };
 
-addEventListener('resize', ()=>{ drawCase(); drawDist(); });
+
+/* ── 호모그래피 대응선 ──────────────────────────────────────────────
+   영상 위 기준점 4개(캘리브레이션 image_points 를 정규화한 값)와
+   구역 맵의 같은 모서리를 잇는다. 두 점은 zone_poly 와 인덱스가 같다.
+   영상은 object-fit:contain 이라 실제 그려진 영역을 따로 구해야 한다. */
+const HOMO_IMG = [[0.6276, 0.5102], [0.8964, 0.6222], [0.8151, 0.9259], [0.4521, 0.762]];   // 영상 기준 0~1 (지면 (0.0, 3.8) / (3.2, 3.8) / (3.2, 0.0) / (0.0, 0.0) 순서)
+let homoOn=false;
+
+function videoBox(){                      // contain 으로 실제 그려진 사각형
+  const r=vid.getBoundingClientRect();
+  const vw=vid.videoWidth||16, vh=vid.videoHeight||9;
+  const scale=Math.min(r.width/vw, r.height/vh);
+  const w=vw*scale, h=vh*scale;
+  return {x:r.left+(r.width-w)/2, y:r.top+(r.height-h)/2, w, h};
+}
+
+function drawHomo(){
+  const svg=$('homo');
+  if(!homoOn || !D || $('tabBev').hidden){ svg.classList.remove('on'); return; }
+  const cv=$('bevCase'), host=$('viewer').getBoundingClientRect();
+  const vb=videoBox(), cb=cv.getBoundingClientRect();
+  if(!vb.w || !cb.width){ svg.classList.remove('on'); return; }
+
+  svg.setAttribute('viewBox', `0 0 ${host.width} ${host.height}`);
+  svg.setAttribute('width', host.width); svg.setAttribute('height', host.height);
+  let out='';
+  HOMO_IMG.forEach((p,i)=>{
+    const z=D.zone_poly[i];
+    const x1=vb.x+p[0]*vb.w-host.left, y1=vb.y+p[1]*vb.h-host.top;
+    const x2=cb.left+z[0]*cb.width-host.left, y2=cb.top+z[1]*cb.height-host.top;
+    const mx=(x1+x2)/2, lift=Math.min(46, Math.abs(x2-x1)*0.16);
+    out+=`<path d="M${x1} ${y1} Q${mx} ${(y1+y2)/2-lift} ${x2} ${y2}" style="animation-delay:${i*0.16}s"/>`
+       + `<circle cx="${x1}" cy="${y1}" r="4"/><circle class="pulse" cx="${x2}" cy="${y2}" r="4"/>`;
+  });
+  svg.innerHTML=out;
+  svg.classList.add('on');
+}
+
+$('homoBtn').onclick=()=>{
+  homoOn=!homoOn;
+  $('homoBtn').classList.toggle('on', homoOn);
+  if(homoOn && $('tabBev').hidden){        // 위치 탭이면 접지점으로 되돌린다
+    $('mapTabs').querySelector('[data-tab="bev"]').click();
+  }
+  drawHomo();
+};
+vid.addEventListener('loadedmetadata', drawHomo);
+addEventListener('resize', drawHomo);
+addEventListener('scroll', drawHomo, {passive:true});
+
+addEventListener('resize', ()=>{ drawCase(); drawDist(); drawHomo(); });
 // 분포 그림은 재생과 달리 다시 그릴 일이 없어, 폭이 바뀔 때마다 다시 맞춘다.
 // (옵저버를 변수에 담아둔다 — 참조를 놓으면 수거돼 콜백이 끊긴다)
 let distRO=null;
