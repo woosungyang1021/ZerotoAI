@@ -148,6 +148,15 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .ui .mid p{font-size:8px;color:#8A91A0;line-height:1.5}
 .spin{width:17px;height:17px;border-radius:50%;border:2px solid #E4E7EC;border-top-color:#9AA2AF;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
+/* 반납 처리 중 — 실제 앱 화면을 그 자리 그대로 옮긴다. 녹화 프레임(440x956)에서
+   제목 y144~165, 부제 y180~192, 자물쇠 x179~261 · y432~520(중심 49.8%)로 쟀다.
+   % 는 상태바(6.49%)를 뺀 본문 높이 기준이라 화면 비율이 바뀌어도 따라온다. */
+.ui .proc{flex:1;position:relative;text-align:center}
+.ui .proc .hd{position:absolute;left:0;right:0;top:8.23%}
+.ui .proc h4{font-size:8.5px;font-weight:800;letter-spacing:-.02em}
+.ui .proc p{font-size:4.8px;color:#8A91A0;line-height:1.5}
+.ui .padlock{position:absolute;left:50%;top:46.3%;transform:translate(-50%,-50%);
+  width:18.9%;height:auto;display:block}
 .ui .cam{flex:1;background-size:cover;background-position:center;position:relative;overflow:hidden}
 /* 촬영 프레임을 옮겨 그리는 캔버스. 못 그리는 동안은 투명해져 밑에 깔린
    app-shot.jpg 가 그대로 보인다 — 실패해도 지금 화면 그대로다. */
@@ -377,8 +386,11 @@ const LOOP = 23.5;          // 세 영상의 공통 길이
 const HIT  = 22.0;          // 판정이 떨어지는 지점
 
 /* 앱 흐름 — 실제 녹화본(정상 반납)의 화면 전환 시각을 그대로 따른다.
-   보류·거부는 녹화본이 없어 같은 리듬으로 재현한다. */
-const FLOW = { ride:9.9, prep:13.7, shot:15.2, wait:19.1, done:HIT };
+   보류·거부는 녹화본이 없어 같은 리듬으로 재현한다.
+   촬영 구간은 프레임 단위로 다시 쟀다. 카메라가 밝아지는 첫 프레임이 영상 4.85초,
+   마지막 카메라 프레임이 8.134초이고 그 다음 프레임(8.151)이 이미 잠금 안내다.
+   ride 오프셋 9.9 를 더해 shot 14.75 / lock 18.05 — 세 폰이 같은 순간에 넘어간다. */
+const FLOW = { ride:9.9, prep:13.7, shot:14.75, lock:18.05, wait:19.1, done:HIT };
 
 const SCEN = [
   {
@@ -505,6 +517,18 @@ function phoneMarkup(s,i){
         <div class="camtip">✋ 견인 구역에 반납하지 않으려면?</div>
       </div>
     </div>
+    <!-- 셔터를 누르면 실제 앱은 촬영 화면을 닫고 잠금 안내를 띄운다. 정상 반납 폰이
+         그 화면으로 넘어가는 바로 그 순간(영상 8.15초)에 재현 폰도 같이 넘어간다. -->
+    <div class="ui" data-st="lock">
+      <div class="proc">
+        <div class="hd"><h4>반납 처리 중이에요</h4><p>앱을 종료하지 말고 기다려 주세요.</p></div>
+        <svg class="padlock" viewBox="0 0 83 89" aria-hidden="true">
+          <path d="M16 44V29.5a24 24 0 0 1 48 0V44" fill="none" stroke="#3F3F3F" stroke-width="11"/>
+          <rect y="42" width="83" height="45" rx="7" fill="#A4ACB4"/>
+          <rect x="38" y="56" width="7" height="13" rx="3.5" fill="#fff"/>
+        </svg>
+      </div>
+    </div>
     <div class="ui" data-st="wait">
       <div class="mid"><div class="spin"></div><p>주차 상태를 확인하고 있어요</p></div>
     </div>
@@ -566,11 +590,13 @@ function syncApp(t, force){
    - 크롭은 여태 깔려 있던 app-shot.jpg 와 같은 자리다 — 프레임(440x956)의 y 182 부터 544px.
      세로로 긴 상자라 cover 가 좌우를 잘라 옆 폰보다 1.54배 크게 잡히는데, 말풍선과
      셔터를 들이지 않으려던 의도(e76e43a)를 그대로 지킨 결과다.
-   - 녹화에서 카메라가 살아 있는 구간은 4.80~8.15초. 8.20초부터는 잠금 안내 흰 화면이라
-     거기 닿으면 그리기를 멈추고 마지막 프레임을 남긴다 — 셔터를 누른 뒤로 읽힌다.
+   - 카메라가 살아 있는 구간은 영상 4.85~8.134초다. 다음 프레임(8.151)은 이미 잠금
+     안내이고, 크롭 영역에 자물쇠와 부제 아랫부분이 들어 있어 한 장만 새도 그대로 비친다.
+     재생 중에는 currentTime 이 화면에 걸린 프레임보다 한 장쯤 뒤처질 수 있으므로
+     8.10 에서 끊어 두 장의 여유를 둔다.
    - 탐색 중이거나 아직 못 읽은 동안은 캔버스를 감춰 폴백 사진으로 돌아간다.
      그래야 되감기 직후 주행 화면 같은 엉뚱한 프레임이 '반납 사진 촬영' 밑에 그려지지 않는다. */
-const SHOT = { y:182, w:440, h:544, from:4.80, to:8.15 };
+const SHOT = { y:182, w:440, h:544, from:4.85, to:8.10 };
 let shotOn = false;
 function shotShow(on){
   if(on === shotOn) return;
@@ -578,7 +604,7 @@ function shotShow(on){
   cams.forEach(c => c.classList.toggle('on', on));
 }
 function drawShots(t){
-  if(t < FLOW.shot || t >= FLOW.wait){ shotShow(false); return; }
+  if(t < FLOW.shot || t >= FLOW.lock){ shotShow(false); return; }
   if(app.readyState < 2 || app.seeking || app.currentTime < SHOT.from){ shotShow(false); return; }
   if(app.currentTime > SHOT.to) return;          // 카메라가 꺼진 뒤 — 마지막 프레임을 남긴다
   const dpr = Math.min(devicePixelRatio || 1, 2);
@@ -648,7 +674,8 @@ addEventListener('resize', aimShots);
 
 function paintPhones(t){
   const st = t < FLOW.prep ? 'ride' : t < FLOW.shot ? 'prep'
-           : t < FLOW.wait ? 'shot' : t < FLOW.done ? 'wait' : 'done';
+           : t < FLOW.lock ? 'shot' : t < FLOW.wait ? 'lock'
+           : t < FLOW.done ? 'wait' : 'done';
   SCEN.forEach((s,i)=>{
     const root = mons[i];
     if(s.phone.real){                       // 실제 녹화 폰 — 주행 화면 동안 구역 안내만 덧입힌다
