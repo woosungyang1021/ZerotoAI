@@ -396,10 +396,11 @@ const SCEN = [
   {
     id:'ok', kind:'ok', no:'CASE 01', nm:'정상 반납', tag:'반납 승인',
     src:'media/case1-normal-return.mp4', clip:93.09,
-    verdict:'17:16:54  #14 SOCAR  RETURN_VALID',
+    verdict:'#14 SOCAR  RETURN_VALID',
     phone:{ real:'media/app-return.mp4', poster:'media/app-return.jpg', at:FLOW.ride,
             hold:12.3 },  // 영상 12.7초부터 홈 화면 — 그 전에 멈춰 완료 화면을 남긴다
-    // 관제로 넘어가는 것 — judgments.jsonl 의 실제 로그. 123 B 는 그 로그 JSON 크기
+    // 관제로 넘어가는 것 — judgments.jsonl 의 실제 로그. 123 B 는 그 로그 JSON 크기.
+    // 시각은 여기에만 둔다 — 화면 배너는 '무엇으로 판정했나', 이 줄은 '어떤 레코드가 갔나'다.
     cc:{ b:'로그 수신', cls:'ok', l1:'17:16:54 #14 SOCAR RETURN_VALID',
          l2:'겹침 100% · 지면 (2.26, 1.41)', l3:'로그 <b>123 B</b> · 영상 없음' }
   },
@@ -422,7 +423,7 @@ const SCEN = [
     src:'media/case2-on-the-line.mp4', clip:0.80,
     // 실제 기체는 쏘카일레클이다. 로그와 영상 배너의 GCOO 는 브랜드 오분류로,
     // 이 케이스의 요지(구역 겹침 55.8%)와는 무관하다.
-    verdict:'17:25:54  #33 SOCAR  INVALID_OUT_OF_ZONE',
+    verdict:'#33 SOCAR  INVALID_OUT_OF_ZONE',
     phone:{ cam:'media/app-shot.jpg', res:'bad', me:[51.0, 54.3],       // 아랫변에 딱 걸침
             title:'반납할 수 없어요',
             sub:'AI가 주차 상태를 확인했어요.<br>지정 주차구역을 벗어났습니다.',
