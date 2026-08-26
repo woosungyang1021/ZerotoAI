@@ -42,6 +42,7 @@ section{margin-top:34px}
 @keyframes breathe{50%{opacity:.42}}
 
 /* ── 제목 ── */
+h2.title .tag b{color:var(--line);font-weight:700}
 h2.title{font-size:16px;font-weight:750;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;margin-bottom:4px}
 h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:none}
 .sub{color:var(--ink-2);font-size:12.5px;margin-bottom:14px;padding-left:13px}
@@ -59,6 +60,8 @@ h2.title::before{content:'';width:3px;height:15px;background:var(--line);flex:no
 .gallery .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:10px}
 .ghead{display:flex;align-items:center;gap:10px;margin-top:6px}
 .ghead span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase;white-space:nowrap}
+.ghead em{font-family:var(--mono);font-size:11px;font-style:normal;font-weight:700;color:var(--line);
+  letter-spacing:.04em;white-space:nowrap}
 .ghead i{flex:1;height:1px;background:var(--rule)}
 .card{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--ink-3);border-radius:3px;cursor:pointer;text-align:left;color:inherit;font:inherit;padding:12px 14px 13px;display:flex;flex-direction:column;gap:7px;transition:border-color .14s,background .14s}
 .card:hover{border-color:var(--ink-3);background:var(--panel-2)}
@@ -453,7 +456,11 @@ fetch('cases.json').then(r=>r.json()).then(d=>{
   $('locRec').textContent='주간 '+dt.sessions+'회 '+dt.judgments+'건 · '   // 야간은 모델 비교용
                          +'야간 '+nt.sessions+'회 '+nt.judgments+'건';     // 이라 갈라서 적는다
 
-  $('galCount').textContent=d.cases.length+'편';
+  // 판정 케이스가 몇 편인지가 이 페이지의 실적이라 그룹별로 나눠 적는다
+  { const by={};
+    d.cases.forEach(c=>{ const k=c.group||'주차 판정'; by[k]=(by[k]||0)+1; });
+    $('galCount').innerHTML=Object.entries(by)
+      .map(([k,n])=>`${k} <b>${n}</b>편`).join(' · '); }
   buildGallery();
   buildTally();
   buildLog();
@@ -474,7 +481,8 @@ function buildGallery(){
   const boxes={};
   groups.forEach(name=>{
     const h=document.createElement('div');
-    h.className='ghead'; h.innerHTML=`<span>${name}</span><i></i>`;
+    const n=D.cases.filter(c=>(c.group||'주차 판정')===name).length;
+    h.className='ghead'; h.innerHTML=`<span>${name}</span><em>${n}편</em><i></i>`;
     g.appendChild(h);
     const box=document.createElement('div');
     box.className='grid'; g.appendChild(box); boxes[name]=box;
